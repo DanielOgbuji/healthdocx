@@ -29,7 +29,7 @@ const OnBoardingForm: React.FC<OnBoardingFormProps> = ({ legendText, helperText 
             <Fieldset.Root size="lg" maxW="lg">
                 <Stack alignItems="center">
                     <Image
-                        src="src/assets/Off-Jeay.svg" />
+                        src="src/assets/Off-Jeay.svg" mb="12px" />
                     <Fieldset.Legend>{legendText}</Fieldset.Legend>
                     <Fieldset.HelperText textAlign="center">
                         {helperText}
