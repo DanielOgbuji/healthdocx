@@ -3,6 +3,7 @@ import {
     Group,
     Field,
     Fieldset,
+    Image,
     Input,
     InputAddon,
     Stack,
@@ -27,8 +28,10 @@ const OnBoardingForm: React.FC<OnBoardingFormProps> = ({ legendText, helperText 
         <>
             <Fieldset.Root size="lg" maxW="lg">
                 <Stack alignItems="center">
+                    <Image
+                        src="src/assets/Off-Jeay.svg" />
                     <Fieldset.Legend>{legendText}</Fieldset.Legend>
-                    <Fieldset.HelperText>
+                    <Fieldset.HelperText textAlign="center">
                         {helperText}
                     </Fieldset.HelperText>
                 </Stack>

@@ -68,7 +68,7 @@ const OnBoardingSteps = () => {
 				</Text>
 			</Layout>
 
-			<Stack justifyContent="center" alignItems="center" flexGrow="1">
+			<Stack justifyContent="center" alignItems="center" flexGrow="1" mt={{ base: "40px", lg: "0px" }}>
 				<StepsContent index={0} width={{ base: "75%", lg: "50%" }}>
 					<OnBoardingForm
 						legendText="Create an account"
