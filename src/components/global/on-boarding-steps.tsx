@@ -1,6 +1,6 @@
 import { Button, Group, Stack, Text, Link } from "@chakra-ui/react";
 import Layout from "./layout";
-import onBoardingForm from "../ui/onBoardingForm";
+import OnBoardingForm from "../ui/on-boarding-form";
 import {
 	StepsCompletedContent,
 	StepsContent,
@@ -11,7 +11,7 @@ import {
 	StepsRoot,
 } from "@/components/ui/steps";
 
-const onBoardingSteps = () => {
+const OnBoardingSteps = () => {
 	return (
 		<StepsRoot
 			orientation="vertical"
@@ -20,8 +20,8 @@ const onBoardingSteps = () => {
 			defaultValue={1}
 			count={4}
 		>
-			<Layout >
-				<StepsList minHeight="440px">
+			<Layout>
+				<StepsList minHeight="440px" pointerEvents="none">
 					<StepsItem
 						index={0}
 						icon={<span className="material-symbols-outlined">person</span>}
@@ -44,7 +44,11 @@ const onBoardingSteps = () => {
 					/>
 					<StepsItem
 						index={3}
-						icon={<span className="material-symbols-outlined">checklist</span>}
+						icon={
+							<span className="material-symbols-outlined">
+								approval_delegation
+							</span>
+						}
 						title="Institution verification"
 						description="Wait for a quick verification"
 					/>
@@ -65,11 +69,18 @@ const onBoardingSteps = () => {
 			</Layout>
 
 			<Stack justifyContent="center" alignItems="center" flexGrow="1">
-				<StepsContent index={0} width={{ base:"75%", lg:"50%" }}>{onBoardingForm()}</StepsContent>
+				<StepsContent index={0} width={{ base: "75%", lg: "50%" }}>
+					<OnBoardingForm
+						legendText="Create an account"
+						helperText="Fill in your details as it is in your National ID."
+					/>
+				</StepsContent>
 				<StepsContent index={1}>Second Step</StepsContent>
 				<StepsContent index={2}>Third Step</StepsContent>
 				<StepsContent index={3}>Fourth Step</StepsContent>
-				<StepsCompletedContent>You have completed all steps!</StepsCompletedContent>
+				<StepsCompletedContent>
+					You have completed all steps!
+				</StepsCompletedContent>
 
 				<Group>
 					<StepsPrevTrigger asChild>
@@ -88,4 +99,4 @@ const onBoardingSteps = () => {
 	);
 };
 
-export default onBoardingSteps;
+export default OnBoardingSteps;

@@ -1,10 +1,10 @@
 import "./App.css";
-import onBoardingSteps from "./components/global/onBoardingSteps";
+import OnBoardingSteps from "./components/global/on-boarding-steps";
 
 function App() {
 	return (
 		<>
-			{onBoardingSteps()}
+			<OnBoardingSteps />
 		</>
 	);
 }
