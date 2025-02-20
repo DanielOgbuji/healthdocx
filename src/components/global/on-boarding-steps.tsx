@@ -1,6 +1,6 @@
 import { Button, Group, Stack, Text, Link } from "@chakra-ui/react";
 import Layout from "./layout";
-import OnBoardingForm from "../ui/on-boarding-form";
+import OnBoardingForm from "../../pages/form-one";
 import {
 	StepsCompletedContent,
 	StepsContent,
