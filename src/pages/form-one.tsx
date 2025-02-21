@@ -94,15 +94,15 @@ const OnBoardingForm: React.FC<OnBoardingFormProps> = ({
 	// Handle password input change
 	const handlePasswordChange = (e: React.ChangeEvent<HTMLInputElement>) => {
 		const password = e.target.value;
-		formik.setFieldValue("password", password); // Updates Formik state instantly
-		setPasswordStrength(getPasswordStrength(password)); // Updates password strength meter
+		formik.handleChange(e);
+		setPasswordStrength(getPasswordStrength(password));
 	};
 
 	return (
-		<form onSubmit={formik.handleSubmit}>
+		<form onSubmit={formik.handleSubmit} className="onboarding-form">
 			<Fieldset.Root size="lg" maxW="lg">
 				<Stack alignItems="center">
-					<Image src="src/assets/Off-Jeay.svg" mb="12px" />
+					<Image src="src/assets/Off-Jeay.svg" mb="12px" width="48px" height="48px" alt="Company Logo" />
 					<Fieldset.Legend>{legendText}</Fieldset.Legend>
 					<Fieldset.HelperText textAlign="center">
 						{helperText}
@@ -110,7 +110,10 @@ const OnBoardingForm: React.FC<OnBoardingFormProps> = ({
 				</Stack>
 
 				<Fieldset.Content>
-					<Field.Root invalid={formik.touched.name && !!formik.errors.name} required>
+					<Field.Root
+						invalid={formik.touched.name && !!formik.errors.name}
+						required
+					>
 						<Field.Label>
 							Full Name
 							<Field.RequiredIndicator />
@@ -126,7 +129,10 @@ const OnBoardingForm: React.FC<OnBoardingFormProps> = ({
 						<Field.ErrorText>{formik.errors.name}</Field.ErrorText>
 					</Field.Root>
 
-					<Field.Root invalid={formik.touched.email && !!formik.errors.email} required>
+					<Field.Root
+						invalid={formik.touched.email && !!formik.errors.email}
+						required
+					>
 						<Field.Label>
 							Email Address
 							<Field.RequiredIndicator />
@@ -142,18 +148,16 @@ const OnBoardingForm: React.FC<OnBoardingFormProps> = ({
 						<Field.ErrorText>{formik.errors.email}</Field.ErrorText>
 					</Field.Root>
 
-					<Field.Root>
-						<Field.Label>
-							Role
-						</Field.Label>
+					<Field.Root required>
+						<Field.Label>Role<Field.RequiredIndicator /></Field.Label>
 						<NativeSelectRoot>
 							<NativeSelectField
-                                name="role"
-                                value={formik.values.role}
-                                onChange={formik.handleChange}
-                                onBlur={formik.handleBlur}
+								placeholder="Choose your role"
+								name="role"
+								value={formik.values.role}
+								onChange={formik.handleChange}
+								onBlur={formik.handleBlur}
 								items={[
-									"Nil",
 									"IT Administrator",
 									"Health Records Officer",
 									"Medical Data Analyst",
@@ -161,12 +165,16 @@ const OnBoardingForm: React.FC<OnBoardingFormProps> = ({
 									"Hospital Administrator",
 									"Medical Researcher",
 									"Healthcare Provider",
+                                    "Other",
 								]}
 							/>
 						</NativeSelectRoot>
 					</Field.Root>
 
-					<Field.Root invalid={formik.touched.phone && !!formik.errors.phone} required>
+					<Field.Root
+						invalid={formik.touched.phone && !!formik.errors.phone}
+						required
+					>
 						<Field.Label>
 							Phone Number
 							<Field.RequiredIndicator />
@@ -188,7 +196,7 @@ const OnBoardingForm: React.FC<OnBoardingFormProps> = ({
 
 					<Field.Root
 						invalid={formik.touched.password && !!formik.errors.password}
-                        required
+						required
 					>
 						<Field.Label>
 							Password

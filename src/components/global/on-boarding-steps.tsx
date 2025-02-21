@@ -27,6 +27,7 @@ const OnBoardingSteps = () => {
 			height="100%"
 			width="100%"
 			count={4}
+			gap="12px"
 		>
 			<Layout>
 				<StepsList minHeight="440px" pointerEvents="none">
@@ -70,13 +71,13 @@ const OnBoardingSteps = () => {
 				</StepsList>
 				<Text textStyle="sm" textAlign="center">
 					Already have an account?
-					<Link href="#" color="gray.500" ml="1">
+					<Link href="#" ml="1">
 						Log in
 					</Link>
 				</Text>
 			</Layout>
 
-			<Stack justifyContent="center" alignItems="center" flexGrow="1" mt={{ base: "40px", lg: "0px" }}>
+			<Stack justifyContent="center" alignItems="center" flexGrow="1">
 				<StepsContent index={0} width={{ base: "75%", lg: "50%" }}>
 					<OnBoardingForm
 						legendText="Create an account"
