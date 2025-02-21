@@ -1,3 +1,4 @@
+import { useRef } from "react";
 import { Button, Group, Stack, Text, Link } from "@chakra-ui/react";
 import Layout from "./layout";
 import OnBoardingForm from "../../pages/form-one";
@@ -12,12 +13,19 @@ import {
 } from "@/components/ui/steps";
 
 const OnBoardingSteps = () => {
+	const nextButtonRef = useRef<HTMLButtonElement>(null);
+
+  const handleFormSuccess = () => {
+    // Trigger a click event on the Next button if available
+    if (nextButtonRef.current) {
+      nextButtonRef.current.click();
+    }
+  };
 	return (
 		<StepsRoot
 			orientation="vertical"
 			height="100%"
 			width="100%"
-			defaultValue={1}
 			count={4}
 		>
 			<Layout>
@@ -73,6 +81,7 @@ const OnBoardingSteps = () => {
 					<OnBoardingForm
 						legendText="Create an account"
 						helperText="Fill in your details as it is in your National ID."
+						onSuccess={handleFormSuccess} // Pass the callback here
 					/>
 				</StepsContent>
 				<StepsContent index={1}>Second Step</StepsContent>
@@ -82,14 +91,14 @@ const OnBoardingSteps = () => {
 					You have completed all steps!
 				</StepsCompletedContent>
 
-				<Group>
+				<Group display="none">
 					<StepsPrevTrigger asChild>
 						<Button variant="outline" size="sm">
 							Prev
 						</Button>
 					</StepsPrevTrigger>
 					<StepsNextTrigger asChild>
-						<Button variant="outline" size="sm">
+						<Button variant="outline" size="sm" ref={nextButtonRef}>
 							Next
 						</Button>
 					</StepsNextTrigger>

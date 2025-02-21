@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import {
+	Button,
 	Group,
 	Field,
 	Fieldset,
@@ -23,6 +24,7 @@ import { withMask } from "use-mask-input";
 interface OnBoardingFormProps {
 	legendText: string;
 	helperText: string;
+	onSuccess?: () => void; // New callback prop
 }
 
 // Function to calculate password strength (0 - Weak, 1 - Fair, 2 - Good, 3 - Strong)
@@ -71,22 +73,29 @@ const validationSchema = Yup.object({
 const OnBoardingForm: React.FC<OnBoardingFormProps> = ({
 	legendText,
 	helperText,
+	onSuccess,
 }) => {
 	const [passwordStrength, setPasswordStrength] = useState(0);
 
 	const formik = useFormik({
-		initialValues: { name: "", email: "", password: "", phone: "" },
+		initialValues: { name: "", email: "", role: "", password: "", phone: "" },
 		validationSchema: validationSchema,
-		onSubmit: (values) => {
+		validateOnChange: true, // Enables instant validation
+		validateOnMount: true,
+		onSubmit: (values, { resetForm }) => {
 			console.log("Form Submitted:", values);
+			resetForm(); // Clears the form after successful submission
+			if (onSuccess) {
+				onSuccess(); // Trigger the next step
+			}
 		},
 	});
 
 	// Handle password input change
 	const handlePasswordChange = (e: React.ChangeEvent<HTMLInputElement>) => {
 		const password = e.target.value;
-		formik.handleChange(e);
-		setPasswordStrength(getPasswordStrength(password));
+		formik.setFieldValue("password", password); // Updates Formik state instantly
+		setPasswordStrength(getPasswordStrength(password)); // Updates password strength meter
 	};
 
 	return (
@@ -101,12 +110,15 @@ const OnBoardingForm: React.FC<OnBoardingFormProps> = ({
 				</Stack>
 
 				<Fieldset.Content>
-					<Field.Root invalid={formik.touched.name && !!formik.errors.name}>
-						<Field.Label>Full Name</Field.Label>
+					<Field.Root invalid={formik.touched.name && !!formik.errors.name} required>
+						<Field.Label>
+							Full Name
+							<Field.RequiredIndicator />
+						</Field.Label>
 						<Input
 							placeholder="Enter as it appears on official documents"
 							name="name"
-                            type="text"
+							type="text"
 							value={formik.values.name}
 							onChange={formik.handleChange}
 							onBlur={formik.handleBlur}
@@ -114,12 +126,15 @@ const OnBoardingForm: React.FC<OnBoardingFormProps> = ({
 						<Field.ErrorText>{formik.errors.name}</Field.ErrorText>
 					</Field.Root>
 
-					<Field.Root invalid={formik.touched.email && !!formik.errors.email}>
-						<Field.Label>Email Address</Field.Label>
+					<Field.Root invalid={formik.touched.email && !!formik.errors.email} required>
+						<Field.Label>
+							Email Address
+							<Field.RequiredIndicator />
+						</Field.Label>
 						<Input
 							placeholder="Add work email"
 							name="email"
-                            type="email"
+							type="email"
 							value={formik.values.email}
 							onChange={formik.handleChange}
 							onBlur={formik.handleBlur}
@@ -128,9 +143,15 @@ const OnBoardingForm: React.FC<OnBoardingFormProps> = ({
 					</Field.Root>
 
 					<Field.Root>
-						<Field.Label>Role</Field.Label>
+						<Field.Label>
+							Role
+						</Field.Label>
 						<NativeSelectRoot>
 							<NativeSelectField
+                                name="role"
+                                value={formik.values.role}
+                                onChange={formik.handleChange}
+                                onBlur={formik.handleBlur}
 								items={[
 									"Nil",
 									"IT Administrator",
@@ -145,15 +166,18 @@ const OnBoardingForm: React.FC<OnBoardingFormProps> = ({
 						</NativeSelectRoot>
 					</Field.Root>
 
-					<Field.Root invalid={formik.touched.phone && !!formik.errors.phone}>
-						<Field.Label>Phone Number</Field.Label>
+					<Field.Root invalid={formik.touched.phone && !!formik.errors.phone} required>
+						<Field.Label>
+							Phone Number
+							<Field.RequiredIndicator />
+						</Field.Label>
 						<Group attached width="100%">
 							<InputAddon>+234</InputAddon>
 							<Input
 								placeholder="(9) 99-999-99999"
 								ref={withMask("(9) 99-999-99999")}
 								name="phone"
-                                type="tel"
+								type="tel"
 								value={formik.values.phone}
 								onChange={formik.handleChange}
 								onBlur={formik.handleBlur}
@@ -164,8 +188,12 @@ const OnBoardingForm: React.FC<OnBoardingFormProps> = ({
 
 					<Field.Root
 						invalid={formik.touched.password && !!formik.errors.password}
+                        required
 					>
-						<Field.Label>Password</Field.Label>
+						<Field.Label>
+							Password
+							<Field.RequiredIndicator />
+						</Field.Label>
 						<Stack width="100%">
 							<PasswordInput
 								placeholder="Enter a password"
@@ -179,6 +207,13 @@ const OnBoardingForm: React.FC<OnBoardingFormProps> = ({
 						</Stack>
 					</Field.Root>
 				</Fieldset.Content>
+				<Button
+					type="submit"
+					variant="solid"
+					disabled={!formik.isValid || formik.isSubmitting}
+				>
+					Get Started
+				</Button>
 			</Fieldset.Root>
 		</form>
 	);
