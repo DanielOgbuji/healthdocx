@@ -90,17 +90,17 @@ const validationSchema = Yup.object({
         .min(3, "Must be at least 3 characters")
         .max(50, "Must not exceed 50 characters")
         .matches(
-            /^[a-zA-Z]+(\s[a-zA-Z]+){2}$/,
+            /^[a-zA-Z-]+(\s[a-zA-Z-]+){2}$/,
             "Please provide your first name, middle name, and last name"
         )
         .test(
             "name-components",
-            "Each name must be at least 2 characters and contain only letters",
+            "Each name must be at least 2 characters and contain only letters and hyphens",
             (value) => {
                 if (!value) return false;
                 const names = value.split(/\s+/);
                 return names.length === 3 && names.every(name => 
-                    name.length >= 2 && /^[a-zA-Z]+$/.test(name)
+                    name.length >= 2 && /^[a-zA-Z-]+$/.test(name)
                 );
             }
         ),
