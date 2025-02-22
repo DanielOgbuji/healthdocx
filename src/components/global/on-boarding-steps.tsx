@@ -1,7 +1,7 @@
 import { useRef } from "react";
 import { Button, Group, Stack, Text, Link } from "@chakra-ui/react";
 import Layout from "./layout";
-import OnBoardingForm from "../../pages/form-one";
+import OnBoardingFormOne from "../../pages/form-one";
 import {
 	StepsCompletedContent,
 	StepsContent,
@@ -79,7 +79,7 @@ const OnBoardingSteps = () => {
 
 			<Stack justifyContent="center" alignItems="center" flexGrow="1">
 				<StepsContent index={0} width={{ base: "75%", lg: "50%" }}>
-					<OnBoardingForm
+					<OnBoardingFormOne
 						legendText="Create an account"
 						helperText="Fill in your details as it is in your National ID."
 						onSuccess={handleFormSuccess} // Pass the callback here
