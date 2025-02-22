@@ -313,7 +313,7 @@ const OnBoardingForm: React.FC<OnBoardingFormProps> = ({
 						<Stack width="100%">
 							<PasswordInput
 								id="password"
-								placeholder="Enter a password"
+								placeholder="Create a password"
 								name="password"
 								value={formik.values.password}
 								onChange={handlePasswordChange}
