@@ -22,7 +22,7 @@ import {
 import { withMask } from "use-mask-input";
 
 // Constants
-const PHONE_MASK = "(9) 99-999-99999";
+const PHONE_MASK = "(0) 12-345-67890";
 const PHONE_REGEX = /^\([\d]\) \d{2}-\d{3}-\d{5}$/;
 const ROLE_OPTIONS = [
 	"IT Administrator",
