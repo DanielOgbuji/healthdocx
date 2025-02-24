@@ -195,6 +195,7 @@ const OnBoardingFormThree: React.FC<OnBoardingFormThreeProps> = ({
 								addDetails
 								allowNonVerifiedHouseNumber
 								allowNonVerifiedStreet
+								debounceDelay={200}
 								placeSelect={handlePlaceSelect}
 								aria-label="Institution Location"
 								placeholder="Add the location of your institution"

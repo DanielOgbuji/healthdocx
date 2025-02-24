@@ -105,8 +105,8 @@ const OnBoardingSteps = () => {
 				<StepsCompletedContent>
 					You have completed all steps!
 				</StepsCompletedContent>
-
-				<Group>
+                
+				<Group display="none">
 					<StepsPrevTrigger asChild>
 						<Button variant="outline" size="sm">
 							Prev
@@ -123,4 +123,5 @@ const OnBoardingSteps = () => {
 	);
 };
 
+//Remove the display="none" property to hide the next and previous button
 export default OnBoardingSteps;
