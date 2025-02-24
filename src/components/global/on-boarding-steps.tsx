@@ -109,8 +109,8 @@ const OnBoardingSteps = () => {
 						 helperText="Great news! Your institution has been successfully verified. 
 						 You're now ready to streamline your medical record management with secure, digital solutions."/>
 				</StepsCompletedContent>
-
-				<Group>
+                
+				<Group display="none">
 					<StepsPrevTrigger asChild>
 						<Button variant="outline" size="sm">
 							Prev
@@ -127,4 +127,5 @@ const OnBoardingSteps = () => {
 	);
 };
 
+//Remove the display="none" property to hide the next and previous button
 export default OnBoardingSteps;

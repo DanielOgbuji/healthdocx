@@ -65,7 +65,7 @@ const OnBoardingFormTwo: React.FC<OnBoardingFormTwoProps> = ({
 						alt="Company Logo"
 						loading="lazy"
 					/>
-					<Fieldset.Legend role="heading" aria-level={1}>
+					<Fieldset.Legend role="heading" fontWeight="bold" aria-level={1}>
 						{legendText}
 					</Fieldset.Legend>
 					<Fieldset.HelperText textAlign="center">
@@ -82,7 +82,7 @@ const OnBoardingFormTwo: React.FC<OnBoardingFormTwoProps> = ({
 					</PinInput.RootProvider>
 				</Fieldset.Content>
 				{error && (
-					<Text color="#f87171" fontSize="sm" mt="0.375rem" textAlign="center">
+					<Text color="fg.error" fontSize="sm" fontWeight="medium" mt="0.375rem" textAlign="center">
 						{error}
 					</Text>
 				)}
