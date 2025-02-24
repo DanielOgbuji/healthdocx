@@ -1,6 +1,14 @@
-import React from "react";
-import { Button, Field, Fieldset, Image, Input, Stack } from "@chakra-ui/react";
-import { InputGroup } from "@/components/ui/input-group";
+import React, { useState } from "react";
+import {
+	Button,
+	Group,
+	Field,
+	Fieldset,
+	Image,
+	Input,
+	InputAddon,
+	Stack,
+} from "@chakra-ui/react";
 import { useFormik } from "formik";
 import {
 	GeoapifyGeocoderAutocomplete,
@@ -31,7 +39,7 @@ const SIZE_OPTIONS = [
 	"Enterprise (250+ staff)",
 ] as const;
 
-const LICENSE_REGEX = /^[A-Z0-9]{3}-[A-Z0-9]{6}-[A-Z0-9]{3}$/;
+const LICENSE_REGEX = /\d{7}$/;
 
 type InstitutionType = (typeof INSTITUTION_TYPE_OPTIONS)[number];
 type SizeType = (typeof SIZE_OPTIONS)[number];
@@ -73,7 +81,7 @@ const validationSchema = Yup.object({
 		.oneOf([...SIZE_OPTIONS], "Please select a valid size category")
 		.required("Size category is required"),
 	licenseNumber: Yup.string()
-		.matches(LICENSE_REGEX, "License format: XXX-XXXXXX-XXX")
+		.matches(LICENSE_REGEX, "License format must be No. 8550483")
 		.required("License number is required")
 		.test("license-check", "Invalid license number format", (value) =>
 			LICENSE_REGEX.test(value || "")
@@ -85,6 +93,9 @@ const OnBoardingFormThree: React.FC<OnBoardingFormThreeProps> = ({
 	helperText,
 	onSuccess,
 }) => {
+	// Local state to capture raw user input from Geoapify
+	const [rawLocation, setRawLocation] = useState("");
+
 	const formik = useFormik<FormValues>({
 		initialValues: {
 			institutionName: "",
@@ -95,25 +106,29 @@ const OnBoardingFormThree: React.FC<OnBoardingFormThreeProps> = ({
 		},
 		validationSchema,
 		validateOnChange: true,
-		validateOnMount: true, // Crucial for initial validation
+		validateOnMount: true,
 		onSubmit: (values, { resetForm }) => {
-			console.log("Form Submitted:", values);
+			// Fallback to raw input if no suggestion was selected.
+			const finalLocation = values.location || rawLocation;
+			const finalValues = { ...values, location: finalLocation };
+
+			console.log("Form Submitted:", finalValues);
 			resetForm();
 			onSuccess?.();
 		},
 	});
 
+	// Callback when a suggestion is selected.
 	const handlePlaceSelect = (feature: GeoJSON.Feature) => {
 		if (!feature.properties) return;
 
 		const { formatted, county } = feature.properties;
-		// Append the county only if it exists and isn't already in the formatted address.
 		const locationValue =
 			county && !formatted.includes(county)
 				? `${formatted}, ${county}`
 				: formatted;
 
-		console.log("Final location value:", locationValue); // For debugging
+		console.log("Final location value:", locationValue);
 		formik.setFieldValue("location", locationValue);
 	};
 
@@ -150,27 +165,16 @@ const OnBoardingFormThree: React.FC<OnBoardingFormThreeProps> = ({
 							Institution Name
 							<Field.RequiredIndicator />
 						</Field.Label>
-						<InputGroup
-							flex="1"
-							width="100%"
-							startElement={
-								<span className="material-symbols-outlined">
-									corporate_fare
-								</span>
-							}
-						>
-							<Input
-								id="institutionName"
-								placeholder="Add the corporate name"
-								name="institutionName"
-								type="text"
-								value={formik.values.institutionName}
-								onChange={formik.handleChange}
-								onBlur={formik.handleBlur}
-								aria-label="Institution Name"
-								ps="46px"
-							/>
-						</InputGroup>
+						<Input
+							id="institutionName"
+							placeholder="Add the corporate name"
+							name="institutionName"
+							type="text"
+							value={formik.values.institutionName}
+							onChange={formik.handleChange}
+							onBlur={formik.handleBlur}
+							aria-label="Institution Name"
+						/>
 						<Field.ErrorText id="institutionName-error">
 							{formik.errors.institutionName}
 						</Field.ErrorText>
@@ -193,8 +197,12 @@ const OnBoardingFormThree: React.FC<OnBoardingFormThreeProps> = ({
 								allowNonVerifiedStreet
 								placeSelect={handlePlaceSelect}
 								aria-label="Institution Location"
-								onUserInput={formik.handleChange}
 								placeholder="Add the location of your institution"
+								// Update both rawLocation and Formik state on user input.
+								onUserInput={(input: string) => {
+									setRawLocation(input);
+									formik.setFieldValue("location", input);
+								}}
 							/>
 						</GeoapifyContext>
 						<Field.ErrorText id="location-error">
@@ -253,13 +261,8 @@ const OnBoardingFormThree: React.FC<OnBoardingFormThreeProps> = ({
 							License Number
 							<Field.RequiredIndicator />
 						</Field.Label>
-						<InputGroup
-							flex="1"
-							width="100%"
-							startElement={
-								<span className="material-symbols-outlined">license</span>
-							}
-						>
+						<Group attached width="100%">
+							<InputAddon aria-label="Country Code">No.</InputAddon>
 							<Input
 								id="licenseNumber"
 								placeholder="Enter license or reg number"
@@ -269,11 +272,10 @@ const OnBoardingFormThree: React.FC<OnBoardingFormThreeProps> = ({
 								onChange={formik.handleChange}
 								onBlur={formik.handleBlur}
 								aria-label="License Number"
-								ps="46px"
 							/>
-						</InputGroup>
+						</Group>
 						<Field.HelperText>
-							Must be Government-issued license or reg number
+							Must be in the format No. 1234567
 						</Field.HelperText>
 						<Field.ErrorText id="licenseNumber-error">
 							{formik.errors.licenseNumber}
