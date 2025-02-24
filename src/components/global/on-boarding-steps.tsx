@@ -1,7 +1,9 @@
-import { useRef } from "react";
+import React from "react";
 import { Button, Group, Stack, Text, Link } from "@chakra-ui/react";
 import Layout from "./layout";
 import OnBoardingFormOne from "../../pages/form-one";
+import OnBoardingFormTwo from "../../pages/form-two";
+import OnBoardingFormThree from "../../pages/form-three";
 import {
 	StepsCompletedContent,
 	StepsContent,
@@ -13,14 +15,14 @@ import {
 } from "@/components/ui/steps";
 
 const OnBoardingSteps = () => {
-	const nextButtonRef = useRef<HTMLButtonElement>(null);
+	const nextButtonRef = React.useRef<HTMLButtonElement>(null);
 
-  const handleFormSuccess = () => {
-    // Trigger a click event on the Next button if available
-    if (nextButtonRef.current) {
-      nextButtonRef.current.click();
-    }
-  };
+	const handleFormSuccess = () => {
+		// Trigger a click event on the Next button if available
+		if (nextButtonRef.current) {
+			nextButtonRef.current.click();
+		}
+	};
 	return (
 		<StepsRoot
 			orientation="vertical"
@@ -85,14 +87,26 @@ const OnBoardingSteps = () => {
 						onSuccess={handleFormSuccess} // Pass the callback here
 					/>
 				</StepsContent>
-				<StepsContent index={1}>Second Step</StepsContent>
-				<StepsContent index={2}>Third Step</StepsContent>
+				<StepsContent index={1} width={{ base: "75%", lg: "50%" }}>
+					<OnBoardingFormTwo
+						legendText="Verify your email"
+						helperText="We sent a code to amarachipeace@email.com"
+						onSuccess={handleFormSuccess} // Pass the callback here
+					/>
+				</StepsContent>
+				<StepsContent index={2} width={{ base: "75%", lg: "50%" }}>
+					<OnBoardingFormThree
+						legendText="Setup institution details"
+						helperText="Fill in your institution details correctly."
+						onSuccess={handleFormSuccess} // Pass the callback here
+					/>
+				</StepsContent>
 				<StepsContent index={3}>Fourth Step</StepsContent>
 				<StepsCompletedContent>
 					You have completed all steps!
 				</StepsCompletedContent>
 
-				<Group display="none">
+				<Group>
 					<StepsPrevTrigger asChild>
 						<Button variant="outline" size="sm">
 							Prev

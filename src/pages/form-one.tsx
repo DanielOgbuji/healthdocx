@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import {
 	Button,
 	Group,
@@ -85,67 +85,68 @@ const getPasswordStrength = (password: string): number => {
 
 // Enhanced validation schema
 const validationSchema = Yup.object({
-    name: Yup.string()
-        .required("Name is required")
-        .min(3, "Must be at least 3 characters")
-        .max(50, "Must not exceed 50 characters")
-        .matches(
-            /^[a-zA-Z-]+(\s[a-zA-Z-]+){2}$/,
-            "Please provide your first name, middle name, and last name"
-        )
-        .test(
-            "name-components",
-            "Each name must be at least 2 characters and contain only letters and hyphens",
-            (value) => {
-                if (!value) return false;
-                const names = value.split(/\s+/);
-                return names.length === 3 && names.every(name => 
-                    name.length >= 2 && /^[a-zA-Z-]+$/.test(name)
-                );
-            }
-        ),
-    email: Yup.string()
-        .email("Invalid email format")
-        .matches(
-            /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/,
-            "Invalid email format"
-        )
-        .max(254, "Email must not exceed 254 characters")
-        .required("Email is required"),
-    phone: Yup.string()
-        .matches(PHONE_REGEX, "Phone number must be exactly 11 digits")
-        .required("Phone number is required"),
-    password: Yup.string()
-        .min(
-            PASSWORD_MIN_LENGTH,
-            `Password must be at least ${PASSWORD_MIN_LENGTH} characters`
-        )
-        .max(
-            PASSWORD_MAX_LENGTH,
-            `Password must not exceed ${PASSWORD_MAX_LENGTH} characters`
-        )
-        .matches(/[A-Z]/, "Password must contain at least one uppercase letter")
-        .matches(/[a-z]/, "Password must contain at least one lowercase letter")
-        .matches(/\d/, "Password must contain at least one number")
-        .matches(
-            /[!@#$%^&*]/,
-            "Password must contain at least one special character"
-        )
-        .test(
-            "no-common-passwords",
-            "Password is too common, please choose a stronger password",
-            (value) =>
-                value ? !COMMON_PASSWORDS.includes(value.toLowerCase()) : true
-        )
-        .test(
-            "no-repeating-chars",
-            "Password cannot contain repeating characters",
-            (value) => (value ? !/(.)\1{2,}/.test(value) : true)
-        )
-        .required("Password is required"),
-    role: Yup.string()
-        .oneOf([...ROLE_OPTIONS], "Please select a valid role")
-        .required("Role is required"),
+	name: Yup.string()
+		.required("Name is required")
+		.min(3, "Must be at least 3 characters")
+		.max(50, "Must not exceed 50 characters")
+		.matches(
+			/^[a-zA-Z-]+(\s[a-zA-Z-]+){2}$/,
+			"Please provide your first name, middle name, and last name"
+		)
+		.test(
+			"name-components",
+			"Each name must be at least 2 characters and contain only letters and hyphens",
+			(value) => {
+				if (!value) return false;
+				const names = value.split(/\s+/);
+				return (
+					names.length === 3 &&
+					names.every((name) => name.length >= 2 && /^[a-zA-Z-]+$/.test(name))
+				);
+			}
+		),
+	email: Yup.string()
+		.email("Invalid email format")
+		.matches(
+			/^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/,
+			"Invalid email format"
+		)
+		.max(254, "Email must not exceed 254 characters")
+		.required("Email is required"),
+	phone: Yup.string()
+		.matches(PHONE_REGEX, "Phone number must be exactly 11 digits")
+		.required("Phone number is required"),
+	password: Yup.string()
+		.min(
+			PASSWORD_MIN_LENGTH,
+			`Password must be at least ${PASSWORD_MIN_LENGTH} characters`
+		)
+		.max(
+			PASSWORD_MAX_LENGTH,
+			`Password must not exceed ${PASSWORD_MAX_LENGTH} characters`
+		)
+		.matches(/[A-Z]/, "Password must contain at least one uppercase letter")
+		.matches(/[a-z]/, "Password must contain at least one lowercase letter")
+		.matches(/\d/, "Password must contain at least one number")
+		.matches(
+			/[!@#$%^&*]/,
+			"Password must contain at least one special character"
+		)
+		.test(
+			"no-common-passwords",
+			"Password is too common, please choose a stronger password",
+			(value) =>
+				value ? !COMMON_PASSWORDS.includes(value.toLowerCase()) : true
+		)
+		.test(
+			"no-repeating-chars",
+			"Password cannot contain repeating characters",
+			(value) => (value ? !/(.)\1{2,}/.test(value) : true)
+		)
+		.required("Password is required"),
+	role: Yup.string()
+		.oneOf([...ROLE_OPTIONS], "Please select a valid role")
+		.required("Role is required"),
 });
 
 const OnBoardingFormOne: React.FC<OnBoardingFormOneProps> = ({
@@ -154,14 +155,6 @@ const OnBoardingFormOne: React.FC<OnBoardingFormOneProps> = ({
 	onSuccess,
 }) => {
 	const [passwordStrength, setPasswordStrength] = useState(0);
-	const nameInputRef = React.useRef<HTMLInputElement>(null);
-
-	// Autofocus implementation
-	useEffect(() => {
-		if (nameInputRef.current) {
-			nameInputRef.current.focus();
-		}
-	}, []);
 
 	const initialValues: FormValues = {
 		name: "",
@@ -224,7 +217,7 @@ const OnBoardingFormOne: React.FC<OnBoardingFormOneProps> = ({
 						</Field.Label>
 						<Input
 							id="name"
-							ref={nameInputRef}
+							autoFocus
 							placeholder="Enter as it appears on official documents"
 							name="name"
 							type="text"
