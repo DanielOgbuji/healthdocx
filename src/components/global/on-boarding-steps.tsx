@@ -4,6 +4,7 @@ import Layout from "./layout";
 import OnBoardingFormOne from "../../pages/form-one";
 import OnBoardingFormTwo from "../../pages/form-two";
 import OnBoardingFormThree from "../../pages/form-three";
+import Welcome from "../../pages/welcome";
 import {
 	StepsCompletedContent,
 	StepsContent,
@@ -102,8 +103,11 @@ const OnBoardingSteps = () => {
 					/>
 				</StepsContent>
 				<StepsContent index={3}>Fourth Step</StepsContent>
-				<StepsCompletedContent>
-					You have completed all steps!
+				<StepsCompletedContent width={{base: "75%", lg: "50%"}}>
+					<Welcome
+					     legendText="Welcome to Healthdocx!"
+						 helperText="Great news! Your institution has been successfully verified. 
+						 You're now ready to streamline your medical record management with secure, digital solutions."/>
 				</StepsCompletedContent>
 
 				<Group>
