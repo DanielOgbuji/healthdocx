@@ -65,7 +65,7 @@ const OnBoardingFormTwo: React.FC<OnBoardingFormTwoProps> = ({
 						alt="Company Logo"
 						loading="lazy"
 					/>
-					<Fieldset.Legend role="heading" aria-level={1}>
+					<Fieldset.Legend role="heading" fontWeight="bold" aria-level={1}>
 						{legendText}
 					</Fieldset.Legend>
 					<Fieldset.HelperText textAlign="center">
