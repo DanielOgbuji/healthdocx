@@ -40,7 +40,7 @@ const Welcome: React.FC<WelcomeProps> = ({
           asChild
           variant="solid"
           width ="100%"
-          mt = "4"
+          mt = "8"
         >
         <a href='./workspace'>Go to workspace</a>
       </Button>       
