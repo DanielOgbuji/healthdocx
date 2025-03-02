@@ -8,9 +8,9 @@ function App() {
 	return (
 		<>
 			
-			<OnBoardingSteps />
+			<Box display="none"> <OnBoardingSteps /> </Box>
 				
-				<Box display="none"><ContactForm /></Box>
+				<ContactForm />
 
 		</>
 	);

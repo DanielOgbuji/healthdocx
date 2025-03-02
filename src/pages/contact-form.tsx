@@ -95,19 +95,29 @@ const ContactForm = () => {
             "aria-describedby": `${fieldName}-error`,
         });
   return (
-    <Flex ml="950px" >
+    <Flex 
+       justify="center" 
+       align="center" 
+       width="100%" 
+       height="100vh" 
+       overflow="hidden"
+       minHeight="100vh"  
+       gap={12} 
+       flexDirection={{ base: "column", md: "row" }}
+       p={{base: "4", md: "6"}}
+    >
         {/*side bar*/}
       <Flex
-      display={{ base: "none", md: "flex" }}
           direction="column"
-          position="fixed"
+          position="relative"
           justify="flex-start"
           bg="gray.200/10"
           width="450px"
-          height="full-screen"
-          left="6px"
+          height="95vh"
+          left={{ md: "6px" }}
           gap="32px"
           borderRadius="md"
+          display={{ base: "none", md: "flex" }}
           >
         <HStack gap="2" py="4" pl="4" mr="8">
             <Status.Root colorPalette="red">
@@ -124,18 +134,18 @@ const ContactForm = () => {
         <Stack py="2">
               <Heading fontSize="lg">Email support</Heading>
                <Text color="gray.400">Email us and we'll get back to you within 24 hours</Text>
-            <Link
-              href="#"
-              variant="underline"
-              fontWeight="bold"
-              color="black">support@healthdocx.io
-            </Link>
+               <Link
+                  href="#"
+                  variant="underline"
+                  fontWeight="bold"
+                  color="black">support@healthdocx.io
+               </Link>
         </Stack>
 
     <Stack py="2">
           <Heading fontSize="lg">Chat support</Heading>
           <Text color="gray.400">Chat our staff 24/7 for instant access to support</Text>
-        <Link
+          <Link
               href="#"
               variant="underline"
               fontWeight="bold"
@@ -143,10 +153,14 @@ const ContactForm = () => {
             <Box >
               <Status.Root colorPalette={isOnline ? "green" : "red"} ml="6" size="sm">
                                    <Status.Indicator />
-                 <Text fontSize="sm" fontWeight="sm" color={isOnline ? "green.500" : "red.500"}>{isOnline ? "Online" : "Offline"}</Text>
+                 <Text 
+                    fontSize="sm" 
+                    fontWeight="sm" 
+                    color={isOnline ? "green.500" : "red.500"}>{isOnline ? "Online" : "Offline"}
+                 </Text>
               </Status.Root>
             </Box>
-        </Link>
+          </Link>
     </Stack>
 
         <Stack py="2">
@@ -158,7 +172,7 @@ const ContactForm = () => {
               fontWeight="bold"
               color="black">+234 800 000 0000 <br />
                             +234 700 000 0001
-         </Link>
+          </Link>
         </Stack>
 
         <Stack py="2">
@@ -169,15 +183,14 @@ const ContactForm = () => {
               variant="underline"
               fontWeight="bold"
               color="black">
-                <Image src="src/assets/location.png"
-         boxSize={5}/>
+                <Image src="src/assets/location.png" boxSize={5}/>
                 20, Ikeja Street Road, <br />
                 Lagos, Nigeria.
           </Link>
         </Stack>
      </Wrap>
 
-        <Stack direction="row" mt="155px" pl="4" gap={4} py="8px">
+        <Stack direction="row" mt="160px" pl="4" gap={4} py="8px">
             <Image src="src/assets/youtube.png" boxSize="20px"/>
             <Image src="src/assets/linkedin.png" boxSize="20px"/>
             <Image src="src/assets/instagram.png" boxSize="20px"/>
@@ -187,18 +200,28 @@ const ContactForm = () => {
       </Flex>
 
        {/*contact form*/}
-       <Box p={4} w={{ base: "100%", md: "auto" }}>
+       <Box p="2px" mx="auto"  maxWidth={{ base: "100%", md: "40%" }} width={{base: "100%", md: "40%"}} >
         <form onSubmit={formik.handleSubmit} className="onboarding-form">
         <Fieldset.Root>
-            <Stack gap={8}>
-                <Fieldset.Legend role="heading" aria-level={1} fontWeight="650" fontSize="36px" >
+            <Flex direction="start">
+                 <Button  
+                     display={{base: "column", md: "none"}}
+                     variant="ghost">
+                     <span className='material-symbols-outlined'>arrow_circle_left</span>
+                 </Button>
+            </Flex>
+
+            <Stack gap={4}>
+                <Fieldset.Legend role="heading" aria-level={1} fontWeight="650" fontSize={{base:"26px", md:"36px"}}>
                     Get in touch
                 </Fieldset.Legend>
-                <Fieldset.HelperText fontWeight="400" fontSize="20px" color="#8B938A" pb="8">Our friendly team would love to hear from you.</Fieldset.HelperText>
+                <Fieldset.HelperText fontWeight="400" fontSize={{base: "10px", md: "20px"}} color="#8B938A" pb="2">
+                    Our friendly team would love to hear from you.
+                </Fieldset.HelperText>
             </Stack>
 
-            <Fieldset.Content>
-                <Flex gap={6}>
+            <Fieldset.Content width={{base: "60%", md: "full"}}>
+                <Flex direction={{base: "column", md: "row"}} gap={6}>
                 <Field.Root {...getFieldErrorProps("firstName")}>
                     <Field.Label>
                         First name
@@ -243,8 +266,8 @@ const ContactForm = () => {
                 <Field.Root {...getFieldErrorProps("email")}>
                     <Field.Label>
                         Email
-                        </Field.Label>
                         <Field.RequiredIndicator />
+                        </Field.Label>
                     <Input 
                        id="email"
                        name="email"
@@ -263,9 +286,9 @@ const ContactForm = () => {
                 <Field.Root {...getFieldErrorProps("phone")}>
                     <Field.Label>
                         Phone number
-                        </Field.Label>
                         <Field.RequiredIndicator />
-                        <Group attached width="full">
+                        </Field.Label>
+                <Group attached width="full">
                             <InputAddon aria-label='country'>NG</InputAddon>
                     <Input 
                        id="phone"
@@ -279,14 +302,16 @@ const ContactForm = () => {
                        onBlur={formik.handleBlur}
                        aria-label='Phone number'
                        />
-                       </Group>
+                </Group>
                        <Field.ErrorText id='phone-error'>
                         {formik.errors.phone}
                         </Field.ErrorText>
                 </Field.Root>
                 <Field.Root {...getFieldErrorProps("message")}>
-                    <Field.Label>Message</Field.Label>
+                    <Field.Label>
+                        Message
                     <Field.RequiredIndicator />
+                    </Field.Label>
                     <Textarea
                         id="message"
                         name="message"
@@ -303,20 +328,24 @@ const ContactForm = () => {
                         </Field.ErrorText>
                 </Field.Root>
                 
-                <Flex justify="space-between">
+            <Flex justify="space-between">
                 <Button 
                     variant="solid"
                     rounded="full"
+                    display={{base: "none", md: "flex"}}
                 >
                 <span className='material-symbols-outlined'>arrow_circle_left</span>
                     Go back
                 </Button>
-                <Button
+                <Button 
                    type='submit'
-                   rounded="full"
-                disabled={!formik.isValid || formik.isSubmitting}
-                aria-disabled={!formik.isValid || formik.isSubmitting}>Send message</Button>
-                </Flex>
+                   rounded={{base: "md", md: "full"}}
+                   width={{ base: "100%", md: "auto" }}
+                   disabled={!formik.isValid || formik.isSubmitting}
+                   aria-disabled={!formik.isValid || formik.isSubmitting}>
+                      Send message
+                </Button>
+            </Flex>
             </Fieldset.Content>
         </Fieldset.Root>
       </form>

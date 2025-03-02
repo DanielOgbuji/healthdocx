@@ -27,8 +27,8 @@ const Welcome: React.FC<WelcomeProps> = ({
                loading ="lazy"
             />
             
-           <Stack gap={4} width="100%">
-             <Text fontWeight="extrabold" fontSize="2xl" width="100%" flex = "1">
+           <Stack gap={4} width="100%" align="center">
+             <Text textAlign="center" fontWeight="extrabold" fontSize="2xl" width="100%">
                 {legendText}
              </Text>
 
