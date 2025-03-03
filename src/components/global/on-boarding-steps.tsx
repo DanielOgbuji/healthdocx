@@ -114,7 +114,7 @@ const OnBoardingSteps = () => {
 						 You're now ready to streamline your medical record management with secure, digital solutions."/>
 				</StepsCompletedContent>
 
-				<Group display="none">
+				<Group>
 					<StepsPrevTrigger asChild>
 						<Button variant="outline" size="sm">
 							Prev

@@ -59,7 +59,7 @@ const VerificationPending: React.FC<VerificationPendingProps> = ({
 							<Box as="span" fontStyle="italic">
 								Need assistance?
 							</Box>{" "}
-							<Link variant="underline">Contact Support</Link> -{" "}
+							<Link variant="underline" href="/contact-form">Contact Support</Link> -{" "}
 							<Box as="span" fontStyle="italic">
 								we&apos;re here to help!
 							</Box>
