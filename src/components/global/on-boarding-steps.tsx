@@ -105,7 +105,7 @@ const OnBoardingSteps = () => {
 				</StepsContent>
 				<StepsContent index={3}>
 					<VerificationPending
-					legendText="Your institution is under review" />
+					legendText="Your institution is under review." />
 				</StepsContent>
 				<StepsCompletedContent width={{ base: "75%", lg: "50%" }}>
 					<Welcome
@@ -115,7 +115,7 @@ const OnBoardingSteps = () => {
 					/>
 				</StepsCompletedContent>
 
-				<Group>
+				<Group display="none">
 					<StepsPrevTrigger asChild>
 						<Button variant="outline" size="sm">
 							Prev

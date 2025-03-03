@@ -151,7 +151,13 @@ const OnBoardingFormThree: React.FC<OnBoardingFormThreeProps> = ({
 						alt="Company Logo"
 						loading="lazy"
 					/>
-					<Fieldset.Legend role="heading" fontWeight="bold" aria-level={1}>
+					<Fieldset.Legend
+						role="heading"
+						fontWeight="bold"
+						fontSize="2xl"
+						aria-level={1}
+						mb="4px"
+					>
 						{legendText}
 					</Fieldset.Legend>
 					<Fieldset.HelperText textAlign="center">
@@ -276,7 +282,7 @@ const OnBoardingFormThree: React.FC<OnBoardingFormThreeProps> = ({
 							/>
 						</Group>
 						<Field.HelperText>
-							Must be in the format No. 1234567
+							Must be Government-issued license or reg number
 						</Field.HelperText>
 						<Field.ErrorText id="licenseNumber-error">
 							{formik.errors.licenseNumber}
