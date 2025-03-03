@@ -109,10 +109,9 @@ const OnBoardingSteps = () => {
 				</StepsContent>
 				<StepsCompletedContent width={{ base: "75%", lg: "50%" }}>
 					<Welcome
-						legendText="Welcome to Healthdocx!"
-						helperText="Great news! Your institution has been successfully verified. 
-						 You're now ready to streamline your medical record management with secure, digital solutions."
-					/>
+					     legendText="Welcome to Healthdocx!"
+						 helperText="Great news! Your institution has been successfully verified. 
+						 You're now ready to streamline your medical record management with secure, digital solutions."/>
 				</StepsCompletedContent>
 
 				<Group display="none">

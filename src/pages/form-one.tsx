@@ -204,7 +204,7 @@ const OnBoardingFormOne: React.FC<OnBoardingFormOneProps> = ({
 					<Fieldset.Legend role="heading" fontWeight="bold" fontSize="2xl" aria-level={1} mb="4px">
 						{legendText}
 					</Fieldset.Legend>
-					<Fieldset.HelperText textAlign="center">
+					<Fieldset.HelperText>
 						{helperText}
 					</Fieldset.HelperText>
 				</Stack>
