@@ -1,9 +1,9 @@
 import { Box,
          Button, 
+         Circle, 
          Fieldset, 
          Flex, 
          Group, 
-         Heading, 
          HStack, 
          Image, 
          Input, 
@@ -11,10 +11,11 @@ import { Box,
          Link, 
          Stack, 
          Status, 
+         StatusIndicator, 
          Text, 
          Textarea, 
-         Wrap } 
-    from '@chakra-ui/react'
+         } 
+        from '@chakra-ui/react'
 import { Field } from "@chakra-ui/react"
 import { useFormik } from 'formik';
 import { withMask } from 'use-mask-input';
@@ -67,7 +68,6 @@ const validationSchema= Yup.object({
               .required("Message is required"),
 })
 
-
 const ContactForm = () => {
     const initialValues: FormValues = {
 		firstName: "",
@@ -95,112 +95,109 @@ const ContactForm = () => {
             "aria-describedby": `${fieldName}-error`,
         });
   return (
-    <Flex 
-       justify="center" 
-       align="center" 
-       width="100%" 
-       height="100vh" 
-       overflow="hidden"
-       minHeight="100vh"  
-       gap={12} 
-       flexDirection={{ base: "column", md: "row" }}
-       p={{base: "4", md: "6"}}
-    >
-        {/*side bar*/}
-      <Flex
-          direction="column"
-          position="relative"
-          justify="flex-start"
-          bg="gray.200/10"
-          width="450px"
-          height="95vh"
-          left={{ md: "6px" }}
-          gap="32px"
-          borderRadius="md"
-          display={{ base: "none", md: "flex" }}
-          >
-        <HStack gap="2" py="4" pl="4" mr="8">
-            <Status.Root colorPalette="red">
-                <Status.Indicator />
-           </Status.Root>
-           <Status.Root colorPalette="yellow">
-              <Status.Indicator />
-           </Status.Root>
-           <Status.Root colorPalette="green">
-              <Status.Indicator />
-           </Status.Root>
-      </HStack>
-            <Wrap gap="1" maxWidth="25" pl="64px" pr="32px">
-        <Stack py="2">
-              <Heading fontSize="lg">Email support</Heading>
-               <Text color="gray.400">Email us and we'll get back to you within 24 hours</Text>
-               <Link
-                  href="#"
-                  variant="underline"
-                  fontWeight="bold"
-                  color="black">support@healthdocx.io
-               </Link>
+    <Flex minH="100vh" justifyContent="center">
+      {/*side panel*/}
+      <Box bg="bg.muted" w= "445px" m="2" borderRadius="25px" display={{base: "none", md: "block"}} >
+        <Stack py="4" px="4">
+          <HStack>
+            <Status.Root>
+              <StatusIndicator colorPalette="red"/>
+              <StatusIndicator colorPalette="yellow"/>
+              <StatusIndicator colorPalette="green"/>
+            </Status.Root>
+          </HStack>
         </Stack>
 
-    <Stack py="2">
-          <Heading fontSize="lg">Chat support</Heading>
-          <Text color="gray.400">Chat our staff 24/7 for instant access to support</Text>
-          <Link
-              href="#"
-              variant="underline"
-              fontWeight="bold"
-              color="black">Start Live Chat
-            <Box >
+         <Stack pl="16" width="318px" gap="30px" py="2">
+              <Stack>
+                <Text fontWeight="700" fontSize="18px">Email support</Text>
+                <Text fontSize="12px" color="#8B938A" width="285px">Email us and we&apos;ll get back to you within 24 hours.</Text>
+                <Link href="#" fontSize="12px" fontWeight="700" textDecor="underline" _hover={{textDecor: "none", color: "black"}} color="black">support@healthdocx.io</Link>
+              </Stack>
+
+              <Stack>
+                <Text fontWeight="700" fontSize="18px">Chat support</Text>
+                <Text fontSize="12px" color="#8B938A" width="278px">
+                    Chat our staff 24/7 for instant access to support.
+                </Text>
+                <Flex>
+                <Link 
+                   href="#" 
+                   fontSize="12px"
+                   color="black" 
+                   fontWeight="700" 
+                   textDecor="underline"
+                   _hover={{textDecor: "none", color: "black"}} >
+                Start Live Chat
+                </Link>
               <Status.Root colorPalette={isOnline ? "green" : "red"} ml="6" size="sm">
+                <Circle size="fit-content" background="white" width="43px" padding="4px">
                                    <Status.Indicator />
                  <Text 
-                    fontSize="sm" 
-                    fontWeight="sm" 
-                    color={isOnline ? "green.500" : "red.500"}>{isOnline ? "Online" : "Offline"}
+                    ml="2"
+                    fontSize="10px" 
+                    fontWeight="500" 
+                    color={isOnline ? "green.500" : "red.500"}> {isOnline ? "Online" : "Offline"}
                  </Text>
+                </Circle>
               </Status.Root>
-            </Box>
-          </Link>
-    </Stack>
+              </Flex>
+            </Stack>
 
-        <Stack py="2">
-          <Heading fontSize="lg">Call Us</Heading>
-          <Text color="gray.400">Mon-Sat &bull; 9:00AM - 5.00PM (WAT) </Text>
-          <Link
-              href="#"
-              variant="underline"
-              fontWeight="bold"
-              color="black">+234 800 000 0000 <br />
-                            +234 700 000 0001
-          </Link>
-        </Stack>
+            <Stack>
+              <Text fontWeight="700" fontSize="18px">Call Us</Text>
+              <Text fontSize="12px" color="#8B938A" width="208px">
+                Mon - Sat &bull; 9:00AM - 5:00PM (WAT)
+              </Text>
+              <Link 
+                 href="#" 
+                 color="black"
+                 fontSize="12px" 
+                 fontWeight="700" 
+                 textDecor="underline" 
+                 _hover={{textDecor: "none", color: "black"}} >
+                           +234 800 000 0000
+                     <br/> +234 700 000 0001
+              </Link>
+              </Stack>
+              
+              <Stack>
+              <Text fontWeight="700" fontSize="18px">Lagos</Text>
+              <Text fontSize="12px" color="#8B938A" width="259px">
+                 Visit our office Mon - Sat &bull; 9:00AM - 5:00PM.
+              </Text>
+              <Link
+                  href="#" 
+                  color="black"
+                  fontSize="12px" 
+                  fontWeight="700" 
+                  textDecor="underline" 
+                  _hover={{textDecor: "none", color: "black"}} >
+                     <Image src="src/assets/location.png" boxSize={4}/>
+                          20, Ikeja Street Road, <br/>
+                          Lagos, Nigeria.
+              </Link>
+              </Stack>
+            </Stack>
 
-        <Stack py="2">
-          <Heading fontSize="lg">Lagos</Heading>
-          <Text color="gray.400">Visit our office Mon-Sat &bull; 9:00AM - 5.00PM</Text>
-          <Link
-              href="#"
-              variant="underline"
-              fontWeight="bold"
-              color="black">
-                <Image src="src/assets/location.png" boxSize={5}/>
-                20, Ikeja Street Road, <br />
-                Lagos, Nigeria.
-          </Link>
-        </Stack>
-     </Wrap>
-
-        <Stack direction="row" mt="160px" pl="4" gap={4} py="8px">
+            <Stack mt={230} px="4" gap={3} direction="row">
             <Image src="src/assets/youtube.png" boxSize="20px"/>
             <Image src="src/assets/linkedin.png" boxSize="20px"/>
             <Image src="src/assets/instagram.png" boxSize="20px"/>
             <Image src="src/assets/github.png" boxSize="20px"/>
-            <Image src="src/assets/twitter.png" boxSize="20px"/>  
-        </Stack>
-      </Flex>
+            <Image src="src/assets/twitter.png" boxSize="20px"/>
+            </Stack>
+      </Box>
 
+    
        {/*contact form*/}
-       <Box p="2px" mx="auto"  maxWidth={{ base: "100%", md: "40%" }} width={{base: "100%", md: "40%"}} >
+       <Box 
+          p="2px" 
+          mx="auto" 
+          ml={{base: "200px", md: "500px"}} 
+          alignItems="center" 
+          maxWidth={{ base: "100%", md: "40%" }} 
+          width={{base: "100%", md: "40%"}} >
         <form onSubmit={formik.handleSubmit} className="onboarding-form">
         <Fieldset.Root>
             <Flex direction="start">
@@ -220,7 +217,7 @@ const ContactForm = () => {
                 </Fieldset.HelperText>
             </Stack>
 
-            <Fieldset.Content width={{base: "60%", md: "full"}}>
+            <Fieldset.Content width={{base: "100%", md: "full"}}>
                 <Flex direction={{base: "column", md: "row"}} gap={6}>
                 <Field.Root {...getFieldErrorProps("firstName")}>
                     <Field.Label>
