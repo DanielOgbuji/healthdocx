@@ -341,16 +341,18 @@ const ContactForm = () => {
 							</Field.Root>
 
 							<Flex justify="space-between">
-								<Button
-									variant="solid"
-									rounded="full"
-									display={{ base: "none", md: "flex" }}
-								>
-									<span className="material-symbols-outlined">
-										arrow_circle_left
-									</span>
-									Go back
-								</Button>
+								<Link href="/" color="bg.emphasized" textDecoration="none">
+									<Button
+										variant="solid"
+										rounded="full"
+										display={{ base: "none", md: "flex" }}
+									>
+										<Box className="material-symbols-outlined">
+											arrow_circle_left
+										</Box>
+										Go back
+									</Button>
+								</Link>
 								<Button
 									type="submit"
 									rounded={{ base: "md", md: "full" }}
