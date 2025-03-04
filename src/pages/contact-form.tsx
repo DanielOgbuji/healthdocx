@@ -31,7 +31,7 @@ const PHONE_REGEX = /^\(\d\) \d{2}-\d{3}-\d{5}$/;
 
 interface FormValues {
 	firstName: string;
-    lastName: string;
+	lastName: string;
 	email: string;
 	phone: string;
 	message: string;
@@ -69,24 +69,24 @@ const validationSchema= Yup.object({
 })
 
 const ContactForm = () => {
-    const initialValues: FormValues = {
+	const initialValues: FormValues = {
 		firstName: "",
-        lastName: "",
+		lastName: "",
 		email: "",
 		phone: "",
 		message: "",
 	};
 
-    const formik = useFormik({
-            initialValues,
-            validationSchema,
-            validateOnChange: true,
-            validateOnMount: true,
-            onSubmit: (values, { resetForm }) => {
-                console.log("Form Submitted:", values);
-                resetForm();
-            },
-        });
+	const formik = useFormik({
+		initialValues,
+		validationSchema,
+		validateOnChange: true,
+		validateOnMount: true,
+		onSubmit: (values, { resetForm }) => {
+			console.log("Form Submitted:", values);
+			resetForm();
+		},
+	});
 
     const getFieldErrorProps = (fieldName: keyof FormValues) => ({
             invalid: formik.touched[fieldName] && !!formik.errors[fieldName],
@@ -208,14 +208,24 @@ const ContactForm = () => {
                  </Button>
             </Flex>
 
-            <Stack gap={4}>
-                <Fieldset.Legend role="heading" aria-level={1} fontWeight="650" fontSize={{base:"26px", md:"36px"}}>
-                    Get in touch
-                </Fieldset.Legend>
-                <Fieldset.HelperText fontWeight="400" fontSize={{base: "10px", md: "20px"}} color="#8B938A" pb="2">
-                    Our friendly team would love to hear from you.
-                </Fieldset.HelperText>
-            </Stack>
+						<Stack gap={4}>
+							<Fieldset.Legend
+								role="heading"
+								aria-level={1}
+								fontWeight="650"
+								fontSize={{ base: "26px", md: "36px" }}
+							>
+								Get in touch
+							</Fieldset.Legend>
+							<Fieldset.HelperText
+								fontWeight="400"
+								fontSize={{ base: "10px", md: "20px" }}
+								color="#8B938A"
+								pb="2"
+							>
+								Our friendly team would love to hear from you.
+							</Fieldset.HelperText>
+						</Stack>
 
             <Fieldset.Content width={{base: "100%", md: "full"}}>
                 <Flex direction={{base: "column", md: "row"}} gap={6}>
@@ -351,4 +361,4 @@ const ContactForm = () => {
   )
 }
 
-export default ContactForm
+export default ContactForm;

@@ -4,6 +4,7 @@ import Layout from "./layout";
 import OnBoardingFormOne from "../../pages/form-one";
 import OnBoardingFormTwo from "../../pages/form-two";
 import OnBoardingFormThree from "../../pages/form-three";
+import VerificationPending from "@/pages/verification-pending";
 import Welcome from "../../pages/welcome";
 import {
 	StepsCompletedContent,
@@ -102,14 +103,17 @@ const OnBoardingSteps = () => {
 						onSuccess={handleFormSuccess} // Pass the callback here
 					/>
 				</StepsContent>
-				<StepsContent index={3}>Fourth Step</StepsContent>
-				<StepsCompletedContent width={{base: "75%", lg: "50%"}}>
+				<StepsContent index={3}>
+					<VerificationPending
+					legendText="Your institution is under review." />
+				</StepsContent>
+				<StepsCompletedContent width={{ base: "75%", lg: "50%" }}>
 					<Welcome
 					     legendText="Welcome to Healthdocx!"
 						 helperText="Great news! Your institution has been successfully verified. 
 						 You're now ready to streamline your medical record management with secure, digital solutions."/>
 				</StepsCompletedContent>
-                
+
 				<Group>
 					<StepsPrevTrigger asChild>
 						<Button variant="outline" size="sm">

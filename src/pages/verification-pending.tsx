@@ -20,8 +20,8 @@ const VerificationPending: React.FC<VerificationPendingProps> = ({
 	return (
 		<Stack gap="6" alignItems="center">
 			<Stack gap="10" textAlign="center" alignItems="center">
-				<Image src={pendingImage} maxW={{ base: "xs", lg: "sm" }} />
-				<Text fontSize={{ base: "2xl", lg: "3xl" }} fontWeight="medium" lineHeight="shorter">
+				<Image src={pendingImage} maxW={{ base: "xs", lg: "sm" }} alt="" />
+				<Text fontSize={{ base: "3xl", lg: "3xl" }} fontWeight="medium" lineHeight="shorter">
 					{legendText}
 				</Text>
 			</Stack>
@@ -59,7 +59,7 @@ const VerificationPending: React.FC<VerificationPendingProps> = ({
 							<Box as="span" fontStyle="italic">
 								Need assistance?
 							</Box>{" "}
-							<Link variant="underline">Contact Support</Link> -{" "}
+							<Link variant="underline" href="/contact-form">Contact Support</Link> -{" "}
 							<Box as="span" fontStyle="italic">
 								we&apos;re here to help!
 							</Box>
