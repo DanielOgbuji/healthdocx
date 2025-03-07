@@ -70,7 +70,7 @@ const ContactForm: React.FC<ContactFormProps> = ({
 	const formik = useFormik({
 		initialValues,
 		validationSchema,
-		validateOnChange: false,
+		validateOnChange: true,
 		validateOnMount: true,
 		onSubmit: (values, { resetForm }) => {
 			console.log("Form Submitted:", values);

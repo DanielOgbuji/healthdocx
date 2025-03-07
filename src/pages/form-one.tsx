@@ -20,6 +20,7 @@ import {
 	PasswordStrengthMeter,
 } from "@/components/ui/password-input";
 import { InputGroup } from "@/components/ui/input-group";
+import Logo from '@/assets/Off-Jeay.svg';
 
 // Constants
 const ROLE_OPTIONS = [
@@ -59,11 +60,11 @@ const getPasswordStrength = (password: string): number => {
 
 	const criteria = {
 		length: password.length >= PASSWORD_MIN_LENGTH,
-		multipleSpecialChars: (password.match(/[!@#$%^&*]/g) || []).length > 1,
+		multipleSpecialChars: (password.match(/[!@#$.%^&*]/g) || []).length > 1,
 		uppercase: /[A-Z]/.test(password),
 		lowercase: /[a-z]/.test(password),
 		numbers: /\d/.test(password),
-		specialChar: /[!@#$%^&*]/.test(password),
+		specialChar: /[!@#$.%^&*]/.test(password),
 		noRepeatingChars: !/(.)\1{2,}/.test(password),
 		mixedChars: /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d).*$/.test(password),
 	};
@@ -125,7 +126,7 @@ const validationSchema = Yup.object({
 		.matches(/[a-z]/, "Password must contain at least one lowercase letter")
 		.matches(/\d/, "Password must contain at least one number")
 		.matches(
-			/[!@#$%^&*]/,
+			/[!@#$.%^&*]/,
 			"Password must contain at least one special character"
 		)
 		.test(
@@ -184,7 +185,7 @@ const OnBoardingFormOne: React.FC<OnBoardingFormOneProps> = ({
 			<Fieldset.Root size="lg" maxW="lg">
 				<Stack alignItems="center" role="banner">
 					<Image
-						src="src/assets/Off-Jeay.svg"
+						src={Logo}
 						mb="12px"
 						width="48px"
 						height="48px"

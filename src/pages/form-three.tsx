@@ -19,6 +19,7 @@ import {
 	NativeSelectField,
 	NativeSelectRoot,
 } from "@/components/ui/native-select";
+import Logo from '@/assets/Off-Jeay.svg';
 
 // Constants
 const INSTITUTION_TYPE_OPTIONS = [
@@ -144,7 +145,7 @@ const OnBoardingFormThree: React.FC<OnBoardingFormThreeProps> = ({
 			<Fieldset.Root size="lg" maxW="lg">
 				<Stack alignItems="center" role="banner">
 					<Image
-						src="src/assets/Off-Jeay.svg"
+						src={Logo}
 						mb="12px"
 						width="48px"
 						height="48px"

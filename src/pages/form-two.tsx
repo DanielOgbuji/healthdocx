@@ -11,6 +11,7 @@ import {
 	usePinInput,
 	PinInput,
 } from "@chakra-ui/react";
+import Logo from '@/assets/Off-Jeay.svg';
 
 interface OnBoardingFormTwoProps {
 	legendText: string;
@@ -58,7 +59,7 @@ const OnBoardingFormTwo: React.FC<OnBoardingFormTwoProps> = ({
 			<Fieldset.Root size="lg" maxW="lg" alignItems="center">
 				<Stack alignItems="center" role="banner">
 					<Image
-						src="src/assets/Off-Jeay.svg"
+						src={Logo}
 						mb="12px"
 						width="48px"
 						height="48px"

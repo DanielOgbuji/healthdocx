@@ -1,6 +1,11 @@
 import { Stack, Text, Link, Box, Flex, Badge } from "@chakra-ui/react";
 import Layout from "../components/global/layout";
 import ContactForm from "./contact-form";
+import Youtube from "@/assets/youtube.svg";
+import Instagram from "@/assets/instagram.svg";
+import Linkedin from "@/assets/linkedin.svg";
+import Whatsapp from "@/assets/whatsapp.svg";
+import X from "@/assets/x.svg";
 
 const ContactPage = () => {
 	return (
@@ -78,8 +83,6 @@ const ContactPage = () => {
 					<Flex
 						direction="column"
 						gap="2"
-						borderBottomWidth="thin"
-						borderBottomStyle="dashed"
 						py="4"
 					>
 						<Text
@@ -103,11 +106,21 @@ const ContactPage = () => {
 					</Flex>
 				</Stack>
 				<Flex gap="3" justifyContent="center">
-					<a href="#"><img src="src\assets\youtube.svg" alt="youtube" width="32px" /></a>
-					<a href="#"><img src="src\assets\instagram.svg" alt="instagram" width="32px" /></a>
-					<a href="#"><img src="src\assets\linkedin.svg" alt="linkedin" width="32px" /></a>
-					<a href="#"><img src="src\assets\whatsapp.svg" alt="whatsapp" width="32px" /></a>
-					<a href="#"><img src="src\assets\x.svg" alt="X formerly known as twitter" width="32px" /></a>
+					<a href="#">
+						<img src={Youtube} alt="youtube" width="32px" />
+					</a>
+					<a href="#">
+						<img src={Instagram} alt="instagram" width="32px" />
+					</a>
+					<a href="#">
+						<img src={Linkedin} alt="linkedin" width="32px" />
+					</a>
+					<a href="#">
+						<img src={Whatsapp} alt="whatsapp" width="32px" />
+					</a>
+					<a href="#">
+						<img src={X} alt="X formerly known as twitter" width="32px" />
+					</a>
 				</Flex>
 			</Layout>
 

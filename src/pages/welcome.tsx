@@ -1,5 +1,6 @@
-import { Button, Container, Image, Stack, Text, Link } from "@chakra-ui/react";
 import React from "react";
+import { Button, Container, Image, Stack, Text, Link } from "@chakra-ui/react";
+import Handshake from "@/assets/oc-handshake.svg";
 
 interface WelcomeProps {
 	legendText: string;
@@ -15,7 +16,7 @@ const Welcome: React.FC<WelcomeProps> = ({ legendText, helperText }) => {
 			centerContent
 		>
 			<Image
-				src="src/assets/oc-handshake.svg"
+				src={Handshake}
 				alt="Welcome image"
 				mb="30px"
 				maxWidth={{ base:"xs", lg:"sm" }}
