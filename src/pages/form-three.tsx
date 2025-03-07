@@ -157,6 +157,7 @@ const OnBoardingFormThree: React.FC<OnBoardingFormThreeProps> = ({
 						fontSize="2xl"
 						aria-level={1}
 						mb="4px"
+						textAlign="center"
 					>
 						{legendText}
 					</Fieldset.Legend>

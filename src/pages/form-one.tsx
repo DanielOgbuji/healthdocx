@@ -19,11 +19,9 @@ import {
 	PasswordInput,
 	PasswordStrengthMeter,
 } from "@/components/ui/password-input";
-import { withMask } from "use-mask-input";
+import { InputGroup } from "@/components/ui/input-group";
 
 // Constants
-const PHONE_MASK = "(9) 99-999-99999";
-const PHONE_REGEX = /^\([\d]\) \d{2}-\d{3}-\d{5}$/;
 const ROLE_OPTIONS = [
 	"IT Administrator",
 	"Health Records Officer",
@@ -38,7 +36,6 @@ const ROLE_OPTIONS = [
 // Password validation constants
 const PASSWORD_MIN_LENGTH = 8;
 const PASSWORD_MAX_LENGTH = 128;
-const COMMON_PASSWORDS = ["Password123", "admin123", "12345678", "qwerty123"];
 
 type RoleType = (typeof ROLE_OPTIONS)[number];
 
@@ -67,7 +64,6 @@ const getPasswordStrength = (password: string): number => {
 		lowercase: /[a-z]/.test(password),
 		numbers: /\d/.test(password),
 		specialChar: /[!@#$%^&*]/.test(password),
-		noCommonPasswords: !COMMON_PASSWORDS.includes(password.toLowerCase()),
 		noRepeatingChars: !/(.)\1{2,}/.test(password),
 		mixedChars: /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d).*$/.test(password),
 	};
@@ -76,10 +72,10 @@ const getPasswordStrength = (password: string): number => {
 
 	// Enhanced scoring system
 	if (password.length < PASSWORD_MIN_LENGTH) return 0;
-	if (strengthScore <= 3) return 0; // Weak
-	if (strengthScore <= 5) return 1; // Fair
-	if (strengthScore <= 7) return 2; // Good
-	if (strengthScore <= 8) return 3; // Strong
+	if (strengthScore <= 2) return 0; // Weak
+	if (strengthScore <= 4) return 1; // Fair
+	if (strengthScore <= 6) return 2; // Good
+	if (strengthScore <= 7) return 3; // Strong
 	return 4; // Very Strong
 };
 
@@ -114,7 +110,7 @@ const validationSchema = Yup.object({
 		.max(254, "Email must not exceed 254 characters")
 		.required("Email is required"),
 	phone: Yup.string()
-		.matches(PHONE_REGEX, "Phone number must be exactly 11 digits")
+		.matches(/^\d{11}$/, "Phone number must be exactly 11 digits")
 		.required("Phone number is required"),
 	password: Yup.string()
 		.min(
@@ -131,12 +127,6 @@ const validationSchema = Yup.object({
 		.matches(
 			/[!@#$%^&*]/,
 			"Password must contain at least one special character"
-		)
-		.test(
-			"no-common-passwords",
-			"Password is too common, please choose a stronger password",
-			(value) =>
-				value ? !COMMON_PASSWORDS.includes(value.toLowerCase()) : true
 		)
 		.test(
 			"no-repeating-chars",
@@ -201,12 +191,16 @@ const OnBoardingFormOne: React.FC<OnBoardingFormOneProps> = ({
 						alt="Company Logo"
 						loading="lazy"
 					/>
-					<Fieldset.Legend role="heading" fontWeight="bold" fontSize="2xl" aria-level={1} mb="4px">
+					<Fieldset.Legend
+						role="heading"
+						fontWeight="bold"
+						fontSize="2xl"
+						aria-level={1}
+						mb="4px"
+					>
 						{legendText}
 					</Fieldset.Legend>
-					<Fieldset.HelperText>
-						{helperText}
-					</Fieldset.HelperText>
+					<Fieldset.HelperText>{helperText}</Fieldset.HelperText>
 				</Stack>
 
 				<Fieldset.Content>
@@ -215,17 +209,27 @@ const OnBoardingFormOne: React.FC<OnBoardingFormOneProps> = ({
 							Full Name
 							<Field.RequiredIndicator />
 						</Field.Label>
-						<Input
-							id="name"
-							autoFocus
-							placeholder="Enter as it appears on official documents"
-							name="name"
-							type="text"
-							value={formik.values.name}
-							onChange={formik.handleChange}
-							onBlur={formik.handleBlur}
-							aria-label="Full Name"
-						/>
+						<InputGroup
+							flex="1"
+							startElement={
+								<span className="material-symbols-outlined">person</span>
+							}
+							width="100%"
+						>
+							<Input
+								id="name"
+								autoFocus
+								placeholder="Enter your full name"
+								title="Enter as it appears on official documents."
+								name="name"
+								type="text"
+								value={formik.values.name}
+								onChange={formik.handleChange}
+								onBlur={formik.handleBlur}
+								aria-label="Full Name"
+								ps="42px"
+							/>
+						</InputGroup>
 						<Field.ErrorText id="name-error">
 							{formik.errors.name}
 						</Field.ErrorText>
@@ -236,16 +240,30 @@ const OnBoardingFormOne: React.FC<OnBoardingFormOneProps> = ({
 							Email Address
 							<Field.RequiredIndicator />
 						</Field.Label>
-						<Input
-							id="email"
-							placeholder="Add work email"
-							name="email"
-							type="email"
-							value={formik.values.email}
-							onChange={formik.handleChange}
-							onBlur={formik.handleBlur}
-							aria-label="Email Address"
-						/>
+						<InputGroup
+							flex="1"
+							startElement={
+								<span
+									className="material-symbols-outlined"
+									style={{ fontSize: "22px" }}
+								>
+									mail
+								</span>
+							}
+							width="100%"
+						>
+							<Input
+								id="email"
+								placeholder="Add work email"
+								name="email"
+								type="email"
+								value={formik.values.email}
+								onChange={formik.handleChange}
+								onBlur={formik.handleBlur}
+								aria-label="Email Address"
+								ps="42px"
+							/>
+						</InputGroup>
 						<Field.ErrorText id="email-error">
 							{formik.errors.email}
 						</Field.ErrorText>
@@ -280,11 +298,14 @@ const OnBoardingFormOne: React.FC<OnBoardingFormOneProps> = ({
 							<Field.RequiredIndicator />
 						</Field.Label>
 						<Group attached width="100%">
-							<InputAddon aria-label="Country Code">+234</InputAddon>
+							<InputAddon aria-label="Country Code">
+								<img src="https://flagcdn.com/w20/ng.png" alt="Nigerian Flag" />
+								&nbsp;+234
+							</InputAddon>
 							<Input
 								id="phone"
-								placeholder={PHONE_MASK}
-								ref={withMask(PHONE_MASK)}
+								placeholder="Enter your phone number"
+								title="Enter your 11 digit phone number."
 								name="phone"
 								type="tel"
 								value={formik.values.phone}
@@ -304,15 +325,32 @@ const OnBoardingFormOne: React.FC<OnBoardingFormOneProps> = ({
 							<Field.RequiredIndicator />
 						</Field.Label>
 						<Stack width="100%">
-							<PasswordInput
-								id="password"
-								placeholder="Create a password"
-								name="password"
-								value={formik.values.password}
-								onChange={handlePasswordChange}
-								onBlur={formik.handleBlur}
-								aria-label="Password"
-							/>
+							<InputGroup
+								flex="1"
+								startElement={
+									<span
+										className="material-symbols-outlined"
+										style={{
+											fontSize: "22px",
+											fontVariationSettings: "'opsz' 48",
+										}}
+									>
+										password
+									</span>
+								}
+								width="100%"
+							>
+								<PasswordInput
+									id="password"
+									placeholder="Create a password"
+									name="password"
+									value={formik.values.password}
+									onChange={handlePasswordChange}
+									onBlur={formik.handleBlur}
+									aria-label="Password"
+									ps="44px"
+								/>
+							</InputGroup>
 							<Field.ErrorText id="password-error">
 								{formik.errors.password}
 							</Field.ErrorText>
