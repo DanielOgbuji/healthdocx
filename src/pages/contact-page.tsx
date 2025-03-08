@@ -25,7 +25,11 @@ const ContactPage = () => {
 						<Text textStyle="sm" color="bg.inverted/32">
 							Email us and we&apos;ll get back to you within 24 hours.
 						</Text>
-						<Link variant="underline" textStyle="sm" href="#">
+						<Link
+							variant="underline"
+							textStyle="sm"
+							href="mailto:support@healthdocx.io"
+						>
 							support@healthdocx.io
 						</Link>
 					</Flex>
@@ -71,20 +75,24 @@ const ContactPage = () => {
 						<Text textStyle="sm" color="bg.inverted/32">
 							Mon - Sat • 9:00AM - 5:00PM (WAT)
 						</Text>
-						<Flex direction="column" gap="1">
-							<Link variant="underline" textStyle="sm" href="#">
+						<Flex direction="row" gap="1">
+							<Link
+								variant="underline"
+								textStyle="sm"
+								href="tel:+2348000000000"
+							>
 								+234 800 000 0000
-							</Link>
-							<Link variant="underline" textStyle="sm" href="#">
+							</Link>,
+							<Link
+								variant="underline"
+								textStyle="sm"
+								href="tel:+2347000000001"
+							>
 								+234 700 000 0001
 							</Link>
 						</Flex>
 					</Flex>
-					<Flex
-						direction="column"
-						gap="2"
-						py="4"
-					>
+					<Flex direction="column" gap="2" py="4">
 						<Text
 							textStyle="lg"
 							fontWeight="bold"
@@ -99,10 +107,24 @@ const ContactPage = () => {
 						</Text>
 						<Flex gap="2">
 							<span className="material-symbols-outlined">location_on</span>
-							<Link variant="underline" textStyle="sm" href="#">
-								20, Ikeja Street Road, Lagos, Nigeria.
+							<Link
+								variant="underline"
+								textStyle="sm"
+								href="https://www.google.com/maps?q=1600+Amphitheatre+Parkway,+Mountain+View,+CA"
+								pb="2"
+							>
+								13 Dolphine Estate, Ikeja Way, Lagos, Nigeria.
 							</Link>
 						</Flex>
+						<iframe
+							src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3964.4895512938538!2d3.413106744107315!3d6.459488576905882!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x103b8b3565684049%3A0xe564840408c42fc3!2sIkeja%20Way%2C%20Dolphine%20Estate%2C%20Lagos%20106104%2C%20Lagos!5e0!3m2!1sen!2sng!4v1741432898679!5m2!1sen!2sng"
+							width="100%"
+							height="120"
+							style={{ border: 0, borderRadius: "10px", boxShadow: "0 3px 4px rgba(0, 0, 0, 0.15)" }}
+							loading="lazy"
+							referrerPolicy="no-referrer-when-downgrade"
+							title="our office location"
+						></iframe>
 					</Flex>
 				</Stack>
 				<Flex gap="3" justifyContent="center">

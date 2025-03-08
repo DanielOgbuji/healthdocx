@@ -31,7 +31,7 @@ const Welcome: React.FC<WelcomeProps> = ({ legendText, helperText }) => {
 
 				<Text>{helperText}</Text>
 			</Stack>
-			<Button asChild variant="solid" w={{ base:"xs", lg:"sm" }} mt="6" borderRadius="lg">
+			<Button asChild variant="solid" w={{ base:"xs", lg:"sm" }} mt="6">
 				<Link textDecoration="none" color="bg.emphasized">Go to workspace</Link>
 			</Button>
 		</Container>

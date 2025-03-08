@@ -9,7 +9,8 @@ const Layout = ({ children }: LayoutProps) => {
 	return (
 		<Flex
 			direction="column"
-			p="52px"
+			p="48px"
+			pb="28px"
 			rounded="md"
 			bg="gray.200/10"
 			justify="space-between"
