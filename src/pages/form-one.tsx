@@ -11,6 +11,7 @@ import {
 } from "@chakra-ui/react";
 import { useFormik } from "formik";
 import * as Yup from "yup";
+import { updateOnboardingData } from "@/context/localStorageHelper";
 import {
 	NativeSelectField,
 	NativeSelectRoot,
@@ -20,7 +21,7 @@ import {
 	PasswordStrengthMeter,
 } from "@/components/ui/password-input";
 import { InputGroup } from "@/components/ui/input-group";
-import Logo from '@/assets/Off-Jeay.svg';
+import Logo from "@/assets/Off-Jeay.svg";
 
 // Constants
 const ROLE_OPTIONS = [
@@ -162,6 +163,11 @@ const OnBoardingFormOne: React.FC<OnBoardingFormOneProps> = ({
 		validateOnMount: true,
 		onSubmit: (values, { resetForm }) => {
 			console.log("Form Submitted:", values);
+			// Update local storage for form one
+			updateOnboardingData(
+				"formOne",
+				values as unknown as Record<string, unknown>
+			);
 			resetForm();
 			onSuccess?.();
 		},

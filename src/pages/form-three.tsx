@@ -15,11 +15,12 @@ import {
 	GeoapifyContext,
 } from "@geoapify/react-geocoder-autocomplete";
 import * as Yup from "yup";
+import { updateOnboardingData } from "@/context/localStorageHelper";
 import {
 	NativeSelectField,
 	NativeSelectRoot,
 } from "@/components/ui/native-select";
-import Logo from '@/assets/Off-Jeay.svg';
+import Logo from "@/assets/Off-Jeay.svg";
 
 // Constants
 const INSTITUTION_TYPE_OPTIONS = [
@@ -108,12 +109,28 @@ const OnBoardingFormThree: React.FC<OnBoardingFormThreeProps> = ({
 		validationSchema,
 		validateOnChange: true,
 		validateOnMount: true,
-		onSubmit: (values, { resetForm }) => {
+		onSubmit: async (values, { resetForm }) => {
 			// Fallback to raw input if no suggestion was selected.
 			const finalLocation = values.location || rawLocation;
-			const finalValues = { ...values, location: finalLocation };
+			const formThreeData = { ...values, location: finalLocation };
 
-			console.log("Form Submitted:", finalValues);
+			// Save the third form's values to local storage
+			updateOnboardingData("formThree", formThreeData);
+
+			// Retrieve combined data from local storage
+			const combinedData = JSON.parse(
+				localStorage.getItem("onboardingData") || "{}"
+			);
+			console.log("Combined Form Data:", combinedData);
+
+			// Optionally, send the combined data to the backend using Axios
+			// try {
+			//   const response = await axios.post('/api/your-endpoint', combinedData);
+			//   console.log("Data sent to backend successfully:", response.data);
+			// } catch (error) {
+			//   console.error("Error sending data to backend:", error);
+			// }
+
 			resetForm();
 			onSuccess?.();
 		},

@@ -1,4 +1,4 @@
-"use client"
+"use client";
 
 import React, { useEffect, useState } from "react";
 import {
@@ -11,7 +11,8 @@ import {
 	usePinInput,
 	PinInput,
 } from "@chakra-ui/react";
-import Logo from '@/assets/Off-Jeay.svg';
+import Logo from "@/assets/Off-Jeay.svg";
+import { updateOnboardingData } from "@/context/localStorageHelper";
 
 interface OnBoardingFormTwoProps {
 	legendText: string;
@@ -33,7 +34,7 @@ const OnBoardingFormTwo: React.FC<OnBoardingFormTwoProps> = ({
 	// Join the array into a string for easier processing.
 	const pin = store.value.join("");
 
-	// Clear error only when the user starts typing (i.e. pin length > 0)
+	// Clear error only when the user starts typing.
 	useEffect(() => {
 		if (pin.length > 0 && error) {
 			setError("");
@@ -45,6 +46,8 @@ const OnBoardingFormTwo: React.FC<OnBoardingFormTwoProps> = ({
 		if (pin.length === 4) {
 			if (pin === CORRECT_OTP) {
 				console.log("Correct OTP entered.");
+				// Save the OTP data to local storage under "formTwo"
+				updateOnboardingData("formTwo", { otp: pin });
 				onSuccess?.();
 			} else {
 				setError("Incorrect code. Please try again.");
@@ -66,7 +69,13 @@ const OnBoardingFormTwo: React.FC<OnBoardingFormTwoProps> = ({
 						alt="Company Logo"
 						loading="lazy"
 					/>
-					<Fieldset.Legend role="heading" fontWeight="bold" fontSize="2xl" aria-level={1} mb="4px">
+					<Fieldset.Legend
+						role="heading"
+						fontWeight="bold"
+						fontSize="2xl"
+						aria-level={1}
+						mb="4px"
+					>
 						{legendText}
 					</Fieldset.Legend>
 					<Fieldset.HelperText textAlign="center">
@@ -83,12 +92,18 @@ const OnBoardingFormTwo: React.FC<OnBoardingFormTwoProps> = ({
 					</PinInput.RootProvider>
 				</Fieldset.Content>
 				{error && (
-					<Text color="fg.error" fontSize="sm" fontWeight="medium" mt="0.375rem" textAlign="center">
+					<Text
+						color="fg.error"
+						fontSize="sm"
+						fontWeight="medium"
+						mt="0.375rem"
+						textAlign="center"
+					>
 						{error}
 					</Text>
 				)}
 				<Text textStyle="sm" textAlign="center">
-					Didn&apos;t get a code?
+					Didn&apos;t get a code?{" "}
 					<Link variant="underline" href="#" ml="1">
 						Click to resend
 					</Link>

@@ -120,7 +120,7 @@ const OnBoardingSteps = () => {
 					/>
 				</StepsCompletedContent>
 
-				<Group>
+				<Group display="none">
 					<StepsPrevTrigger asChild>
 						<Button variant="outline" size="sm">
 							Prev
