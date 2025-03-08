@@ -26,7 +26,7 @@ const VerificationPending: React.FC<VerificationPendingProps> = ({
 				</Text>
 			</Stack>
 			<Stack
-				maxW={{ base: "95%", lg: "md" }}
+				maxW={{ base: "95%", lg: "lg" }}
 				bgColor="bg.subtle"
 				padding="4"
 				paddingTop="3"

@@ -5,6 +5,7 @@ import OnBoardingFormOne from "../../pages/form-one";
 import OnBoardingFormTwo from "../../pages/form-two";
 import OnBoardingFormThree from "../../pages/form-three";
 import VerificationPending from "@/pages/verification-pending";
+import VerificationError from "@/pages/verification-error";
 import Welcome from "../../pages/welcome";
 import {
 	StepsCompletedContent,
@@ -104,14 +105,19 @@ const OnBoardingSteps = () => {
 					/>
 				</StepsContent>
 				<StepsContent index={3}>
-					<VerificationPending
-					legendText="Your institution is under review." />
+					<Stack>
+						<VerificationPending legendText="Your institution is under review." />
+					</Stack>
+					<Stack display="none">
+						<VerificationError legendText="Review Unsuccessful - Action needed" />
+					</Stack>
 				</StepsContent>
 				<StepsCompletedContent width={{ base: "75%", lg: "50%" }}>
 					<Welcome
-					     legendText="Welcome to Healthdocx!"
-						 helperText="Great news! Your institution has been successfully verified. 
-						 You're now ready to streamline your medical record management with secure, digital solutions."/>
+						legendText="Welcome to Healthdocx!"
+						helperText="Great news! Your institution has been successfully verified. 
+						 You're now ready to streamline your medical record management with secure, digital solutions."
+					/>
 				</StepsCompletedContent>
 
 				<Group>
