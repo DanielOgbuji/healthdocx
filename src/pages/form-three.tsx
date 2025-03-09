@@ -83,7 +83,10 @@ const validationSchema = Yup.object({
 		.oneOf([...SIZE_OPTIONS], "Please select a valid size category")
 		.required("Size category is required"),
 	licenseNumber: Yup.string()
-		.matches(LICENSE_REGEX, "License format must be No. 8550483")
+		.matches(
+			LICENSE_REGEX,
+			"License number must be a 7 digits (e.g. No. 8550483)"
+		)
 		.required("License number is required"),
 });
 
@@ -188,6 +191,7 @@ const OnBoardingFormThree: React.FC<OnBoardingFormThreeProps> = ({
 							<Field.RequiredIndicator />
 						</Field.Label>
 						<Input
+							autoFocus
 							id="institutionName"
 							placeholder="Add the corporate name"
 							name="institutionName"
