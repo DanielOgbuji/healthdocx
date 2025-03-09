@@ -1,33 +1,39 @@
-import React from "react";
-import { Button, Group, Stack, Text, Link } from "@chakra-ui/react";
+import { useState } from "react";
+import { Text, Link, Stack, Spinner, VStack } from "@chakra-ui/react";
 import Layout from "./layout";
-import OnBoardingFormOne from "../../pages/form-one";
-import OnBoardingFormTwo from "../../pages/form-two";
-import OnBoardingFormThree from "../../pages/form-three";
-import VerificationPending from "@/pages/verification-pending";
-import VerificationError from "@/pages/verification-error";
-import Welcome from "../../pages/welcome";
 import {
 	StepsCompletedContent,
 	StepsContent,
 	StepsItem,
 	StepsList,
-	StepsNextTrigger,
-	StepsPrevTrigger,
 	StepsRoot,
 } from "@/components/ui/steps";
+import { getOnboardingData } from "@/context/localStorageHelper";
+import { Suspense, lazy } from "react";
+
+// Lazy load components using React.lazy
+const OnBoardingFormOne = lazy(() => import("../../pages/form-one"));
+const OnBoardingFormTwo = lazy(() => import("../../pages/form-two"));
+const OnBoardingFormThree = lazy(() => import("../../pages/form-three"));
+const VerificationPending = lazy(() => import("@/pages/verification-pending"));
+const VerificationError = lazy(() => import("@/pages/verification-error"));
+const Welcome = lazy(() => import("../../pages/welcome"));
 
 const OnBoardingSteps = () => {
-	const nextButtonRef = React.useRef<HTMLButtonElement>(null);
+	const [step, setStep] = useState(0);
+
+	// Retrieve data from Form One; adjust key as needed
+	const formOneData = getOnboardingData("formOne");
+	const email = formOneData?.email || "your email";
 
 	const handleFormSuccess = () => {
-		// Trigger a click event on the Next button if available
-		if (nextButtonRef.current) {
-			nextButtonRef.current.click();
-		}
+		setStep((prev) => prev + 1);
 	};
+
 	return (
 		<StepsRoot
+			step={step}
+			onStepChange={(e) => setStep(e.step)}
 			orientation="vertical"
 			height="100%"
 			width="100%"
@@ -75,67 +81,79 @@ const OnBoardingSteps = () => {
 					/>
 				</StepsList>
 				<Text textStyle="sm" textAlign="center">
-					Already have an account?
+					Already have an account?{" "}
 					<Link href="#" ml="1">
 						Log in
 					</Link>
 				</Text>
 			</Layout>
 
-			<Stack justifyContent="center" alignItems="center" flexGrow="1">
-				<StepsContent index={0} width={{ base: "75%", lg: "50%" }}>
-					<OnBoardingFormOne
-						legendText="Create an account"
-						helperText="Fill in your details as it is in your National ID."
-						onSuccess={handleFormSuccess} // Pass the callback here
-					/>
-				</StepsContent>
-				<StepsContent index={1} width={{ base: "75%", lg: "50%" }}>
-					<OnBoardingFormTwo
-						legendText="Verify your email"
-						helperText="We sent a code to amarachipeace@email.com"
-						onSuccess={handleFormSuccess} // Pass the callback here
-					/>
-				</StepsContent>
-				<StepsContent index={2} width={{ base: "75%", lg: "50%" }}>
-					<OnBoardingFormThree
-						legendText="Setup institution details"
-						helperText="Fill in your institution details correctly."
-						onSuccess={handleFormSuccess} // Pass the callback here
-					/>
-				</StepsContent>
-				<StepsContent index={3}>
-					<Stack>
-						<VerificationPending legendText="Your institution is under review." />
-					</Stack>
-					<Stack display="none">
-						<VerificationError legendText="Review Unsuccessful - Action needed" />
-					</Stack>
-				</StepsContent>
-				<StepsCompletedContent width={{ base: "75%", lg: "50%" }}>
-					<Welcome
-						legendText="Welcome to Healthdocx!"
-						helperText="Great news! Your institution has been successfully verified. 
-						 You're now ready to streamline your medical record management with secure, digital solutions."
-					/>
-				</StepsCompletedContent>
+			<Suspense
+				fallback={
+          <Stack flexGrow="1" height="100%" alignItems="center" justifyContent="center">
+					<VStack colorPalette="teal">
+						<Spinner color="colorPalette.600" borderWidth="4px" />
+						<Text color="colorPalette.600">Loading...</Text>
+					</VStack>
+          </Stack>
+				}
+			>
+				<Stack justifyContent="center" alignItems="center" flexGrow="1">
+					{step === 0 && (
+						<StepsContent index={0} width={{ base: "75%", lg: "50%" }}>
+							<OnBoardingFormOne
+								legendText="Create an account"
+								helperText="Fill in your details as it is in your National ID."
+								onSuccess={handleFormSuccess}
+							/>
+						</StepsContent>
+					)}
 
-				<Group display="none">
-					<StepsPrevTrigger asChild>
-						<Button variant="outline" size="sm">
-							Prev
-						</Button>
-					</StepsPrevTrigger>
-					<StepsNextTrigger asChild>
-						<Button variant="outline" size="sm" ref={nextButtonRef}>
-							Next
-						</Button>
-					</StepsNextTrigger>
-				</Group>
-			</Stack>
+					{step === 1 && (
+						<StepsContent index={1} width={{ base: "75%", lg: "50%" }}>
+							<OnBoardingFormTwo
+								legendText="Verify your email"
+								helperText="We sent a code to"
+								userEmail={`${email}`}
+								onSuccess={handleFormSuccess}
+							/>
+						</StepsContent>
+					)}
+
+					{step === 2 && (
+						<StepsContent index={2} width={{ base: "75%", lg: "50%" }}>
+							<OnBoardingFormThree
+								legendText="Setup institution details"
+								helperText="Fill in your institution details correctly."
+								onSuccess={handleFormSuccess}
+							/>
+						</StepsContent>
+					)}
+
+					{step === 3 && (
+						<StepsContent index={3}>
+							<Stack>
+								<VerificationPending legendText="Your institution is under review." />
+							</Stack>
+							<Stack display="none">
+								<VerificationError legendText="Review Unsuccessful - Action needed" />
+							</Stack>
+						</StepsContent>
+					)}
+
+					{step === 4 && (
+						<StepsCompletedContent width={{ base: "75%", lg: "50%" }}>
+							<Welcome
+								legendText="Welcome to Healthdocx!"
+								helperText={`Great news! Your institution has been successfully verified.
+You're now ready to streamline your medical record management with secure, digital solutions.`}
+							/>
+						</StepsCompletedContent>
+					)}
+				</Stack>
+			</Suspense>
 		</StepsRoot>
 	);
 };
 
-//Remove the display="none" property to hide the next and previous button
 export default OnBoardingSteps;

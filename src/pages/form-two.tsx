@@ -17,6 +17,7 @@ import { updateOnboardingData } from "@/context/localStorageHelper";
 interface OnBoardingFormTwoProps {
 	legendText: string;
 	helperText: string;
+	userEmail: string;
 	onSuccess?: () => void;
 }
 
@@ -26,6 +27,7 @@ const CORRECT_OTP = "1234";
 const OnBoardingFormTwo: React.FC<OnBoardingFormTwoProps> = ({
 	legendText,
 	helperText,
+	userEmail,
 	onSuccess,
 }) => {
 	const store = usePinInput();
@@ -79,7 +81,7 @@ const OnBoardingFormTwo: React.FC<OnBoardingFormTwoProps> = ({
 						{legendText}
 					</Fieldset.Legend>
 					<Fieldset.HelperText textAlign="center">
-						{helperText}
+						{helperText} <b>{userEmail}</b>
 					</Fieldset.HelperText>
 				</Stack>
 				<Fieldset.Content alignItems="center">

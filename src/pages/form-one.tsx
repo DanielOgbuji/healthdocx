@@ -61,11 +61,11 @@ const getPasswordStrength = (password: string): number => {
 
 	const criteria = {
 		length: password.length >= PASSWORD_MIN_LENGTH,
-		multipleSpecialChars: (password.match(/[!@#$.%^&*]/g) || []).length > 1,
+		multipleSpecialChars: (password.match(/[!@#$.%^&*-_]/g) || []).length > 1,
 		uppercase: /[A-Z]/.test(password),
 		lowercase: /[a-z]/.test(password),
 		numbers: /\d/.test(password),
-		specialChar: /[!@#$.%^&*]/.test(password),
+		specialChar: /[!@#$.%^&*-_]/.test(password),
 		noRepeatingChars: !/(.)\1{2,}/.test(password),
 		mixedChars: /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d).*$/.test(password),
 	};
@@ -127,7 +127,7 @@ const validationSchema = Yup.object({
 		.matches(/[a-z]/, "Password must contain at least one lowercase letter")
 		.matches(/\d/, "Password must contain at least one number")
 		.matches(
-			/[!@#$.%^&*]/,
+			/[!@#$.%^&*-_]/,
 			"Password must contain at least one special character"
 		)
 		.test(
