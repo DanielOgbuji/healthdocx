@@ -84,10 +84,7 @@ const validationSchema = Yup.object({
 		.required("Size category is required"),
 	licenseNumber: Yup.string()
 		.matches(LICENSE_REGEX, "License format must be No. 8550483")
-		.required("License number is required")
-		.test("license-check", "Invalid license number format", (value) =>
-			LICENSE_REGEX.test(value || "")
-		),
+		.required("License number is required"),
 });
 
 const OnBoardingFormThree: React.FC<OnBoardingFormThreeProps> = ({
