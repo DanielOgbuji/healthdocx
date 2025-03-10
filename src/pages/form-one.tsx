@@ -1,4 +1,5 @@
-import React, { useState } from "react";
+import React, { useState, useCallback, useEffect, useMemo } from "react";
+import { debounce } from "lodash";
 import {
 	Button,
 	Group,
@@ -11,7 +12,8 @@ import {
 } from "@chakra-ui/react";
 import { useFormik } from "formik";
 import * as Yup from "yup";
-import { updateOnboardingData } from "@/context/localStorageHelper";
+import { useDispatch } from "react-redux";
+import { updateFormOne } from "@/store/onboardingSlice";
 import {
 	NativeSelectField,
 	NativeSelectRoot,
@@ -35,9 +37,18 @@ const ROLE_OPTIONS = [
 	"Other",
 ] as const;
 
-// Password validation constants
 const PASSWORD_MIN_LENGTH = 8;
 const PASSWORD_MAX_LENGTH = 128;
+
+const PASSWORD_REGEX = {
+	UPPERCASE: /[A-Z]/,
+	LOWERCASE: /[a-z]/,
+	NUMBER: /\d/,
+	SPECIAL: /[!@#$.%^&*\-_]/,
+	MULTIPLE_SPECIAL: /[!@#$.%^&*\-_]/g,
+	NO_REPEATING: /(.)\1{2,}/,
+	MIXED: /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d).*$/,
+};
 
 type RoleType = (typeof ROLE_OPTIONS)[number];
 
@@ -55,98 +66,97 @@ interface OnBoardingFormOneProps {
 	onSuccess?: () => void;
 }
 
-// Enhanced password strength calculation
 const getPasswordStrength = (password: string): number => {
 	if (!password) return 0;
-
 	const criteria = {
 		length: password.length >= PASSWORD_MIN_LENGTH,
-		multipleSpecialChars: (password.match(/[!@#$.%^&*-_]/g) || []).length > 1,
-		uppercase: /[A-Z]/.test(password),
-		lowercase: /[a-z]/.test(password),
-		numbers: /\d/.test(password),
-		specialChar: /[!@#$.%^&*-_]/.test(password),
-		noRepeatingChars: !/(.)\1{2,}/.test(password),
-		mixedChars: /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d).*$/.test(password),
+		multipleSpecialChars:
+			(password.match(PASSWORD_REGEX.MULTIPLE_SPECIAL) || []).length > 1,
+		uppercase: PASSWORD_REGEX.UPPERCASE.test(password),
+		lowercase: PASSWORD_REGEX.LOWERCASE.test(password),
+		numbers: PASSWORD_REGEX.NUMBER.test(password),
+		specialChar: PASSWORD_REGEX.SPECIAL.test(password),
+		noRepeatingChars: !PASSWORD_REGEX.NO_REPEATING.test(password),
+		mixedChars: PASSWORD_REGEX.MIXED.test(password),
 	};
 
 	const strengthScore = Object.values(criteria).filter(Boolean).length;
-
-	// Enhanced scoring system
 	if (password.length < PASSWORD_MIN_LENGTH) return 0;
-	if (strengthScore <= 2) return 0; // Weak
-	if (strengthScore <= 4) return 1; // Fair
-	if (strengthScore <= 6) return 2; // Good
-	if (strengthScore <= 7) return 3; // Strong
-	return 4; // Very Strong
+	if (strengthScore <= 2) return 0;
+	if (strengthScore <= 4) return 1;
+	if (strengthScore <= 6) return 2;
+	if (strengthScore <= 7) return 3;
+	return 4;
 };
-
-// Enhanced validation schema
-const validationSchema = Yup.object({
-	name: Yup.string()
-		.required("Name is required")
-		.min(3, "Must be at least 3 characters")
-		.max(50, "Must not exceed 50 characters")
-		.matches(
-			/^[a-zA-Z-]+(\s[a-zA-Z-]+){2}$/,
-			"Please provide your first name, middle name, and last name"
-		)
-		.test(
-			"name-components",
-			"Each name must be at least 2 characters and contain only letters and hyphens",
-			(value) => {
-				if (!value) return false;
-				const names = value.split(/\s+/);
-				return (
-					names.length === 3 &&
-					names.every((name) => name.length >= 2 && /^[a-zA-Z-]+$/.test(name))
-				);
-			}
-		),
-	email: Yup.string()
-		.email("Invalid email format")
-		.matches(
-			/^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/,
-			"Invalid email format"
-		)
-		.max(254, "Email must not exceed 254 characters")
-		.required("Email is required"),
-	phone: Yup.string()
-		.matches(/^\d{11}$/, "Phone number must be exactly 11 digits")
-		.required("Phone number is required"),
-	password: Yup.string()
-		.min(
-			PASSWORD_MIN_LENGTH,
-			`Password must be at least ${PASSWORD_MIN_LENGTH} characters`
-		)
-		.max(
-			PASSWORD_MAX_LENGTH,
-			`Password must not exceed ${PASSWORD_MAX_LENGTH} characters`
-		)
-		.matches(/[A-Z]/, "Password must contain at least one uppercase letter")
-		.matches(/[a-z]/, "Password must contain at least one lowercase letter")
-		.matches(/\d/, "Password must contain at least one number")
-		.matches(
-			/[!@#$.%^&*-_]/,
-			"Password must contain at least one special character"
-		)
-		.test(
-			"no-repeating-chars",
-			"Password cannot contain repeating characters",
-			(value) => (value ? !/(.)\1{2,}/.test(value) : true)
-		)
-		.required("Password is required"),
-	role: Yup.string()
-		.oneOf([...ROLE_OPTIONS], "Please select a valid role")
-		.required("Role is required"),
-});
 
 const OnBoardingFormOne: React.FC<OnBoardingFormOneProps> = ({
 	legendText,
 	helperText,
 	onSuccess,
 }) => {
+	const dispatch = useDispatch();
 	const [passwordStrength, setPasswordStrength] = useState(0);
+
+	// Memoize the validation schema to prevent its recreation on every render
+	const memoizedValidationSchema = useMemo(
+		() =>
+			Yup.object({
+				name: Yup.string()
+					.required("Name is required")
+					.min(3, "Must be at least 3 characters")
+					.max(50, "Must not exceed 50 characters")
+					.matches(
+						/^[a-zA-Z-]+(\s[a-zA-Z-]+){2,}$/,
+						"Please provide your first name, middle name, and last name"
+					),
+				email: Yup.string()
+					.email("Invalid email format")
+					.matches(
+						/^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/,
+						"Invalid email format"
+					)
+					.max(254, "Email must not exceed 254 characters")
+					.required("Email is required"),
+				phone: Yup.string()
+					.matches(/^\d{11}$/, "Phone number must be exactly 11 digits")
+					.required("Phone number is required"),
+				password: Yup.string()
+					.min(
+						PASSWORD_MIN_LENGTH,
+						`Password must be at least ${PASSWORD_MIN_LENGTH} characters`
+					)
+					.max(
+						PASSWORD_MAX_LENGTH,
+						`Password must not exceed ${PASSWORD_MAX_LENGTH} characters`
+					)
+					.matches(
+						PASSWORD_REGEX.UPPERCASE,
+						"Password must contain at least one uppercase letter"
+					)
+					.matches(
+						PASSWORD_REGEX.LOWERCASE,
+						"Password must contain at least one lowercase letter"
+					)
+					.matches(
+						PASSWORD_REGEX.NUMBER,
+						"Password must contain at least one number"
+					)
+					.matches(
+						PASSWORD_REGEX.SPECIAL,
+						"Password must contain at least one special character"
+					)
+					.test(
+						"no-repeating-chars",
+						"Password cannot contain repeating characters",
+						(value) => (value ? !PASSWORD_REGEX.NO_REPEATING.test(value) : true)
+					)
+					.required("Password is required"),
+				role: Yup.string()
+					.oneOf([...ROLE_OPTIONS], "Please select a valid role")
+					.required("Role is required"),
+			}),
+		[]
+	);
 
 	const initialValues: FormValues = {
 		name: "",
@@ -158,33 +168,55 @@ const OnBoardingFormOne: React.FC<OnBoardingFormOneProps> = ({
 
 	const formik = useFormik({
 		initialValues,
-		validationSchema,
-		validateOnChange: true,
+		validationSchema: memoizedValidationSchema,
+		validateOnChange: false,
+		validateOnBlur: true,
 		validateOnMount: true,
 		onSubmit: (values, { resetForm }) => {
 			console.log("Form Submitted:", values);
-			// Update local storage for form one
-			updateOnboardingData(
-				"formOne",
-				values as unknown as Record<string, unknown>
-			);
+			dispatch(updateFormOne(values as unknown as Record<string, unknown>));
 			resetForm();
 			onSuccess?.();
 		},
 	});
 
-	const handlePasswordChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-		const password = e.target.value;
-		formik.handleChange(e);
-		setPasswordStrength(getPasswordStrength(password));
-	};
+	const debouncedValidate = useCallback(
+		debounce(() => formik.validateForm(), 300),
+		[formik.validateForm]
+	);
 
-	const getFieldErrorProps = (fieldName: keyof FormValues) => ({
-		invalid: formik.touched[fieldName] && !!formik.errors[fieldName],
-		required: true,
-		"aria-invalid": formik.touched[fieldName] && !!formik.errors[fieldName],
-		"aria-describedby": `${fieldName}-error`,
-	});
+	useEffect(() => {
+		return () => {
+			debouncedValidate.cancel();
+		};
+	}, [debouncedValidate]);
+
+	const handleChangeDebounced = useCallback(
+		(e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
+			formik.handleChange(e);
+			debouncedValidate();
+		},
+		[formik.handleChange, debouncedValidate]
+	);
+
+	const handlePasswordChange = useCallback(
+		(e: React.ChangeEvent<HTMLInputElement>) => {
+			formik.handleChange(e);
+			debouncedValidate();
+			setPasswordStrength(getPasswordStrength(e.target.value));
+		},
+		[formik.handleChange, debouncedValidate]
+	);
+
+	const getFieldErrorProps = useCallback(
+		(fieldName: keyof FormValues) => ({
+			invalid: formik.touched[fieldName] && !!formik.errors[fieldName],
+			required: true,
+			"aria-invalid": formik.touched[fieldName] && !!formik.errors[fieldName],
+			"aria-describedby": `${fieldName}-error`,
+		}),
+		[formik.touched, formik.errors]
+	);
 
 	return (
 		<form onSubmit={formik.handleSubmit} className="onboarding-form">
@@ -231,7 +263,7 @@ const OnBoardingFormOne: React.FC<OnBoardingFormOneProps> = ({
 								name="name"
 								type="text"
 								value={formik.values.name}
-								onChange={formik.handleChange}
+								onChange={handleChangeDebounced}
 								onBlur={formik.handleBlur}
 								aria-label="Full Name"
 								ps="42px"
@@ -265,7 +297,7 @@ const OnBoardingFormOne: React.FC<OnBoardingFormOneProps> = ({
 								name="email"
 								type="email"
 								value={formik.values.email}
-								onChange={formik.handleChange}
+								onChange={handleChangeDebounced}
 								onBlur={formik.handleBlur}
 								aria-label="Email Address"
 								ps="42px"
@@ -288,7 +320,7 @@ const OnBoardingFormOne: React.FC<OnBoardingFormOneProps> = ({
 								placeholder="Choose your role"
 								name="role"
 								value={formik.values.role}
-								onChange={formik.handleChange}
+								onChange={handleChangeDebounced}
 								onBlur={formik.handleBlur}
 								items={[...ROLE_OPTIONS]}
 								aria-label="Select Role"
@@ -316,7 +348,7 @@ const OnBoardingFormOne: React.FC<OnBoardingFormOneProps> = ({
 								name="phone"
 								type="tel"
 								value={formik.values.phone}
-								onChange={formik.handleChange}
+								onChange={handleChangeDebounced}
 								onBlur={formik.handleBlur}
 								aria-label="Phone Number"
 							/>
@@ -382,4 +414,4 @@ const OnBoardingFormOne: React.FC<OnBoardingFormOneProps> = ({
 	);
 };
 
-export default OnBoardingFormOne;
+export default React.memo(OnBoardingFormOne);

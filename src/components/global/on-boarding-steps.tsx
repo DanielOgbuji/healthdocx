@@ -1,4 +1,4 @@
-import { useState } from "react";
+import React, { useState, Suspense, lazy } from "react";
 import { Text, Link, Stack, Spinner, VStack } from "@chakra-ui/react";
 import Layout from "./layout";
 import {
@@ -8,27 +8,29 @@ import {
 	StepsList,
 	StepsRoot,
 } from "@/components/ui/steps";
-import { getOnboardingData } from "@/context/localStorageHelper";
-import { Suspense, lazy } from "react";
+import { useSelector } from "react-redux";
+import { RootState } from "@/store/store";
 
-// Lazy load components using React.lazy
-const OnBoardingFormOne = lazy(() => import("../../pages/form-one"));
-const OnBoardingFormTwo = lazy(() => import("../../pages/form-two"));
-const OnBoardingFormThree = lazy(() => import("../../pages/form-three"));
-const VerificationPending = lazy(() => import("@/pages/verification-pending"));
-const VerificationError = lazy(() => import("@/pages/verification-error"));
-const Welcome = lazy(() => import("../../pages/welcome"));
+const lazySteps: { [key: number]: () => ReturnType<typeof lazy> } = {
+	0: () => lazy(() => import("../../pages/form-one")),
+	1: () => lazy(() => import("../../pages/form-two")),
+	2: () => lazy(() => import("../../pages/form-three")),
+	3: () => lazy(() => import("@/pages/verification-pending")),
+	4: () => lazy(() => import("../../pages/welcome")),
+};
 
 const OnBoardingSteps = () => {
 	const [step, setStep] = useState(0);
-
-	// Retrieve data from Form One; adjust key as needed
-	const formOneData = getOnboardingData("formOne");
+	const formOneData = useSelector(
+		(state: RootState) => state.onboarding.formOne
+	);
 	const email = formOneData?.email || "your email";
 
 	const handleFormSuccess = () => {
 		setStep((prev) => prev + 1);
 	};
+
+	const StepComponent = lazySteps[step] ? lazySteps[step]() : null;
 
 	return (
 		<StepsRoot
@@ -104,9 +106,9 @@ const OnBoardingSteps = () => {
 				}
 			>
 				<Stack justifyContent="center" alignItems="center" flexGrow="1">
-					{step === 0 && (
+					{step === 0 && StepComponent && (
 						<StepsContent index={0} width={{ base: "75%", lg: "50%" }}>
-							<OnBoardingFormOne
+							<StepComponent
 								legendText="Create an account"
 								helperText="Fill in your details as it is in your National ID."
 								onSuccess={handleFormSuccess}
@@ -114,20 +116,20 @@ const OnBoardingSteps = () => {
 						</StepsContent>
 					)}
 
-					{step === 1 && (
+					{step === 1 && StepComponent && (
 						<StepsContent index={1} width={{ base: "75%", lg: "50%" }}>
-							<OnBoardingFormTwo
+							<StepComponent
 								legendText="Verify your email"
 								helperText="We sent a code to"
-								userEmail={`${email}`}
+								userEmail={email}
 								onSuccess={handleFormSuccess}
 							/>
 						</StepsContent>
 					)}
 
-					{step === 2 && (
+					{step === 2 && StepComponent && (
 						<StepsContent index={2} width={{ base: "75%", lg: "50%" }}>
-							<OnBoardingFormThree
+							<StepComponent
 								legendText="Setup institution details"
 								helperText="Fill in your institution details correctly."
 								onSuccess={handleFormSuccess}
@@ -135,20 +137,28 @@ const OnBoardingSteps = () => {
 						</StepsContent>
 					)}
 
-					{step === 3 && (
+					{step === 3 && StepComponent && (
 						<StepsContent index={3}>
 							<Stack>
-								<VerificationPending legendText="Your institution is under review." />
+								<StepComponent legendText="Your institution is under review." />
 							</Stack>
 							<Stack display="none">
-								<VerificationError legendText="Review Unsuccessful - Action needed" />
+								{/*
+                  The VerificationError component is still lazy loaded inline.
+                */}
+								{React.createElement(
+									lazy(() => import("@/pages/verification-error")),
+									{
+										legendText: "Review Unsuccessful - Action needed",
+									}
+								)}
 							</Stack>
 						</StepsContent>
 					)}
 
-					{step === 4 && (
+					{step === 4 && StepComponent && (
 						<StepsCompletedContent width={{ base: "75%", lg: "50%" }}>
-							<Welcome
+							<StepComponent
 								legendText="Welcome to Healthdocx!"
 								helperText={`Great news! Your institution has been successfully verified.
 You're now ready to streamline your medical record management with secure, digital solutions.`}

@@ -1,4 +1,5 @@
-import React, { useState } from "react";
+import React, { useState, useMemo, useEffect, useCallback } from "react";
+import { debounce } from "lodash";
 import {
 	Button,
 	Group,
@@ -15,7 +16,8 @@ import {
 	GeoapifyContext,
 } from "@geoapify/react-geocoder-autocomplete";
 import * as Yup from "yup";
-import { updateOnboardingData } from "@/context/localStorageHelper";
+import { useDispatch } from "react-redux";
+import { updateFormThree } from "@/store/onboardingSlice";
 import {
 	NativeSelectField,
 	NativeSelectRoot,
@@ -60,102 +62,99 @@ interface OnBoardingFormThreeProps {
 	onSuccess?: () => void;
 }
 
-const validationSchema = Yup.object({
-	institutionName: Yup.string()
-		.required("Institution name is required")
-		.min(3, "Must be at least 3 characters")
-		.max(100, "Must not exceed 100 characters")
-		.matches(
-			/^[a-zA-Z0-9&'-.\s]+$/,
-			"Only letters, numbers, &, ', and hyphens are allowed"
-		),
-	location: Yup.string()
-		.required("Location is required")
-		.min(5, "Must be at least 5 characters")
-		.max(200, "Must not exceed 200 characters"),
-	institutionType: Yup.string()
-		.oneOf(
-			[...INSTITUTION_TYPE_OPTIONS],
-			"Please select a valid institution type"
-		)
-		.required("Institution type is required"),
-	size: Yup.string()
-		.oneOf([...SIZE_OPTIONS], "Please select a valid size category")
-		.required("Size category is required"),
-	licenseNumber: Yup.string()
-		.matches(
-			LICENSE_REGEX,
-			"License number must be a 7 digits (e.g. No. 8550483)"
-		)
-		.required("License number is required"),
-});
-
 const OnBoardingFormThree: React.FC<OnBoardingFormThreeProps> = ({
 	legendText,
 	helperText,
 	onSuccess,
 }) => {
-	// Local state to capture raw user input from Geoapify
+	const dispatch = useDispatch();
 	const [rawLocation, setRawLocation] = useState("");
 
+	// Memoize the validation schema to prevent its recreation on every render
+	const memoizedValidationSchema = useMemo(
+		() =>
+			Yup.object({
+				institutionName: Yup.string()
+					.required("Institution name is required")
+					.min(3, "Must be at least 3 characters")
+					.max(100, "Must not exceed 100 characters")
+					.matches(
+						/^[a-zA-Z0-9&'-.\s]+$/,
+						"Only letters, numbers, &, ', and hyphens are allowed"
+					),
+				location: Yup.string()
+					.required("Location is required")
+					.min(5, "Must be at least 5 characters")
+					.max(200, "Must not exceed 200 characters"),
+				institutionType: Yup.string()
+					.oneOf(
+						[...INSTITUTION_TYPE_OPTIONS],
+						"Please select a valid institution type"
+					)
+					.required("Institution type is required"),
+				size: Yup.string()
+					.oneOf([...SIZE_OPTIONS], "Please select a valid size category")
+					.required("Size category is required"),
+				licenseNumber: Yup.string()
+					.matches(
+						LICENSE_REGEX,
+						"License number must be a 7 digits (e.g. No. 8550483)"
+					)
+					.required("License number is required"),
+			}),
+		[]
+	);
+
+	const initialValues: FormValues = {
+		institutionName: "",
+		location: "",
+		institutionType: "",
+		size: "",
+		licenseNumber: "",
+	};
+
 	const formik = useFormik<FormValues>({
-		initialValues: {
-			institutionName: "",
-			location: "",
-			institutionType: "",
-			size: "",
-			licenseNumber: "",
-		},
-		validationSchema,
-		validateOnChange: true,
+		initialValues,
+		validationSchema: memoizedValidationSchema,
+		validateOnChange: false,
 		validateOnMount: true,
-		onSubmit: async (values, { resetForm }) => {
-			// Fallback to raw input if no suggestion was selected.
+		onSubmit: (values, { resetForm }) => {
 			const finalLocation = values.location || rawLocation;
 			const formThreeData = { ...values, location: finalLocation };
-
-			// Save the third form's values to local storage
-			updateOnboardingData("formThree", formThreeData);
-
-			// Retrieve combined data from local storage
-			const combinedData = JSON.parse(
-				localStorage.getItem("onboardingData") || "{}"
-			);
-			console.log("Combined Form Data:", combinedData);
-
-			// Optionally, send the combined data to the backend using Axios
-			// try {
-			//   const response = await axios.post('/api/your-endpoint', combinedData);
-			//   console.log("Data sent to backend successfully:", response.data);
-			// } catch (error) {
-			//   console.error("Error sending data to backend:", error);
-			// }
-
+			dispatch(updateFormThree(formThreeData));
 			resetForm();
 			onSuccess?.();
 		},
 	});
 
-	// Callback when a suggestion is selected.
-	const handlePlaceSelect = (feature: GeoJSON.Feature) => {
-		if (!feature.properties) return;
+	const debouncedValidate = useMemo(
+		() => debounce(() => formik.validateForm(), 300),
+		[formik.validateForm]
+	);
 
-		const { formatted, county } = feature.properties;
-		const locationValue =
-			county && !formatted.includes(county)
-				? `${formatted}, ${county}`
-				: formatted;
+	useEffect(() => {
+		return () => {
+			debouncedValidate.cancel();
+		};
+	}, [debouncedValidate]);
 
-		console.log("Final location value:", locationValue);
-		formik.setFieldValue("location", locationValue);
-	};
+	const handleChangeDebounced = useCallback(
+		(e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
+			formik.handleChange(e);
+			debouncedValidate();
+		},
+		[formik.handleChange, debouncedValidate]
+	);
 
-	const getFieldErrorProps = (fieldName: keyof FormValues) => ({
-		invalid: formik.touched[fieldName] && !!formik.errors[fieldName],
-		required: true,
-		"aria-invalid": formik.touched[fieldName] && !!formik.errors[fieldName],
-		"aria-describedby": `${fieldName}-error`,
-	});
+	const getFieldErrorProps = useCallback(
+		(fieldName: keyof FormValues) => ({
+			invalid: formik.touched[fieldName] && !!formik.errors[fieldName],
+			required: true,
+			"aria-invalid": formik.touched[fieldName] && !!formik.errors[fieldName],
+			"aria-describedby": `${fieldName}-error`,
+		}),
+		[formik.touched, formik.errors]
+	);
 
 	return (
 		<form onSubmit={formik.handleSubmit} className="onboarding-form">
@@ -197,7 +196,7 @@ const OnBoardingFormThree: React.FC<OnBoardingFormThreeProps> = ({
 							name="institutionName"
 							type="text"
 							value={formik.values.institutionName}
-							onChange={formik.handleChange}
+							onChange={handleChangeDebounced}
 							onBlur={formik.handleBlur}
 							aria-label="Institution Name"
 						/>
@@ -222,13 +221,23 @@ const OnBoardingFormThree: React.FC<OnBoardingFormThreeProps> = ({
 								allowNonVerifiedHouseNumber
 								allowNonVerifiedStreet
 								debounceDelay={200}
-								placeSelect={handlePlaceSelect}
+								placeSelect={(feature) => {
+									if (feature.properties) {
+										const { formatted, county } = feature.properties;
+										const locationValue =
+											county && !formatted.includes(county)
+												? `${formatted}, ${county}`
+												: formatted;
+										console.log("Final location value:", locationValue);
+										formik.setFieldValue("location", locationValue);
+									}
+								}}
 								aria-label="Institution Location"
 								placeholder="Add the location of your institution"
-								// Update both rawLocation and Formik state on user input.
 								onUserInput={(input: string) => {
 									setRawLocation(input);
 									formik.setFieldValue("location", input);
+									debouncedValidate();
 								}}
 							/>
 						</GeoapifyContext>
@@ -249,7 +258,7 @@ const OnBoardingFormThree: React.FC<OnBoardingFormThreeProps> = ({
 								placeholder="Choose type"
 								name="institutionType"
 								value={formik.values.institutionType}
-								onChange={formik.handleChange}
+								onChange={handleChangeDebounced}
 								onBlur={formik.handleBlur}
 								items={[...INSTITUTION_TYPE_OPTIONS]}
 								aria-label="Institution Type"
@@ -272,7 +281,7 @@ const OnBoardingFormThree: React.FC<OnBoardingFormThreeProps> = ({
 								placeholder="Choose size category"
 								name="size"
 								value={formik.values.size}
-								onChange={formik.handleChange}
+								onChange={handleChangeDebounced}
 								onBlur={formik.handleBlur}
 								items={[...SIZE_OPTIONS]}
 								aria-label="Institution Size"
@@ -296,7 +305,7 @@ const OnBoardingFormThree: React.FC<OnBoardingFormThreeProps> = ({
 								name="licenseNumber"
 								type="text"
 								value={formik.values.licenseNumber}
-								onChange={formik.handleChange}
+								onChange={handleChangeDebounced}
 								onBlur={formik.handleBlur}
 								aria-label="License Number"
 							/>
@@ -323,4 +332,4 @@ const OnBoardingFormThree: React.FC<OnBoardingFormThreeProps> = ({
 	);
 };
 
-export default OnBoardingFormThree;
+export default React.memo(OnBoardingFormThree);
