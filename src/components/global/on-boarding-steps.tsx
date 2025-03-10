@@ -90,12 +90,17 @@ const OnBoardingSteps = () => {
 
 			<Suspense
 				fallback={
-          <Stack flexGrow="1" height="100%" alignItems="center" justifyContent="center">
-					<VStack colorPalette="teal">
-						<Spinner color="colorPalette.600" borderWidth="4px" />
-						<Text color="colorPalette.600">Loading...</Text>
-					</VStack>
-          </Stack>
+					<Stack
+						flexGrow="1"
+						height="100%"
+						alignItems="center"
+						justifyContent="center"
+					>
+						<VStack colorPalette="teal">
+							<Spinner color="colorPalette.600" borderWidth="4px" />
+							<Text color="colorPalette.600">Loading...</Text>
+						</VStack>
+					</Stack>
 				}
 			>
 				<Stack justifyContent="center" alignItems="center" flexGrow="1">
