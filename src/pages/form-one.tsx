@@ -8,6 +8,7 @@ import {
 	Image,
 	Input,
 	InputAddon,
+	Link,
 	Stack,
 } from "@chakra-ui/react";
 import { useFormik } from "formik";
@@ -177,7 +178,7 @@ const OnBoardingFormOne: React.FC<OnBoardingFormOneProps> = ({
 		validateOnChange: false,
 		validateOnMount: true,
 		onSubmit: (values) => {
-			console.log("Form Submitted:", values);
+			//console.log("Form Submitted:", values);
 			dispatch(updateFormOne(values as unknown as Record<string, unknown>));
 			onSuccess?.();
 		},
@@ -237,15 +238,25 @@ const OnBoardingFormOne: React.FC<OnBoardingFormOneProps> = ({
 						role="heading"
 						fontWeight="bold"
 						fontSize="2xl"
+						display="flex"
+						alignItems="center"
+						gap="2"
 						aria-level={1}
 						mb="4px"
 					>
-						{legendText} <InfoTip content="We will never share your information" />
+						{legendText}{" "}
+						<InfoTip
+							content={
+								<>
+									We will never share your information.{" "}
+									<Link href="#" variant="underline" width="fit-content">
+										Our Privacy Policy
+									</Link>
+								</>
+							}
+						/>
 					</Fieldset.Legend>
-					<Fieldset.HelperText
-					>
-						{helperText}
-					</Fieldset.HelperText>
+					<Fieldset.HelperText textAlign="center">{helperText}</Fieldset.HelperText>
 				</Stack>
 
 				<Fieldset.Content>
@@ -264,7 +275,7 @@ const OnBoardingFormOne: React.FC<OnBoardingFormOneProps> = ({
 							<Input
 								id="name"
 								autoFocus
-								placeholder="As it appears on official documents"
+								placeholder="Enter your full name"
 								title="Enter your full name"
 								name="name"
 								type="text"

@@ -121,19 +121,19 @@ const OnBoardingSteps = () => {
 					</Stack>
 				}
 			>
-				<Stack justifyContent="center" alignItems="center" flexGrow="1">
+				<Stack justifyContent="center" alignItems="center" flexGrow="1" py={{ base: "12", lg: "0" }}>
 					{step === 0 && (
-						<StepsContent index={0} width={{ base: "75%", lg: "50%" }}>
+						<StepsContent index={0} width={{ base: "80%", lg: "50%" }}>
 							<StepComponent
 								legendText="Create an account"
-								helperText="Fill in your details as it is in your National ID."
+								helperText="Fill in your details as it appears in your National ID."
 								onSuccess={handleFormSuccess}
 							/>
 						</StepsContent>
 					)}
 
 					{step === 1 && (
-						<StepsContent index={1} width={{ base: "75%", lg: "50%" }}>
+						<StepsContent index={1} width={{ base: "80%", lg: "50%" }}>
 							<StepComponent
 								legendText="Verify your email"
 								helperText="We sent a code to"
@@ -144,7 +144,7 @@ const OnBoardingSteps = () => {
 					)}
 
 					{step === 2 && (
-						<StepsContent index={2} width={{ base: "75%", lg: "50%" }}>
+						<StepsContent index={2} width={{ base: "80%", lg: "50%" }}>
 							<StepComponent
 								legendText="Setup institution details"
 								helperText="Fill in your institution details correctly."
@@ -162,7 +162,7 @@ const OnBoardingSteps = () => {
 					)}
 
 					{step === 4 && (
-						<StepsCompletedContent width={{ base: "75%", lg: "50%" }}>
+						<StepsCompletedContent width={{ base: "80%", lg: "50%" }}>
 							<StepComponent
 								legendText="Welcome to Healthdocx!"
 								helperText={`Great news! Your institution has been successfully verified.
