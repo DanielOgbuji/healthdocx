@@ -118,11 +118,10 @@ const OnBoardingFormThree: React.FC<OnBoardingFormThreeProps> = ({
 		validationSchema: memoizedValidationSchema,
 		validateOnChange: false,
 		validateOnMount: true,
-		onSubmit: (values, { resetForm }) => {
+		onSubmit: (values) => {
 			const finalLocation = values.location || rawLocation;
 			const formThreeData = { ...values, location: finalLocation };
 			dispatch(updateFormThree(formThreeData));
-			resetForm();
 			onSuccess?.();
 		},
 	});

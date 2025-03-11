@@ -102,19 +102,23 @@ const OnBoardingFormOne: React.FC<OnBoardingFormOneProps> = ({
 		() =>
 			Yup.object({
 				name: Yup.string()
-					.required("Name is required")
-					.min(3, "Must be at least 3 characters")
+					.required("Full name is required")
 					.max(50, "Must not exceed 50 characters")
+					.test(
+						"min-length-each",
+						"Each name must be at least 2 characters long",
+						(value) =>
+							value
+								?.trim()
+								.split(/\s+/)
+								.every((part) => part.length >= 2)
+					)
 					.matches(
-						/^[a-zA-Z-]+(\s[a-zA-Z-]+){2,}$/,
-						"Please provide your first name, middle name, and last name"
+						/^(?:\p{L}+(?:[-']\p{L}+)*)\s+(?:\p{L}+(?:[-']\p{L}+)*)\s+(?:\p{L}+(?:[-']\p{L}+)*)$/u,
+						"Enter your first, middle, and last name (letters, hyphens, and apostrophes only)"
 					),
 				email: Yup.string()
 					.email("Invalid email format")
-					.matches(
-						/^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/,
-						"Invalid email format"
-					)
 					.max(254, "Email must not exceed 254 characters")
 					.required("Email is required"),
 				phone: Yup.string()
@@ -170,18 +174,16 @@ const OnBoardingFormOne: React.FC<OnBoardingFormOneProps> = ({
 		initialValues,
 		validationSchema: memoizedValidationSchema,
 		validateOnChange: false,
-		validateOnBlur: true,
 		validateOnMount: true,
-		onSubmit: (values, { resetForm }) => {
+		onSubmit: (values) => {
 			console.log("Form Submitted:", values);
 			dispatch(updateFormOne(values as unknown as Record<string, unknown>));
-			resetForm();
 			onSuccess?.();
 		},
 	});
 
 	const debouncedValidate = useCallback(
-		debounce(() => formik.validateForm(), 300),
+		debounce(() => formik.validateForm(), 400),
 		[formik.validateForm]
 	);
 
@@ -258,8 +260,8 @@ const OnBoardingFormOne: React.FC<OnBoardingFormOneProps> = ({
 							<Input
 								id="name"
 								autoFocus
-								placeholder="Enter your full name"
-								title="Enter as it appears on official documents."
+								placeholder="As it appears on official documents"
+								title="Enter your full name"
 								name="name"
 								type="text"
 								value={formik.values.name}

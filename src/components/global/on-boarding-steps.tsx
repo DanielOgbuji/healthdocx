@@ -1,4 +1,4 @@
-import React, { useState, Suspense, lazy } from "react";
+import { useState, Suspense, lazy, useEffect, useCallback } from "react";
 import { Text, Link, Stack, Spinner, VStack } from "@chakra-ui/react";
 import Layout from "./layout";
 import {
@@ -11,12 +11,12 @@ import {
 import { useSelector } from "react-redux";
 import { RootState } from "@/store/store";
 
-const lazySteps: { [key: number]: () => ReturnType<typeof lazy> } = {
-	0: () => lazy(() => import("../../pages/form-one")),
-	1: () => lazy(() => import("../../pages/form-two")),
-	2: () => lazy(() => import("../../pages/form-three")),
-	3: () => lazy(() => import("@/pages/verification-pending")),
-	4: () => lazy(() => import("../../pages/welcome")),
+const lazySteps: { [key: number]: ReturnType<typeof lazy> } = {
+	0: lazy(() => import("../../pages/form-one")),
+	1: lazy(() => import("../../pages/form-two")),
+	2: lazy(() => import("../../pages/form-three")),
+	3: lazy(() => import("@/pages/verification-pending")),
+	4: lazy(() => import("../../pages/welcome")),
 };
 
 const OnBoardingSteps = () => {
@@ -26,11 +26,27 @@ const OnBoardingSteps = () => {
 	);
 	const email = formOneData?.email || "your email";
 
+	const handleBeforeUnload = useCallback(
+		(e: BeforeUnloadEvent) => {
+			if (step < 3) {
+				e.preventDefault();
+				e.returnValue = ""; // Some older browsers still expect this
+			}
+		},
+		[step]
+	);
+
+	useEffect(() => {
+		window.addEventListener("beforeunload", handleBeforeUnload);
+		return () => window.removeEventListener("beforeunload", handleBeforeUnload);
+	}, [handleBeforeUnload]);
+
 	const handleFormSuccess = () => {
 		setStep((prev) => prev + 1);
 	};
 
-	const StepComponent = lazySteps[step] ? lazySteps[step]() : null;
+	const StepComponent = lazySteps[step] || null;
+	if (!StepComponent) return null;
 
 	return (
 		<StepsRoot
@@ -98,15 +114,15 @@ const OnBoardingSteps = () => {
 						alignItems="center"
 						justifyContent="center"
 					>
-						<VStack colorPalette="teal">
-							<Spinner color="colorPalette.600" borderWidth="4px" />
-							<Text color="colorPalette.600">Loading...</Text>
+						<VStack>
+							<Spinner borderWidth="4px" />
+							<Text>Loading...</Text>
 						</VStack>
 					</Stack>
 				}
 			>
 				<Stack justifyContent="center" alignItems="center" flexGrow="1">
-					{step === 0 && StepComponent && (
+					{step === 0 && (
 						<StepsContent index={0} width={{ base: "75%", lg: "50%" }}>
 							<StepComponent
 								legendText="Create an account"
@@ -116,7 +132,7 @@ const OnBoardingSteps = () => {
 						</StepsContent>
 					)}
 
-					{step === 1 && StepComponent && (
+					{step === 1 && (
 						<StepsContent index={1} width={{ base: "75%", lg: "50%" }}>
 							<StepComponent
 								legendText="Verify your email"
@@ -127,7 +143,7 @@ const OnBoardingSteps = () => {
 						</StepsContent>
 					)}
 
-					{step === 2 && StepComponent && (
+					{step === 2 && (
 						<StepsContent index={2} width={{ base: "75%", lg: "50%" }}>
 							<StepComponent
 								legendText="Setup institution details"
@@ -137,26 +153,15 @@ const OnBoardingSteps = () => {
 						</StepsContent>
 					)}
 
-					{step === 3 && StepComponent && (
+					{step === 3 && (
 						<StepsContent index={3}>
 							<Stack>
 								<StepComponent legendText="Your institution is under review." />
 							</Stack>
-							<Stack display="none">
-								{/*
-                  The VerificationError component is still lazy loaded inline.
-                */}
-								{React.createElement(
-									lazy(() => import("@/pages/verification-error")),
-									{
-										legendText: "Review Unsuccessful - Action needed",
-									}
-								)}
-							</Stack>
 						</StepsContent>
 					)}
 
-					{step === 4 && StepComponent && (
+					{step === 4 && (
 						<StepsCompletedContent width={{ base: "75%", lg: "50%" }}>
 							<StepComponent
 								legendText="Welcome to Healthdocx!"
