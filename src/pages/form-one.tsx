@@ -22,6 +22,7 @@ import {
 	PasswordInput,
 	PasswordStrengthMeter,
 } from "@/components/ui/password-input";
+import { InfoTip } from "@/components/ui/toggle-tip";
 import { InputGroup } from "@/components/ui/input-group";
 import Logo from "@/assets/Off-Jeay.svg";
 
@@ -239,9 +240,12 @@ const OnBoardingFormOne: React.FC<OnBoardingFormOneProps> = ({
 						aria-level={1}
 						mb="4px"
 					>
-						{legendText}
+						{legendText} <InfoTip content="We will never share your information" />
 					</Fieldset.Legend>
-					<Fieldset.HelperText>{helperText}</Fieldset.HelperText>
+					<Fieldset.HelperText
+					>
+						{helperText}
+					</Fieldset.HelperText>
 				</Stack>
 
 				<Fieldset.Content>
