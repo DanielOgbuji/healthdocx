@@ -126,7 +126,7 @@ const OnBoardingSteps = () => {
 						<StepsContent index={0} width={{ base: "80%", lg: "50%" }}>
 							<StepComponent
 								legendText="Create an account"
-								helperText="Fill in your details as it appears in your National ID."
+								helperText="Fill in any required details as they appears on your National ID."
 								onSuccess={handleFormSuccess}
 							/>
 						</StepsContent>
