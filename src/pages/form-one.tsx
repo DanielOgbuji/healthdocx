@@ -407,13 +407,17 @@ const OnBoardingFormOne: React.FC<OnBoardingFormOneProps> = ({
 									ps="44px"
 								/>
 							</InputGroup>
-							<Field.ErrorText id="password-error">
-								{formik.errors.password}
-							</Field.ErrorText>
-							<PasswordStrengthMeter
-								value={passwordStrength}
-								aria-label="Password Strength"
-							/>
+							{formik.values.password && (
+								<>
+									<Field.ErrorText id="password-error">
+										{formik.errors.password}
+									</Field.ErrorText>
+									<PasswordStrengthMeter
+										value={passwordStrength}
+										aria-label="Password Strength"
+									/>
+								</>
+							)}
 						</Stack>
 					</Field.Root>
 				</Fieldset.Content>

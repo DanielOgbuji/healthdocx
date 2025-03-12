@@ -121,7 +121,12 @@ const OnBoardingSteps = () => {
 					</Stack>
 				}
 			>
-				<Stack justifyContent="center" alignItems="center" flexGrow="1" py={{ base: "12", lg: "0" }}>
+				<Stack
+					justifyContent="center"
+					alignItems="center"
+					flexGrow="1"
+					py={{ base: "12", lg: "0" }}
+				>
 					{step === 0 && (
 						<StepsContent index={0} width={{ base: "80%", lg: "50%" }}>
 							<StepComponent

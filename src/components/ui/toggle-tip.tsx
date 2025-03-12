@@ -71,7 +71,7 @@ export const InfoTip = React.forwardRef<
         colorPalette="blue"
         color="fg.info"
 				className="material-symbols-outlined"
-        fontSize="lg"
+        fontSize="md"
         size="xs"
 			>
 				security
