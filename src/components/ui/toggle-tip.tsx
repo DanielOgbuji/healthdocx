@@ -68,11 +68,11 @@ export const InfoTip = React.forwardRef<
 				aria-label="info"
 				height="fit-content"
 				minW="unset"
-        colorPalette="blue"
-        color="fg.info"
+				colorPalette="blue"
+				color="fg.info"
 				className="material-symbols-outlined"
-        fontSize="md"
-        size="xs"
+				fontSize="md"
+				size="xs"
 			>
 				security
 			</IconButton>
