@@ -243,6 +243,7 @@ const OnBoardingFormOne: React.FC<OnBoardingFormOneProps> = ({
 						gap="2"
 						aria-level={1}
 						mb="4px"
+						color="onBackground"
 					>
 						{legendText}{" "}
 						<InfoTip
@@ -425,6 +426,11 @@ const OnBoardingFormOne: React.FC<OnBoardingFormOneProps> = ({
 				<Button
 					type="submit"
 					variant="solid"
+					bgColor="primary"
+					color="onPrimary"
+					_hover={{ bgColor: "primary/85" }}
+					_disabled={{ bgColor: "onSurface/12", color: "onSurface/38" }}
+					focusRingColor="secondary"
 					disabled={!formik.isValid || formik.isSubmitting}
 					aria-disabled={!formik.isValid || formik.isSubmitting}
 				>

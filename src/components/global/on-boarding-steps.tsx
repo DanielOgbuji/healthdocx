@@ -59,7 +59,7 @@ const OnBoardingSteps = () => {
 			gap="12px"
 		>
 			<Layout>
-				<StepsList minHeight="440px" pointerEvents="none">
+				<StepsList minHeight="420px" pointerEvents="none">
 					<StepsItem
 						index={0}
 						icon={<span className="material-symbols-outlined">person</span>}

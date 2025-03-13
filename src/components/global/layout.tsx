@@ -11,8 +11,8 @@ const Layout = ({ children }: LayoutProps) => {
 			direction="column"
 			p="48px"
 			pb="30px"
-			rounded="md"
-			bg="gray.200/10"
+			rounded="lg"
+			bgColor="surface"
 			justify="space-between"
 			hideBelow="lg"
 		>
