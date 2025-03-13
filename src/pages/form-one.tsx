@@ -124,7 +124,7 @@ const OnBoardingFormOne: React.FC<OnBoardingFormOneProps> = ({
 					.max(254, "Email must not exceed 254 characters")
 					.required("Email is required"),
 				phone: Yup.string()
-					.matches(/^\d{11}$/, "Phone number must be exactly 11 digits")
+					.matches(/^\d{10}$/, "Phone number must be exactly 10 digits")
 					.required("Phone number is required"),
 				password: Yup.string()
 					.min(
@@ -361,7 +361,7 @@ const OnBoardingFormOne: React.FC<OnBoardingFormOneProps> = ({
 							<Input
 								id="phone"
 								placeholder="Enter your phone number"
-								title="Enter your 11 digit phone number."
+								title="Enter your 10 digit phone number."
 								name="phone"
 								type="tel"
 								value={formik.values.phone}

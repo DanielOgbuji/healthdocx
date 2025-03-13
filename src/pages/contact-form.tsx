@@ -47,7 +47,7 @@ const validationSchema = Yup.object({
 		.max(254, "Email must not exceed 254 characters")
 		.required("Email is required"),
 	phone: Yup.string()
-		.matches(/^\d{11}$/, "Phone number must be exactly 11 digits")
+		.matches(/^\d{10}$/, "Phone number must be exactly 10 digits")
 		.required("Phone number is required"),
 	message: Yup.string()
 		.required("Message is required")
