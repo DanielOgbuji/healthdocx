@@ -23,6 +23,8 @@ import {
 	NativeSelectRoot,
 } from "@/components/ui/native-select";
 import Logo from "@/assets/Off-Jeay.svg";
+import LogoDark from "@/assets/Off-Jeay-Dark.svg";
+import { useColorMode } from "@/components/ui/color-mode";
 
 // Constants
 const INSTITUTION_TYPE_OPTIONS = [
@@ -67,6 +69,7 @@ const OnBoardingFormThree: React.FC<OnBoardingFormThreeProps> = ({
 	helperText,
 	onSuccess,
 }) => {
+	const { colorMode } = useColorMode(); //Get current color mode
 	const dispatch = useDispatch();
 	const [rawLocation, setRawLocation] = useState("");
 
@@ -160,7 +163,7 @@ const OnBoardingFormThree: React.FC<OnBoardingFormThreeProps> = ({
 			<Fieldset.Root size="lg" maxW="lg">
 				<Stack alignItems="center" role="banner">
 					<Image
-						src={Logo}
+						src={colorMode === "dark" ? LogoDark : Logo}
 						mb="12px"
 						width="48px"
 						height="48px"
@@ -182,7 +185,7 @@ const OnBoardingFormThree: React.FC<OnBoardingFormThreeProps> = ({
 					</Fieldset.HelperText>
 				</Stack>
 
-				<Fieldset.Content>
+				<Fieldset.Content colorPalette="green">
 					<Field.Root {...getFieldErrorProps("institutionName")}>
 						<Field.Label htmlFor="institutionName">
 							Institution Name
@@ -323,6 +326,11 @@ const OnBoardingFormThree: React.FC<OnBoardingFormThreeProps> = ({
 					variant="solid"
 					disabled={!formik.isValid || formik.isSubmitting}
 					aria-disabled={!formik.isValid || formik.isSubmitting}
+					color="onPrimary"
+					bgColor="primary"
+					_hover={{ bgColor: "primary/85" }}
+					_disabled={{ bgColor: "onSurface/12", color: "onSurface/38" }}
+					focusRingColor="secondary"
 				>
 					Confirm
 				</Button>

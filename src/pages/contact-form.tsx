@@ -95,8 +95,13 @@ const ContactForm: React.FC<ContactFormProps> = ({
 					textDecoration="none"
 					display={{ base: "flex", md: "none" }}
 				>
-					<Button variant="ghost" padding="0">
-						<span className="material-symbols-outlined" style={{ fontSize: '48px' }}>arrow_circle_left</span>
+					<Button variant="ghost"	padding="0">
+						<span
+						   className="material-symbols-outlined" 
+						   style={{ fontSize : '48px', color : 'green'}}
+						>
+						      arrow_circle_left
+						</span>
 					</Button>
 				</Link>
 				<Stack role="banner">
@@ -106,13 +111,14 @@ const ContactForm: React.FC<ContactFormProps> = ({
 						fontSize="3xl"
 						aria-level={1}
 						mb="12px"
+						color="onBackground"
 					>
 						{legendText}
 					</Fieldset.Legend>
 					<Fieldset.HelperText fontSize="lg">{helperText}</Fieldset.HelperText>
 				</Stack>
 
-				<Fieldset.Content>
+				<Fieldset.Content colorPalette="green">
 					{/* First Name */}
 					<Flex gap="3" direction={{ base: "column", lg: "row" }}>
 						<Field.Root {...getFieldErrorProps("firstName")}>
@@ -245,8 +251,17 @@ const ContactForm: React.FC<ContactFormProps> = ({
 						textDecoration="none"
 						display={{ base: "none", md: "flex" }}
 					>
-						<Button variant="outline">
-							<span className="material-symbols-outlined">
+						<Button 
+						    variant="outline"
+							color="onBackground"
+							bgColor="background/10"
+							_hover={{bgColor : "background/50"}}
+							focusRingColor="surfaceVariant"
+							>
+							<span
+							   className="material-symbols-outlined"
+							   style={{color : "green"}}
+							   >
 								arrow_circle_left
 							</span>
 							Go back
@@ -258,6 +273,11 @@ const ContactForm: React.FC<ContactFormProps> = ({
 						width={{ base: "100%", md: "fit-content" }}
 						disabled={!formik.isValid || formik.isSubmitting}
 						aria-disabled={!formik.isValid || formik.isSubmitting}
+						color="onPrimary"
+					    bgColor="primary"
+					    _hover={{ bgColor: "primary/85" }}
+					    _disabled={{ bgColor: "onSurface/12", color: "onSurface/38" }}
+					    focusRingColor="secondary"
 					>
 						Send message
 					</Button>

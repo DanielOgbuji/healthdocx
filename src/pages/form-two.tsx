@@ -7,6 +7,9 @@ import { useDispatch } from "react-redux";
 import { updateFormTwo } from "@/store/onboardingSlice";
 import { toaster } from "@/components/ui/toaster";
 import Logo from "@/assets/Off-Jeay.svg";
+import LogoDark from "@/assets/Off-Jeay-Dark.svg";
+
+import { useColorMode } from "@/components/ui/color-mode";
 
 interface OnBoardingFormTwoProps {
 	legendText: string;
@@ -23,6 +26,7 @@ const OnBoardingFormTwo: React.FC<OnBoardingFormTwoProps> = ({
 	userEmail,
 	onSuccess,
 }) => {
+	const { colorMode } = useColorMode();//Get current color mode
 	const dispatch = useDispatch();
 	const [otp, setOtp] = useState("");
 	const [error, setError] = useState("");
@@ -56,7 +60,7 @@ const OnBoardingFormTwo: React.FC<OnBoardingFormTwoProps> = ({
 			<Fieldset.Root size="lg" maxW="lg" alignItems="center">
 				<Stack alignItems="center" role="banner">
 					<Image
-						src={Logo}
+						src={colorMode === "dark" ? LogoDark : Logo}
 						mb="12px"
 						width="48px"
 						height="48px"
@@ -69,6 +73,7 @@ const OnBoardingFormTwo: React.FC<OnBoardingFormTwoProps> = ({
 						fontSize="2xl"
 						aria-level={1}
 						mb="4px"
+						color="onBackground"
 					>
 						{legendText}
 					</Fieldset.Legend>
@@ -77,6 +82,7 @@ const OnBoardingFormTwo: React.FC<OnBoardingFormTwoProps> = ({
 					</Fieldset.HelperText>
 				</Stack>
 				<Fieldset.Content
+				    colorPalette="green"
 					alignItems="center"
 					display="inline-flex"
 					flexDirection="row"
@@ -137,6 +143,11 @@ const OnBoardingFormTwo: React.FC<OnBoardingFormTwoProps> = ({
 					disabled={otp.length !== 4}
 					aria-disabled={otp.length !== 4}
 					width={{ base: "100%", lg: "75%" }}
+					color="onPrimary"
+					bgColor="primary"
+					_hover={{ bgColor: "primary/85" }}
+					_disabled={{ bgColor: "onSurface/12", color: "onSurface/38" }}
+					focusRingColor="secondary"
 				>
 					Continue
 				</Button>

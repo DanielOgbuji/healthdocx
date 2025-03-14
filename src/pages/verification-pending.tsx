@@ -21,7 +21,7 @@ const VerificationPending: React.FC<VerificationPendingProps> = ({
 		<Stack gap="6" alignItems="center">
 			<Stack gap="10" textAlign="center" alignItems="center">
 				<Image src={pendingImage} maxW={{ base: "xs", lg: "sm" }} alt="" />
-				<Text fontSize={{ base: "3xl", lg: "3xl" }} fontWeight="medium" lineHeight="shorter">
+				<Text fontSize={{ base: "3xl", lg: "3xl" }} fontWeight="medium" lineHeight="shorter" color="onBackground">
 					{legendText}
 				</Text>
 			</Stack>
