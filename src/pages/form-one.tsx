@@ -3,6 +3,7 @@ import { useColorMode } from "@/components/ui/color-mode";
 import { debounce } from "lodash";
 import {
 	Button,
+	Box,
 	Group,
 	Field,
 	Fieldset,
@@ -28,6 +29,7 @@ import { InfoTip } from "@/components/ui/toggle-tip";
 import { InputGroup } from "@/components/ui/input-group";
 import Logo from "@/assets/Off-Jeay.svg";
 import LogoDark from "@/assets/Off-Jeay-Dark.svg";
+import * as motion from "motion/react-client";
 
 // Constants
 const ROLE_OPTIONS = [
@@ -260,10 +262,12 @@ const OnBoardingFormOne: React.FC<OnBoardingFormOneProps> = ({
 							}
 						/>
 					</Fieldset.Legend>
-					<Fieldset.HelperText textAlign="center">{helperText}</Fieldset.HelperText>
+					<Fieldset.HelperText textAlign="center">
+						{helperText}
+					</Fieldset.HelperText>
 				</Stack>
 
-				<Fieldset.Content>
+				<Fieldset.Content colorPalette="green">
 					<Field.Root {...getFieldErrorProps("name")}>
 						<Field.Label htmlFor="name">
 							Full Name
@@ -272,7 +276,7 @@ const OnBoardingFormOne: React.FC<OnBoardingFormOneProps> = ({
 						<InputGroup
 							flex="1"
 							startElement={
-								<span className="material-symbols-outlined">person</span>
+								<Box className="material-symbols-outlined">person</Box>
 							}
 							width="100%"
 						>
@@ -303,12 +307,12 @@ const OnBoardingFormOne: React.FC<OnBoardingFormOneProps> = ({
 						<InputGroup
 							flex="1"
 							startElement={
-								<span
+								<Box
 									className="material-symbols-outlined"
 									style={{ fontSize: "22px" }}
 								>
 									mail
-								</span>
+								</Box>
 							}
 							width="100%"
 						>
@@ -388,7 +392,7 @@ const OnBoardingFormOne: React.FC<OnBoardingFormOneProps> = ({
 							<InputGroup
 								flex="1"
 								startElement={
-									<span
+									<Box
 										className="material-symbols-outlined"
 										style={{
 											fontSize: "22px",
@@ -396,7 +400,7 @@ const OnBoardingFormOne: React.FC<OnBoardingFormOneProps> = ({
 										}}
 									>
 										password
-									</span>
+									</Box>
 								}
 								width="100%"
 							>
@@ -439,6 +443,17 @@ const OnBoardingFormOne: React.FC<OnBoardingFormOneProps> = ({
 					aria-disabled={!formik.isValid || formik.isSubmitting}
 				>
 					Get Started
+					<Box className="material-symbols-outlined" fontSize="lg">
+						{!formik.isSubmitting && formik.isValid && (
+							<motion.div
+								initial={{ transform: "translateX(0px)" }}
+								animate={{ transform: ["translateX(10px)", "translate(0px)", "translateX(10px)"] }}
+								transition={{ ease: "easeInOut", duration: 1, repeat: Infinity }}
+							>
+								arrow_forward
+							</motion.div>
+						)}
+					</Box>
 				</Button>
 			</Fieldset.Root>
 		</form>
