@@ -5,7 +5,7 @@ const config = defineConfig({
 		tokens: {
 			colors: {
 				white: { value: "#FFFFFF" },
-                black: { value: "#000000" },
+				black: { value: "#000000" },
 				primary: {
 					10: { value: "#00210B" },
 					20: { value: "#003918" },
@@ -89,87 +89,117 @@ const config = defineConfig({
 				body: { value: "Inter, system-ui, sans-serif" },
 			},
 		},
-    semanticTokens: {
-      colors: {
-        primary: {
-          value: { base: "{colors.primary.40}", _dark: "{colors.primary.80}" },
-        },
-        onPrimary: {
-          value: { base: "{colors.white}", _dark: "{colors.primary.20}" }
-        },
-        primaryContainer: {
-          value: { base: "{colors.primary.90}", _dark: "{colors.primary.30}" }
-        },
-        onPrimaryContainer: {
-          value: { base: "{colors.primary.10}", _dark: "{colors.primary.90}" }
-        },
+		semanticTokens: {
+			colors: {
+				primary: {
+					value: { base: "{colors.primary.40}", _dark: "{colors.primary.80}" },
+				},
+				onPrimary: {
+					value: { base: "{colors.white}", _dark: "{colors.primary.20}" },
+				},
+				primaryContainer: {
+					value: { base: "{colors.primary.90}", _dark: "{colors.primary.30}" },
+				},
+				onPrimaryContainer: {
+					value: { base: "{colors.primary.10}", _dark: "{colors.primary.90}" },
+				},
 
-		secondary: {
-		  value: { base: "{colors.secondary.40}", _dark: "{colors.secondary.80}" }
-		},
-		onSecondary: {
-		  value: { base: "{colors.white}", _dark: "{colors.secondary.20}" }
-		},
-		secondaryContainer: {
-		  value: { base: "{colors.secondary.90}", _dark: "{colors.secondary.30}" }
-	    },
-		onSecondaryContainer: {
-		  value: { base: "{colors.secondary.10}", _dark: "{colors.secondary.90}" }
-		},
+				secondary: {
+					value: {
+						base: "{colors.secondary.40}",
+						_dark: "{colors.secondary.80}",
+					},
+				},
+				onSecondary: {
+					value: { base: "{colors.white}", _dark: "{colors.secondary.20}" },
+				},
+				secondaryContainer: {
+					value: {
+						base: "{colors.secondary.90}",
+						_dark: "{colors.secondary.30}",
+					},
+				},
+				onSecondaryContainer: {
+					value: {
+						base: "{colors.secondary.10}",
+						_dark: "{colors.secondary.90}",
+					},
+				},
 
-		tertiary: {
-		  value: { base: "{colors.tertiary.40}", _dark: "{colors.tertiary.80}" }
-		},
-		onTertiary: {
-		  value: { base: "{colors.white}", _dark: "{colors.tertiary.20}" }
-		},
-		tertiaryContainer: {
-		  value: { base: "{colors.tertiary.90}", _dark: "{colors.tertiary.30}" }
-		},
-		onTertiaryContainer: {
-		  value: { base: "{colors.tertiary.10}", _dark: "{colors.tertiary.90}" }
-		},
+				tertiary: {
+					value: {
+						base: "{colors.tertiary.40}",
+						_dark: "{colors.tertiary.80}",
+					},
+				},
+				onTertiary: {
+					value: { base: "{colors.white}", _dark: "{colors.tertiary.20}" },
+				},
+				tertiaryContainer: {
+					value: {
+						base: "{colors.tertiary.90}",
+						_dark: "{colors.tertiary.30}",
+					},
+				},
+				onTertiaryContainer: {
+					value: {
+						base: "{colors.tertiary.10}",
+						_dark: "{colors.tertiary.90}",
+					},
+				},
 
-		error: {
-		  value: { base: "{colors.error.40}", _dark: "{colors.error.80}" }
-		},
-		onError: {
-		  value: { base: "{colors.white}", _dark: "{colors.error.20}" }
-		},
-	    errorContainer: {
-		  value: { base: "{colors.error.90}", _dark: "{colors.error.30}" }
-		},
-		onErrorContainer: {
-		  value: { base: "{colors.error.10}", _dark: "{colors.error.90}" }
-		},
+				error: {
+					value: { base: "{colors.error.40}", _dark: "{colors.error.80}" },
+				},
+				onError: {
+					value: { base: "{colors.white}", _dark: "{colors.error.20}" },
+				},
+				errorContainer: {
+					value: { base: "{colors.error.90}", _dark: "{colors.error.30}" },
+				},
+				onErrorContainer: {
+					value: { base: "{colors.error.10}", _dark: "{colors.error.90}" },
+				},
 
-		background: {
-		  value: { base: "{colors.neutral.99}", _dark: "{colors.neutral.10}" }
-		},
-		onBackground: {
-		  value: { base: "{colors.neutral.10}", _dark: "{colors.neutral.90}" }
-		},
-		surface: {
-		  value: { base: "{colors.neutral.99}", _dark: "{colors.neutral.10}" }
-		},
-	    onSurface: {
-		  value: { base: "{colors.neutral.10}", _dark: "{colors.neutral.90}" }
-		},
+				background: {
+					value: { base: "{colors.neutral.99}", _dark: "{colors.neutral.10}" },
+				},
+				onBackground: {
+					value: { base: "{colors.neutral.10}", _dark: "{colors.neutral.90}" },
+				},
+				surface: {
+					value: { base: "{colors.neutral.99}", _dark: "{colors.neutral.10}" },
+				},
+				onSurface: {
+					value: { base: "{colors.neutral.10}", _dark: "{colors.neutral.90}" },
+				},
 
-		surfaceVariant: {
-		  value: { base: "{colors.neutralVariant.90}", _dark: "{colors.neutralVariant.30}" }
+				surfaceVariant: {
+					value: {
+						base: "{colors.neutralVariant.90}",
+						_dark: "{colors.neutralVariant.30}",
+					},
+				},
+				onSurfaceVariant: {
+					value: {
+						base: "{colors.neutralVariant.30}",
+						_dark: "{colors.neutralVariant.80}",
+					},
+				},
+				outline: {
+					value: {
+						base: "{colors.neutralVariant.50}",
+						_dark: "{colors.neutralVariant.60}",
+					},
+				},
+				outlineVariant: {
+					value: {
+						base: "{colors.neutralVariant.80}",
+						_dark: "{colors.neutralVariant.30}",
+					},
+				},
+			},
 		},
-		onSurfaceVariant: {
-		  value: { base: "{colors.neutralVariant.30}", _dark: "{colors.neutralVariant.80}" }
-		},
-		outline: {
-		  value: { base: "{colors.neutralVariant.50}", _dark: "{colors.neutralVariant.60}" }
-		},
-		outlineVariant: {
-		  value: { base: "{colors.neutralVariant.80}", _dark: "{colors.neutralVariant.30}" }
-		},
-      }
-    },
 	},
 });
 

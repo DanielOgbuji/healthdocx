@@ -1,4 +1,5 @@
 import React, { useState, useCallback, useEffect, useMemo } from "react";
+import { useColorMode } from "@/components/ui/color-mode";
 import { debounce } from "lodash";
 import {
 	Button,
@@ -26,6 +27,7 @@ import {
 import { InfoTip } from "@/components/ui/toggle-tip";
 import { InputGroup } from "@/components/ui/input-group";
 import Logo from "@/assets/Off-Jeay.svg";
+import LogoDark from "@/assets/Off-Jeay-Dark.svg";
 
 // Constants
 const ROLE_OPTIONS = [
@@ -96,6 +98,7 @@ const OnBoardingFormOne: React.FC<OnBoardingFormOneProps> = ({
 	helperText,
 	onSuccess,
 }) => {
+	const { colorMode } = useColorMode(); // Get current color mode
 	const dispatch = useDispatch();
 	const [passwordStrength, setPasswordStrength] = useState(0);
 
@@ -227,7 +230,7 @@ const OnBoardingFormOne: React.FC<OnBoardingFormOneProps> = ({
 			<Fieldset.Root size="lg" maxW="lg">
 				<Stack alignItems="center" role="banner">
 					<Image
-						src={Logo}
+						src={colorMode === "dark" ? LogoDark : Logo}
 						mb="12px"
 						width="48px"
 						height="48px"
@@ -428,6 +431,7 @@ const OnBoardingFormOne: React.FC<OnBoardingFormOneProps> = ({
 					variant="solid"
 					bgColor="primary"
 					color="onPrimary"
+					fontWeight="bold"
 					_hover={{ bgColor: "primary/85" }}
 					_disabled={{ bgColor: "onSurface/12", color: "onSurface/38" }}
 					focusRingColor="secondary"

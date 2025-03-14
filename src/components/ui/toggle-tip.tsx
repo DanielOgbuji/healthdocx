@@ -1,5 +1,6 @@
 import { Popover as ChakraPopover, IconButton, Portal } from "@chakra-ui/react";
 import * as React from "react";
+import * as motion from "motion/react-client";
 
 export interface ToggleTipProps extends ChakraPopover.RootProps {
 	showArrow?: boolean;
@@ -74,7 +75,13 @@ export const InfoTip = React.forwardRef<
 				fontSize="md"
 				size="xs"
 			>
-				security
+				<motion.div
+					initial={{ rotateY: '0deg' }}
+					animate={{ rotateY: '360deg' }}
+					transition={{ duration: 1, repeat: 3 }}
+				>
+					security
+				</motion.div>
 			</IconButton>
 		</ToggleTip>
 	);
