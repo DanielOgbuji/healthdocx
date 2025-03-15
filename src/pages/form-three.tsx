@@ -2,6 +2,7 @@ import React, { useState, useMemo, useEffect, useCallback } from "react";
 import { debounce } from "lodash";
 import {
 	Button,
+	Box,
 	Group,
 	Field,
 	Fieldset,
@@ -25,6 +26,7 @@ import {
 import Logo from "@/assets/Off-Jeay.svg";
 import LogoDark from "@/assets/Off-Jeay-Dark.svg";
 import { useColorMode } from "@/components/ui/color-mode";
+import * as motion from "motion/react-client";
 
 // Constants
 const INSTITUTION_TYPE_OPTIONS = [
@@ -217,8 +219,8 @@ const OnBoardingFormThree: React.FC<OnBoardingFormThreeProps> = ({
 								type="amenity"
 								lang="en"
 								limit={10}
-								filterByCountryCode={["auto"]}
-								biasByCountryCode={["auto"]}
+								filterByCountryCode={["ng"]}
+								biasByCountryCode={["ng"]}
 								addDetails
 								allowNonVerifiedHouseNumber
 								allowNonVerifiedStreet
@@ -328,11 +330,34 @@ const OnBoardingFormThree: React.FC<OnBoardingFormThreeProps> = ({
 					aria-disabled={!formik.isValid || formik.isSubmitting}
 					color="onPrimary"
 					bgColor="primary"
+					fontWeight="bold"
 					_hover={{ bgColor: "primary/85" }}
 					_disabled={{ bgColor: "onSurface/12", color: "onSurface/38" }}
 					focusRingColor="secondary"
 				>
 					Confirm
+					<Box className="material-symbols-outlined" fontSize="xl">
+						{!formik.isSubmitting && formik.isValid && (
+							<motion.div
+								initial={{ transform: "translateX(0px)" }}
+								animate={{
+									rotate: 360,
+									transform: [
+										"translateX(10px)",
+										"translate(0px)",
+										"translateX(10px)",
+									],
+								}}
+								transition={{
+									ease: "easeInOut",
+									duration: 1,
+									repeat: Infinity,
+								}}
+							>
+								send
+							</motion.div>
+						)}
+					</Box>
 				</Button>
 			</Fieldset.Root>
 		</form>

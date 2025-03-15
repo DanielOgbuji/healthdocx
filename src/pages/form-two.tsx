@@ -1,7 +1,15 @@
 "use client";
 
 import React, { useEffect, useState } from "react";
-import { Fieldset, Stack, Image, Text, Link, Button } from "@chakra-ui/react";
+import {
+	Fieldset,
+	Stack,
+	Image,
+	Text,
+	Link,
+	Button,
+	Box,
+} from "@chakra-ui/react";
 import { PinInput, PinInputField } from "@chakra-ui/pin-input";
 import { useDispatch } from "react-redux";
 import { updateFormTwo } from "@/store/onboardingSlice";
@@ -26,7 +34,7 @@ const OnBoardingFormTwo: React.FC<OnBoardingFormTwoProps> = ({
 	userEmail,
 	onSuccess,
 }) => {
-	const { colorMode } = useColorMode();//Get current color mode
+	const { colorMode } = useColorMode(); //Get current color mode
 	const dispatch = useDispatch();
 	const [otp, setOtp] = useState("");
 	const [error, setError] = useState("");
@@ -78,11 +86,14 @@ const OnBoardingFormTwo: React.FC<OnBoardingFormTwoProps> = ({
 						{legendText}
 					</Fieldset.Legend>
 					<Fieldset.HelperText textAlign="center">
-						{helperText} <b>{userEmail}</b>
+						{helperText}{" "}
+						<Box as="span" color="primary" fontWeight="bold">
+							{userEmail}
+						</Box>
 					</Fieldset.HelperText>
 				</Stack>
 				<Fieldset.Content
-				    colorPalette="green"
+					colorPalette="green"
 					alignItems="center"
 					display="inline-flex"
 					flexDirection="row"
@@ -123,6 +134,7 @@ const OnBoardingFormTwo: React.FC<OnBoardingFormTwoProps> = ({
 							type="button"
 							variant="plain"
 							height="fit-content"
+							colorPalette="green"
 							p="0"
 							onClick={() =>
 								toaster.create({
@@ -144,6 +156,7 @@ const OnBoardingFormTwo: React.FC<OnBoardingFormTwoProps> = ({
 					aria-disabled={otp.length !== 4}
 					width={{ base: "100%", lg: "75%" }}
 					color="onPrimary"
+					fontWeight="bold"
 					bgColor="primary"
 					_hover={{ bgColor: "primary/85" }}
 					_disabled={{ bgColor: "onSurface/12", color: "onSurface/38" }}

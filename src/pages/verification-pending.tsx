@@ -8,7 +8,9 @@ import {
 	Box,
 } from "@chakra-ui/react";
 import React from "react";
-import pendingImage from "@/assets/oc-time-flies.svg";
+import { useColorMode } from "@/components/ui/color-mode";
+import pendingImage from "@/assets/time-flies-light.svg";
+import pendingImageDark from "@/assets/time-flies-dark.svg";
 
 interface VerificationPendingProps {
 	legendText: string;
@@ -17,10 +19,11 @@ interface VerificationPendingProps {
 const VerificationPending: React.FC<VerificationPendingProps> = ({
 	legendText,
 }) => {
+	const { colorMode } = useColorMode();
 	return (
 		<Stack gap="6" alignItems="center">
 			<Stack gap="10" textAlign="center" alignItems="center">
-				<Image src={pendingImage} maxW={{ base: "xs", lg: "sm" }} alt="" />
+				<Image src={colorMode === "dark" ? pendingImageDark : pendingImage} maxW={{ base: "xs", lg: "sm" }} alt="" />
 				<Text fontSize={{ base: "3xl", lg: "3xl" }} fontWeight="medium" lineHeight="shorter" color="onBackground">
 					{legendText}
 				</Text>
@@ -42,7 +45,7 @@ const VerificationPending: React.FC<VerificationPendingProps> = ({
 				<List.Root ps="7" fontSize="15px">
 					<List.Item>
 						Verification typically takes{" "}
-						<Box as="span" fontWeight="bold">
+						<Box as="span" fontWeight="bold" color="primary">
 							24-48 hours.
 						</Box>
 					</List.Item>
@@ -53,7 +56,7 @@ const VerificationPending: React.FC<VerificationPendingProps> = ({
 						After approval, you can log into your workspace.
 					</List.Item>
 				</List.Root>
-				<Blockquote.Root bg="bg.muted" p="2" pl="3">
+				<Blockquote.Root borderColor="primary" borderLeftWidth="2px" bgColor="primary/5" p="2" pl="3" variant="solid">
 					<Blockquote.Content>
 						<Text fontSize="sm">
 							<Box as="span" fontStyle="italic">

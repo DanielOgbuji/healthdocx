@@ -115,6 +115,11 @@ h1 {
 	border-radius: 4px;
 }
 
+.geoapify-autocomplete-input:focus-visible {
+	outline: 1px solid #16a34a;
+	border-color: #16a34a;
+}
+
 .geoapify-close-button {
 	z-index: 99;
 	background-color: #242424;

@@ -115,8 +115,8 @@ const OnBoardingSteps = () => {
 						justifyContent="center"
 					>
 						<VStack>
-							<Spinner borderWidth="4px" />
-							<Text>Loading...</Text>
+							<Spinner borderWidth="4px" color="primary" />
+							<Text color="primary">Loading...</Text>
 						</VStack>
 					</Stack>
 				}
