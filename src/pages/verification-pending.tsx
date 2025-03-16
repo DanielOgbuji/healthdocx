@@ -9,8 +9,8 @@ import {
 } from "@chakra-ui/react";
 import React from "react";
 import { useColorMode } from "@/components/ui/color-mode";
-import pendingImage from "@/assets/time-flies-light.svg";
-import pendingImageDark from "@/assets/time-flies-dark.svg";
+import pendingImage from "@/assets/animate.svg";
+import pendingImageDark from "@/assets/animate-dark.svg";
 
 interface VerificationPendingProps {
 	legendText: string;
@@ -56,7 +56,7 @@ const VerificationPending: React.FC<VerificationPendingProps> = ({
 						After approval, you can log into your workspace.
 					</List.Item>
 				</List.Root>
-				<Blockquote.Root borderColor="primary" borderLeftWidth="2px" bgColor="primary/5" p="2" pl="3" variant="solid">
+				<Blockquote.Root borderColor="primary" borderLeftWidth="2px" bgColor="primary/5" p="2" pl="3" variant="solid" borderRightRadius="lg">
 					<Blockquote.Content>
 						<Text fontSize="sm">
 							<Box as="span" fontStyle="italic">

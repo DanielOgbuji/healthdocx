@@ -103,7 +103,7 @@ const ContactPage = () => {
 							alignItems="center"
 							gap="2"
 						>
-							Walk in <Badge>Lagos</Badge>
+							Walk in <Badge colorPalette="green">Lagos</Badge>
 						</Text>
 						<Text textStyle="sm" color="bg.inverted/32">
 							Visit our office Mon - Sat • 9:00AM - 5:00PM.

@@ -1,6 +1,7 @@
 import React from "react";
 import {
 	Button,
+	Box,
 	Group,
 	Field,
 	Fieldset,
@@ -95,13 +96,14 @@ const ContactForm: React.FC<ContactFormProps> = ({
 					textDecoration="none"
 					display={{ base: "flex", md: "none" }}
 				>
-					<Button variant="ghost"	padding="0">
-						<span
-						   className="material-symbols-outlined" 
-						   style={{ fontSize : '48px', color : 'green'}}
+					<Button variant="ghost" padding="0">
+						<Box
+							className="material-symbols-outlined"
+							fontSize= "48px"
+							color= "primary"
 						>
-						      arrow_circle_left
-						</span>
+							arrow_circle_left
+						</Box>
 					</Button>
 				</Link>
 				<Stack role="banner">
@@ -251,19 +253,16 @@ const ContactForm: React.FC<ContactFormProps> = ({
 						textDecoration="none"
 						display={{ base: "none", md: "flex" }}
 					>
-						<Button 
-						    variant="outline"
+						<Button
+							variant="outline"
 							color="onBackground"
 							bgColor="background/10"
-							_hover={{bgColor : "background/50"}}
+							_hover={{ bgColor: "background/50" }}
 							focusRingColor="surfaceVariant"
-							>
-							<span
-							   className="material-symbols-outlined"
-							   style={{color : "green"}}
-							   >
+						>
+							<Box className="material-symbols-outlined" color="primary">
 								arrow_circle_left
-							</span>
+							</Box>
 							Go back
 						</Button>
 					</Link>
@@ -274,10 +273,10 @@ const ContactForm: React.FC<ContactFormProps> = ({
 						disabled={!formik.isValid || formik.isSubmitting}
 						aria-disabled={!formik.isValid || formik.isSubmitting}
 						color="onPrimary"
-					    bgColor="primary"
-					    _hover={{ bgColor: "primary/85" }}
-					    _disabled={{ bgColor: "onSurface/12", color: "onSurface/38" }}
-					    focusRingColor="secondary"
+						bgColor="primary"
+						_hover={{ bgColor: "primary/85" }}
+						_disabled={{ bgColor: "onSurface/12", color: "onSurface/38" }}
+						focusRingColor="secondary"
 					>
 						Send message
 					</Button>
