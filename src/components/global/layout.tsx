@@ -17,7 +17,7 @@ const Layout = ({ children }: LayoutProps) => {
 			display={{ base: "none", lg: "flex" }}
 			bgImage={{ base: "url(../src/assets/jeay-backdrop.svg)", _dark: "url(../src/assets/jeay-backdrop-dark.svg)" }}
 			bgRepeat="no-repeat"
-			bgPos="-60% 490px"
+			bgPos="60% 480px"
 			bgSize="120%"
 		>
 			{children}
