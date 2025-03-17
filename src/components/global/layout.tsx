@@ -14,10 +14,15 @@ const Layout = ({ children }: LayoutProps) => {
 			rounded="lg"
 			bgColor="surface"
 			justify="space-between"
-			hideBelow="lg"
+			display={{ base: "none", lg: "flex" }}
+			bgImage={{ base: "url(../src/assets/jeay-backdrop.svg)", _dark: "url(../src/assets/jeay-backdrop-dark.svg)" }}
+			bgRepeat="no-repeat"
+			bgPos="-25% 490px"
+			bgSize="120%"
+			bgBlendMode="multiply"
 		>
-            {children}
-        </Flex>
+			{children}
+		</Flex>
 	);
 };
 
