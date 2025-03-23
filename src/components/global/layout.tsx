@@ -1,5 +1,7 @@
 import { Flex } from "@chakra-ui/react";
 import { ReactNode } from "react";
+import jeayBackdrop from "@/assets/jeay-backdrop.svg";
+import jeayBackdropDark from "@/assets/jeay-backdrop-dark.svg";
 
 interface LayoutProps {
     children: ReactNode;
@@ -14,8 +16,10 @@ const Layout = ({ children }: LayoutProps) => {
 			rounded="lg"
 			bgColor="surface"
 			justify="space-between"
-			display={{ base: "none", lg: "flex" }}
-			bgImage={{ base: "url(../src/assets/jeay-backdrop.svg)", _dark: "url(../src/assets/jeay-backdrop-dark.svg)" }}
+			bgImage={{
+				base: `url("${jeayBackdrop}")`,
+				_dark: `url("${jeayBackdropDark}")`,
+			}}
 			bgRepeat="no-repeat"
 			bgPos="60% 480px"
 			bgSize="120%"

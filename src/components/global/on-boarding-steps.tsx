@@ -59,7 +59,7 @@ const OnBoardingSteps = () => {
 			gap="12px"
 		>
 			<Layout>
-				<StepsList minHeight="400px" pointerEvents="none">
+				<StepsList minHeight="400px" pointerEvents="none" inert>
 					<StepsItem
 						index={0}
 						icon={<span className="material-symbols-outlined">person</span>}
@@ -100,7 +100,7 @@ const OnBoardingSteps = () => {
 				</StepsList>
 				<Text textStyle="sm" textAlign="center">
 					Already have an account?{" "}
-					<Link href="#" ml="1">
+					<Link href="#" ml="1" color="onSurface">
 						Log in
 					</Link>
 				</Text>
