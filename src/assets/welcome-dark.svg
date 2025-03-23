@@ -1,0 +1,105 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="394" height="373" viewBox="0 0 394 373" fill="none">
+  <style>
+    /* Handshake: slight rotation back and forth */
+    .handshake {
+      transform-origin: center;
+      animation: shake 2s infinite alternate ease-in-out;
+    }
+    @keyframes shake {
+      from { transform: rotate(-3deg); }
+      to   { transform: rotate(3deg); }
+    }
+    /* Mail icon: gentle pulse */
+    .mail {
+      transform-origin: center;
+      animation: pulse 2s infinite ease-in-out;
+    }
+    @keyframes pulse {
+      0%, 100% { transform: scale(1); }
+      50%      { transform: scale(0.9); }
+    }
+    /* Chat bubble: bounce effect */
+    .chat {
+      transform-origin: bottom center;
+      animation: bounce 1.5s infinite ease;
+    }.chatter {
+      transform-origin: bottom center;
+      animation: mounce 2s infinite ease-in-out;
+    }
+    @keyframes bounce {
+      0%, 100% { transform: translateY(0); }
+      50%      { transform: translateY(-10px); }
+    }@keyframes mounce {
+      0%, 100% { transform: translateY(0); }
+      50%      { transform: translateY(5px); }
+    }
+    /* Paper with scribbles: drawing effect */
+    .paper path {
+      stroke-dasharray: 1000;
+      stroke-dashoffset: 1000;
+      animation: draw 3s forwards ease-in-out;
+    }
+    @keyframes draw {
+      to { stroke-dashoffset: 0; }
+    }
+  </style>
+  
+  <defs>
+    <clipPath id="clip0_35_39">
+      <rect width="394" height="373" fill="white"/>
+    </clipPath>
+  </defs>
+  
+  <g clip-path="url(#clip0_35_39)">
+    <!-- Handshake icon -->
+    <g class="handshake paper">
+      <path d="M185.434 338.309C190.655 339.523 205.468 340.349 208.382 331.023" stroke="#66DE88" stroke-width="5" stroke-linecap="round"/>
+      <path d="M193.078 317.906C201.82 326.284 215.662 339.762 222.947 328.834L227.319 321.549" stroke="#66DE88" stroke-width="5" stroke-linecap="round"/>
+      <path d="M193.078 295.324C203.035 304.795 233.584 327.525 246.989 319.365C249.417 317.787 254.347 312.736 254.638 305.159" stroke="#66DE88" stroke-width="5" stroke-linecap="round"/>
+      <path d="M217.125 282.575C229.388 292.168 256.465 309.312 266.664 301.153C276.864 292.993 266.3 281.726 259.743 277.112L215.668 241.414" stroke="#66DE88" stroke-width="5" stroke-linecap="round"/>
+      <path d="M90.3672 247.973C95.8312 250.843 101.859 258.286 103.845 265.093C106.395 273.835 113.559 281.363 116.594 283.67" stroke="#66DE88" stroke-width="5" stroke-linecap="round"/>
+      <path d="M199.645 199.158C192.36 196.243 171.962 190.343 155.934 192.965C139.907 195.588 141.364 190.415 133.714 186.044L90.3672 159.453" stroke="#66DE88" stroke-width="5" stroke-linecap="round"/>
+      <path d="M257.93 196.976L273.957 188.598M272.136 291.319C278.838 289.571 289.985 279.663 294.72 274.928L313.297 265.092" stroke="#66DE88" stroke-width="5" stroke-linecap="round"/>
+      <path d="M259.377 235.952C248.692 242.387 221.931 250.304 200.367 233.402" stroke="#66DE88" stroke-width="5" stroke-linecap="round"/>
+      <path d="M200.372 233.402C192.358 244.694 173.562 266.258 162.489 262.178C151.415 258.098 156.418 246.151 160.303 240.687C171.595 218.103 206.929 177.743 257.925 196.976" stroke="#66DE88" stroke-width="5" stroke-linecap="round"/>
+      <path d="M186.164 325.191C185.872 335.973 182.4 340.612 180.7 341.583C172.413 346.318 163.215 339.033 165.782 333.112C167.544 329.832 169.905 323.065 170.865 320.092C173.099 313.171 186.455 314.409 186.164 325.191Z" stroke="#66DE88" stroke-width="5" stroke-linecap="round"/>
+      <path d="M155.933 335.394C143.694 338.017 143.548 325.559 149.012 319.366C150.763 317.382 155.132 313.304 160.668 308.803C166.205 304.301 169.775 308.141 170.868 310.624C172.311 313.903 168.172 332.771 155.933 335.394Z" stroke="#66DE88" stroke-width="5" stroke-linecap="round"/>
+      <path d="M135.533 320.82C122.129 320.528 122.784 308.799 128.248 303.699C132.498 299.207 143.328 290.877 152.654 293.5C161.979 296.123 159.939 304.792 157.753 309.163C155.932 313.17 148.938 321.111 135.533 320.82Z" stroke="#66DE88" stroke-width="5" stroke-linecap="round"/>
+      <path d="M139.901 280.389C125.622 276.893 113.552 285.489 109.303 290.224C106.389 294.013 106.631 298.36 107.117 300.06C110.614 308.802 126.787 302.488 134.437 298.238C142.208 293.746 154.18 283.886 139.901 280.389Z" stroke="#66DE88" stroke-width="5" stroke-linecap="round"/>
+    <path d="M334.962 148.562L297.078 177.339C248.996 214.129 295.985 255.412 313.47 264.762L369.202 229.064" stroke="#66DE88" stroke-width="5" stroke-linecap="round"/></g>
+    
+    <!-- Paper with scribbles -->
+    <g class="paper chatter">
+      <!-- Scribble strokes on paper -->
+      <path d="M159.574 149.254C161.76 154.111 165.475 166.083 162.853 175.116" stroke="#B4F1BD" stroke-width="5" stroke-linecap="round"/>
+      <path d="M173.051 158.363C173.658 161.035 174.872 167.47 174.872 171.841" stroke="#B4F1BD" stroke-width="5" stroke-linecap="round"/>
+      <path d="M218.578 132.496L226.956 162.001" stroke="#B4F1BD" stroke-width="5" stroke-linecap="round"/>
+      <path d="M242.269 145.613L239.719 163.098" stroke="#B4F1BD" stroke-width="5" stroke-linecap="round"/>
+      <path d="M264.847 158.363L252.098 168.198" stroke="#B4F1BD" stroke-width="5" stroke-linecap="round"/>
+      <!-- Paper outline and scribbled line -->
+      
+      <path d="M173.707 55.4562C179.171 54.7276 190.9 50.5751 194.106 39.793" stroke="#FFFFFF" stroke-width="5" stroke-linecap="round"/>
+      <path d="M155.863 46.71C159.506 46.8314 167.884 45.0344 172.255 36.875" stroke="#FFFFFF" stroke-width="5" stroke-linecap="round"/>
+      <path d="M139.461 33.5945C145.289 32.3841 157.965 28.6144 162.045 23.2188" stroke="#FFFFFF" stroke-width="5" stroke-linecap="round"/>
+      <path d="M192.055 73.7976C155.809 81.799 122.009 46.1382 108.221 25.3526C107.505 24.2735 108.026 22.8256 109.254 22.4139L165.932 3.40613C166.67 3.15847 167.481 3.36205 168.029 3.91595C186.811 22.9128 220.997 31.5596 240.044 34.1593C241.866 34.408 242.509 36.7923 241.029 37.8839L192.798 73.4588C192.578 73.6215 192.322 73.7385 192.055 73.7976Z" stroke="#FFFFFF" stroke-width="5" stroke-linecap="round"/>
+    </g>
+    
+    <!-- Mail icon -->
+    <g class="mail paper">
+      <path d="M23.5685 190.413C23.5685 196.373 18.7367 201.205 12.7764 201.205C6.8161 201.205 1.98431 196.373 1.98431 190.413C1.98431 184.453 6.8161 179.621 12.7764 179.621C18.7367 179.621 23.5685 184.453 23.5685 190.413Z" fill="#B4F1BD" stroke="#FFFFFF"/>
+      <path d="M31.3351 191.386C50.4379 189.419 80.4122 191.745 83.9549 206.521C87.4976 221.298 73.9694 226.702 66.7624 227.557C39.3238 231.918 2.94141 229.866 2.94141 206.521" stroke="#FFFFFF" stroke-width="5" stroke-linecap="round"/>
+      <path d="M24.4326 214.042C25.8133 214.042 26.9326 212.923 26.9326 211.542C26.9326 210.161 25.8133 209.042 24.4326 209.042C23.0519 209.042 21.9326 210.161 21.9326 211.542C21.9326 212.923 23.0519 214.042 24.4326 214.042Z" stroke="#FFFFFF" stroke-width="3.01373"/>
+      <path d="M61.5811 214.042C62.9618 214.042 64.0811 212.923 64.0811 211.542C64.0811 210.161 62.9618 209.042 61.5811 209.042C60.2004 209.042 59.0811 210.161 59.0811 211.542C59.0811 212.923 60.2004 214.042 61.5811 214.042Z" stroke="#FFFFFF" stroke-width="3.01373"/>
+      <path d="M43.5811 214.042C44.9618 214.042 46.0811 212.923 46.0811 211.542C46.0811 210.161 44.9618 209.042 43.5811 209.042C42.2004 209.042 41.0811 210.161 41.0811 211.542C41.0811 212.923 42.2004 214.042 43.5811 214.042Z" stroke="#FFFFFF" stroke-width="3.01373"/>
+    </g>
+    
+    <!-- Chat bubble icon -->
+    <g class="chat paper">
+      <path d="M339.748 326.649C339.748 332.207 335.243 336.712 329.685 336.712C324.127 336.712 319.621 332.207 319.621 326.649C319.621 321.091 324.127 316.586 329.685 316.586C335.243 316.586 339.748 321.091 339.748 326.649Z" fill="#B4F1BD" stroke="#FFFFFF"/>
+      <path d="M346.862 319.004C353.268 319.004 371.574 319.004 380.184 319.004C387.159 319.004 390.517 320.547 390.517 331.346C390.517 341.84 390.431 355.431 390.517 360.917C390.577 364.774 388.657 369.042 382.251 369.66C375.844 370.277 350.133 369.917 338.079 369.66C333.601 369.66 325.679 367.121 325.68 356.803V345.232" stroke="#FFFFFF" stroke-width="5" stroke-linecap="round"/>
+      <path d="M342.43 337.215L358.457 348.143" stroke="#FFFFFF" stroke-width="5" stroke-linecap="round"/>
+      <path d="M358.457 348.143L387.598 321.188" stroke="#FFFFFF" stroke-width="5" stroke-linecap="round"/>
+      <path d="M336.598 357.609L348.347 341.582M365.84 341.582L381.766 357.609" stroke="#FFFFFF" stroke-width="5" stroke-linecap="round"/>
+    </g>
+  </g>
+</svg>
