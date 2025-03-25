@@ -1,5 +1,5 @@
 import { Stack, Text, Link, Box, Flex, Badge } from "@chakra-ui/react";
-import Layout from "../components/global/layout";
+import Layout from "../../components/global/layout";
 import ContactForm from "./contact-form";
 import Youtube from "@/assets/youtube.svg";
 import Instagram from "@/assets/instagram.svg";

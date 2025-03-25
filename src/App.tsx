@@ -4,7 +4,7 @@ import { Toaster } from "@/components/ui/toaster";
 import store from "./store/store";
 import "./App.css";
 import OnBoardingSteps from "@/components/global/on-boarding-steps";
-import ContactPage from "./pages/contact-page";
+import ContactPage from "./pages/onboarding/contact-page";
 
 function App() {
 	return (

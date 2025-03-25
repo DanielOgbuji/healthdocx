@@ -12,11 +12,11 @@ import { useSelector } from "react-redux";
 import { RootState } from "@/store/store";
 
 const lazySteps: { [key: number]: ReturnType<typeof lazy> } = {
-	0: lazy(() => import("../../pages/form-one")),
-	1: lazy(() => import("../../pages/form-two")),
-	2: lazy(() => import("../../pages/form-three")),
-	3: lazy(() => import("@/pages/verification-pending")),
-	4: lazy(() => import("../../pages/welcome")),
+	0: lazy(() => import("../../pages/onboarding/form-one")),
+	1: lazy(() => import("../../pages/onboarding/form-two")),
+	2: lazy(() => import("../../pages/onboarding/form-three")),
+	3: lazy(() => import("@/pages/onboarding/verification-pending")),
+	4: lazy(() => import("../../pages/onboarding/welcome")),
 };
 
 const OnBoardingSteps = () => {

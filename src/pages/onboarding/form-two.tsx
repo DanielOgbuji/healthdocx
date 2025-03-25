@@ -27,6 +27,8 @@ interface OnBoardingFormTwoProps {
 }
 
 const CORRECT_OTP = "1234";
+const RESEND_TIMER_INCREMENT = 15; // Increment time in seconds
+const INITIAL_RESEND_TIMER = 30; // Initial timer in seconds
 
 const OnBoardingFormTwo: React.FC<OnBoardingFormTwoProps> = ({
 	legendText,
@@ -34,10 +36,12 @@ const OnBoardingFormTwo: React.FC<OnBoardingFormTwoProps> = ({
 	userEmail,
 	onSuccess,
 }) => {
-	const { colorMode } = useColorMode(); //Get current color mode
+	const { colorMode } = useColorMode(); // Get current color mode
 	const dispatch = useDispatch();
 	const [otp, setOtp] = useState("");
 	const [error, setError] = useState("");
+	const [timer, setTimer] = useState(0);
+	const [resendTimer, setResendTimer] = useState(INITIAL_RESEND_TIMER);
 
 	// Reset error if any input is added
 	useEffect(() => {
@@ -45,6 +49,21 @@ const OnBoardingFormTwo: React.FC<OnBoardingFormTwoProps> = ({
 			setError("");
 		}
 	}, [otp, error]);
+
+	// Timer countdown logic
+	useEffect(() => {
+		let interval: NodeJS.Timeout | null = null;
+		if (timer > 0) {
+			interval = setInterval(() => {
+				setTimer((prev) => prev - 1);
+			}, 1000);
+		} else if (interval) {
+			clearInterval(interval);
+		}
+		return () => {
+			if (interval) clearInterval(interval);
+		};
+	}, [timer]);
 
 	const handleChange = (value: string) => {
 		setOtp(value);
@@ -61,6 +80,17 @@ const OnBoardingFormTwo: React.FC<OnBoardingFormTwoProps> = ({
 				setOtp(""); // Clear all inputs, letting PinInput handle focus reset
 			}
 		}
+	};
+
+	const handleResendCode = () => {
+		toaster.create({
+			duration: 3000,
+			title: "Code has been resent",
+			description: "Check your inbox or spam for code",
+			type: "success",
+		});
+		setTimer(resendTimer); // Reset the timer
+		setResendTimer((prev) => prev + RESEND_TIMER_INCREMENT); // Increment the resend timer
 	};
 
 	return (
@@ -136,16 +166,11 @@ const OnBoardingFormTwo: React.FC<OnBoardingFormTwoProps> = ({
 							height="fit-content"
 							colorPalette="green"
 							p="0"
-							onClick={() =>
-								toaster.create({
-									duration: 3000,
-									title: "Code has been resent",
-									description: "Check your inbox or spam for code",
-									type: "success",
-								})
-							}
+							onClick={handleResendCode}
+							disabled={timer > 0}
+							aria-disabled={timer > 0}
 						>
-							Click to resend
+							{timer > 0 ? `Resend in ${timer}s` : "Click to resend"}
 						</Button>
 					</Link>
 				</Text>
