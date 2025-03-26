@@ -11,6 +11,7 @@ const Layout = ({ children }: LayoutProps) => {
 	return (
 		<Flex
 			direction="column"
+			display={{ base: "none", lg: "flex" }}
 			p="48px"
 			pb="30px"
 			rounded="lg"

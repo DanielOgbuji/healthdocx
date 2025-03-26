@@ -1,22 +1,14 @@
 "use client";
 
 import React, { useEffect, useState } from "react";
-import {
-	Fieldset,
-	Stack,
-	Image,
-	Text,
-	Link,
-	Button,
-	Box,
-} from "@chakra-ui/react";
+import { Fieldset, Stack, Image, Text, Button, Box } from "@chakra-ui/react";
 import { PinInput, PinInputField } from "@chakra-ui/pin-input";
 import { useDispatch } from "react-redux";
 import { updateFormTwo } from "@/store/onboardingSlice";
 import { toaster } from "@/components/ui/toaster";
 import Logo from "@/assets/Off-Jeay.svg";
 import LogoDark from "@/assets/Off-Jeay-Dark.svg";
-
+import { useAnimate } from "motion/react";
 import { useColorMode } from "@/components/ui/color-mode";
 
 interface OnBoardingFormTwoProps {
@@ -42,6 +34,21 @@ const OnBoardingFormTwo: React.FC<OnBoardingFormTwoProps> = ({
 	const [error, setError] = useState("");
 	const [timer, setTimer] = useState(0);
 	const [resendTimer, setResendTimer] = useState(INITIAL_RESEND_TIMER);
+
+	// Use useAnimate hook
+	const [scope, animate] = useAnimate();
+
+	// Trigger shake animation when error occurs
+	useEffect(() => {
+		if (error) {
+			// Animate the scoped element
+			animate(
+				scope.current,
+				{ x: [0, -6, 6, -6, 6, 0] },
+				{ duration: 0.25, repeat: 2 }
+			);
+		}
+	}, [error, animate, scope]);
 
 	// Reset error if any input is added
 	useEffect(() => {
@@ -122,30 +129,42 @@ const OnBoardingFormTwo: React.FC<OnBoardingFormTwoProps> = ({
 						</Box>
 					</Fieldset.HelperText>
 				</Stack>
-				<Fieldset.Content
-					colorPalette="green"
-					alignItems="center"
-					display="inline-flex"
-					flexDirection="row"
-					justifyContent="center"
-					gap="2"
+				<div
+					ref={scope}
+					style={{
+						width: "fit-content",
+						height: "fit-content",
+						display: "flex",
+						alignItems: "center",
+						justifyContent: "center",
+						borderRadius: "10px",
+					}}
 				>
-					<PinInput value={otp} onChange={handleChange} autoFocus>
-						{Array.from({ length: 4 }).map((_, index) => (
-							<PinInputField
-								key={index}
-								width="4rem"
-								height="4rem"
-								textAlign="center"
-								borderWidth="1px"
-								borderColor={error ? "#f87171" : "inherit"}
-								borderRadius="4px"
-								bgColor="transparent"
-								fontSize="large"
-							/>
-						))}
-					</PinInput>
-				</Fieldset.Content>
+					<Fieldset.Content
+						colorPalette="green"
+						alignItems="center"
+						display="inline-flex"
+						flexDirection="row"
+						justifyContent="center"
+						gap="2"
+					>
+						<PinInput value={otp} onChange={handleChange} autoFocus>
+							{Array.from({ length: 4 }).map((_, index) => (
+								<PinInputField
+									key={index}
+									width="4rem"
+									height="4rem"
+									textAlign="center"
+									borderWidth="1px"
+									borderColor={error ? "#f87171" : "inherit"}
+									borderRadius="4px"
+									bgColor="transparent"
+									fontSize="large"
+								/>
+							))}
+						</PinInput>
+					</Fieldset.Content>
+				</div>
 				{error && (
 					<Text
 						color="fg.error"
@@ -157,22 +176,21 @@ const OnBoardingFormTwo: React.FC<OnBoardingFormTwoProps> = ({
 						{error}
 					</Text>
 				)}
-				<Text textStyle="sm" textAlign="center">
+				<Text textStyle="sm" textAlign="center" display="flex" alignItems="center" gap="1">
 					Didn&apos;t get a code?{" "}
-					<Link variant="underline" href="#" ml="1">
-						<Button
-							type="button"
-							variant="plain"
-							height="fit-content"
-							colorPalette="green"
-							p="0"
-							onClick={handleResendCode}
-							disabled={timer > 0}
-							aria-disabled={timer > 0}
-						>
-							{timer > 0 ? `Resend in ${timer}s` : "Click to resend"}
-						</Button>
-					</Link>
+					<Button
+						type="button"
+						variant="plain"
+						height="fit-content"
+						colorPalette="green"
+						p="0"
+						onClick={handleResendCode}
+						disabled={timer > 0}
+						aria-disabled={timer > 0}
+						textDecoration="underline"
+					>
+						{timer > 0 ? `Resend in ${timer}s` : "Click to resend"}
+					</Button>
 				</Text>
 				<Button
 					type="submit"
