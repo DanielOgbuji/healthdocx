@@ -26,6 +26,7 @@ const VerificationError: React.FC<VerificationErrorProps> = ({
 					fontSize={{ base: "3xl", lg: "3xl" }}
 					fontWeight="medium"
 					lineHeight="shorter"
+					color="onBackground"
 				>
 					{legendText}
 				</Text>
@@ -76,7 +77,15 @@ const VerificationError: React.FC<VerificationErrorProps> = ({
 				</Blockquote.Root>
 			</Stack>
 			<Link href="/" textDecoration="none" width={{ base: "95%", lg: "100%" }}>
-				<Button variant="solid" width="100%">
+				<Button type="submit"
+					variant="solid"
+					//width={{ base: "100%", lg: "75%" }}
+					color="onPrimary"
+					fontWeight="bold"
+					bgColor="primary"
+					_hover={{ bgColor: "primary/85" }}
+					_disabled={{ bgColor: "onSurface/12", color: "onSurface/38" }}
+					focusRingColor="secondary" width="100%">
 					Update and resubmit
 				</Button>
 			</Link>

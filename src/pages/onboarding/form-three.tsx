@@ -224,7 +224,7 @@ const OnBoardingFormThree: React.FC<OnBoardingFormThreeProps> = ({
 								addDetails
 								allowNonVerifiedHouseNumber
 								allowNonVerifiedStreet
-								debounceDelay={200}
+								debounceDelay={100}
 								placeSelect={(feature) => {
 									if (feature.properties) {
 										const { formatted, county } = feature.properties;
