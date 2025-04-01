@@ -96,6 +96,7 @@ const VerifyEmail: React.FC<VerifyEmailProps> = ({ onSuccess }) => {
 		<form
 			onSubmit={handleSubmit}
 			style={{ width: "100%", height: "100%", overflow: "hidden" }}
+			className="password-recovery"
 		>
 			<Box
 				w="100%"
@@ -105,7 +106,15 @@ const VerifyEmail: React.FC<VerifyEmailProps> = ({ onSuccess }) => {
 				justifyContent="center"
 				alignItems="center"
 				py={{ base: "12", lg: "0" }}
+				px="4"
 				overflow="hidden"
+				css={{
+					"& > *": {
+						shadow: "0px -42px 200px 0px var(--shadow-color)",
+						shadowColor: "primary/20",
+						borderRadius: "md",
+					},
+				}}
 			>
 				<AnimatePresence initial={true}>
 					{isVisible ? (
@@ -125,9 +134,13 @@ const VerifyEmail: React.FC<VerifyEmailProps> = ({ onSuccess }) => {
 								pt={{ base: "4", lg: "8" }}
 								borderStyle="solid"
 								borderWidth="thin"
-								borderColor="outline-variant"
+								borderColor="outline/40"
 								borderRadius="md"
+								bgGradient="to-t"
+								gradientFrom="transparent"
+								gradientTo="primary/15"
 								overflow="hidden"
+								backdropFilter={"blur(1.25px)"}
 							>
 								<Stack alignItems="flex-start" role="banner" w="100%">
 									<Fieldset.Legend

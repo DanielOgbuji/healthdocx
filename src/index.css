@@ -24,7 +24,7 @@ a {
 	font-weight: 500;
 }
 a:hover {
-	color: #66DE88;
+	color: #66de88;
 }
 
 .chakra-pin-input:focus-visible {
@@ -34,7 +34,6 @@ a:hover {
 
 body {
 	margin: 0;
-	padding: 12px;
 	display: flex;
 	min-width: 320px;
 	min-height: 100vh;
@@ -51,8 +50,8 @@ h1 {
 }
 
 .css-1a7v5ig[data-current] {
-	background-color: #344C38; /*secondary container*/
-	color: #66DE88; /*primary*/
+	background-color: #344c38; /*secondary container*/
+	color: #66de88; /*primary*/
 }
 
 .css-1a7v5ig[data-incomplete] {
@@ -61,7 +60,7 @@ h1 {
 }
 
 .css-1a7v5ig[data-complete] {
-	background-color: #66DE88; /*primary*/
+	background-color: #66de88; /*primary*/
 }
 
 .css-et5dtk .css-0 .css-g5uffv {
@@ -69,7 +68,7 @@ h1 {
 }
 
 .css-et5dtk[data-current] .css-0 .css-ggk2e6 {
-	color: #66DE88; /*primary*/
+	color: #66de88; /*primary*/
 	font-weight: bold;
 }
 
@@ -91,7 +90,7 @@ h1 {
 }
 
 .css-jov7l4 {
-	background-color: #344C38; /*secondary container*/
+	background-color: #344c38; /*secondary container*/
 }
 
 .css-jov7l4[data-incomplete] {
@@ -99,7 +98,7 @@ h1 {
 }
 
 .css-jov7l4[data-complete] {
-	background-color: #66DE88;
+	background-color: #66de88;
 }
 
 .geocoder-container {
@@ -121,6 +120,14 @@ h1 {
 	background-color: #000000;
 	height: 90%;
 	margin-top: 2px;
+}
+
+.password-recovery {
+	background-color: #000000;
+	background-image:
+		linear-gradient(30deg, rgba(22, 163, 74, 0.2) 1px, transparent 1px),
+		linear-gradient(30deg, rgba(22, 163, 74, 0.2) 1px, #000000 1px);
+	background-size: 10px 10px;
 }
 
 @media (prefers-color-scheme: light) {
@@ -270,5 +277,13 @@ h1 {
 		margin-left: 10px;
 		font-size: small;
 		color: rgba(0, 0, 0, 0.6);
+	}
+
+	.password-recovery {
+		background-color: #ffffff;
+		background-image:
+			linear-gradient(30deg, rgba(0, 109, 52, 0.2) 1px, transparent 1px),
+			linear-gradient(30deg, rgba(0, 109, 52, 0.2) 1px, #ffffff 1px);
+		background-size: 10px 10px;
 	}
 }

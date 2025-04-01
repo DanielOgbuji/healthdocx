@@ -23,7 +23,7 @@ const VerificationPending: React.FC<VerificationPendingProps> = ({
 	return (
 		<Stack gap="6" alignItems="center">
 			<Stack gap="10" textAlign="center" alignItems="center">
-				<Image src={colorMode === "dark" ? pendingImageDark : pendingImage} maxW={{ base: "xs", lg: "sm" }} alt="" />
+				<Image src={colorMode === "dark" ? pendingImageDark : pendingImage} maxW={{ base: "2xs", lg: "sm" }} alt="" />
 				<Text fontSize={{ base: "3xl", lg: "3xl" }} fontWeight="medium" lineHeight="shorter" color="onBackground">
 					{legendText}
 				</Text>

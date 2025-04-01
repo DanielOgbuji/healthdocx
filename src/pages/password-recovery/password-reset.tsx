@@ -143,6 +143,7 @@ const PasswordResetForm: React.FC<PasswordResetFormProps> = ({ onSuccess }) => {
 		<form
 			onSubmit={formik.handleSubmit}
 			style={{ width: "100%", height: "100%", overflow: "hidden" }}
+			className="password-recovery"
 		>
 			<Box
 				w="100%"
@@ -157,8 +158,15 @@ const PasswordResetForm: React.FC<PasswordResetFormProps> = ({ onSuccess }) => {
 				<motion.div
 					initial={{ y: "100%", opacity: 0 }}
 					animate={{ y: "0", opacity: 1 }}
-					transition={{ duration: 0.4, ease: "easeOut" }}
-					style={{ overflow: "hidden", width: "100%", display: "flex", alignItems: "center", justifyContent: "center" }}
+					transition={{ duration: 0.5, ease: "easeOut" }}
+					style={{
+						overflow: "hidden",
+						width: "100%",
+						height: "100%",
+						display: "flex",
+						alignItems: "center",
+						justifyContent: "center",
+					}}
 				>
 					<Fieldset.Root
 						size="lg"
@@ -168,9 +176,16 @@ const PasswordResetForm: React.FC<PasswordResetFormProps> = ({ onSuccess }) => {
 						pt={{ base: "4", lg: "8" }}
 						borderStyle="solid"
 						borderWidth="thin"
-						borderColor="outline-variant"
+						borderColor="outline/40"
 						borderRadius="md"
+						bgGradient="to-t"
+						gradientFrom="transparent"
+						gradientTo="primary/15"
 						overflow="hidden"
+						backdropFilter={"blur(1.25px)"}
+						shadow="0px -42px 200px 0px var(--shadow-color)"
+						shadowColor="primary/20"
+						mx="4"
 					>
 						<Stack alignItems="flex-start" role="banner" w="100%">
 							<Fieldset.Legend

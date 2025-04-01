@@ -1,4 +1,4 @@
-"use client"
+"use client";
 
 import React, { useCallback, useMemo, useState } from "react";
 import {
@@ -64,6 +64,7 @@ const ForgotPassword: React.FC = () => {
 		<form
 			onSubmit={formik.handleSubmit}
 			style={{ width: "100%", height: "100%", overflow: "hidden" }}
+			className="password-recovery"
 		>
 			<Box
 				w="100%"
@@ -73,119 +74,132 @@ const ForgotPassword: React.FC = () => {
 				justifyContent="center"
 				alignItems="center"
 				py={{ base: "12", lg: "0" }}
+				px="4"
 				overflow="hidden"
+				css={{
+					"& > *": {
+						shadow: "0px -42px 200px 0px var(--shadow-color)",
+						shadowColor: "primary/20",
+						borderRadius: "md",
+					},
+				}}
 			>
 				<AnimatePresence initial={true}>
-                {isVisible ? (
-				<motion.div
-					initial={{ y: "100%", opacity: 0 }}
-					animate={{ y: "0", opacity: 1 }}
-					exit={{ opacity: 0, y: "-100%" }}
-					transition={{ duration: 0.5, ease: "easeOut" }}
-					style={{ overflow: "hidden" }}
-					key="box"
-				>
-					<Fieldset.Root
-						size="lg"
-						w={{ base: "100%", lg: "lg" }}
-						px={{ base: "4", lg: "8" }}
-						pb={{ base: "4", lg: "6" }}
-						pt={{ base: "4", lg: "8" }}
-						borderStyle="solid"
-						borderWidth="thin"
-						borderColor="outline-variant"
-						borderRadius="md"
-						overflow="hidden"
-					>
-						<Stack alignItems="flex-start" role="banner" w="100%">
-							<Fieldset.Legend
-								role="heading"
-								fontWeight="bold"
-								fontSize="2xl"
-								display="flex"
-								alignItems="center"
-								gap="2"
-								aria-level={1}
-								mb="4px"
-							>
-								Password recovery
-							</Fieldset.Legend>
-							<Fieldset.HelperText lineHeight="tall">
-								Please enter your account email, and we&apos;ll send an OTP to
-								reset your password.
-							</Fieldset.HelperText>
-						</Stack>
-
-						<Fieldset.Content colorPalette="green">
-							<Field.Root {...getFieldErrorProps("email")}>
-								<Field.Label htmlFor="email">
-									Email Address
-									<Field.RequiredIndicator />
-								</Field.Label>
-								<InputGroup
-									flex="1"
-									startElement={
-										<Box
-											className="material-symbols-outlined"
-											style={{ fontSize: "22px" }}
-										>
-											mail
-										</Box>
-									}
-									width="100%"
-								>
-									<Input
-										id="email"
-										autoFocus
-										placeholder="Enter your email"
-										name="email"
-										type="email"
-										aria-label="Email Address"
-										ps="42px"
-										value={formik.values.email}
-										onChange={formik.handleChange}
-										onBlur={formik.handleBlur}
-									/>
-								</InputGroup>
-								<Field.ErrorText id="email-error">
-									{formik.errors.email}
-								</Field.ErrorText>
-							</Field.Root>
-						</Fieldset.Content>
-						<Button
-							type="submit"
-							variant="solid"
-							bgColor="primary"
-							color="onPrimary"
-							fontWeight="bold"
-							_hover={{ bgColor: "primary/85" }}
-							_disabled={{ bgColor: "onSurface/12", color: "onSurface/38" }}
-							focusRingColor="secondary"
-							disabled={!formik.isValid || formik.isSubmitting}
-							aria-disabled={!formik.isValid || formik.isSubmitting}
-							onClick={() => {
-								if (formik.isValid) {
-									formik.handleSubmit();
-									setIsVisible(!isVisible);
-									setTimeout(() => {
-										window.location.href = "/verify-email";
-									}, 500);
-								}
-							}}
+					{isVisible ? (
+						<motion.div
+							initial={{ y: "100%", opacity: 0 }}
+							animate={{ y: "0", opacity: 1 }}
+							exit={{ opacity: 0, y: "-100%" }}
+							transition={{ duration: 0.5, ease: "easeOut" }}
+							style={{ overflow: "hidden" }}
+							key="box"
 						>
-							Submit
-						</Button>
-						<Flex w="full" fontSize="sm" gap="1" alignItems="center" mt="6">
-							<Box className="material-symbols-outlined" color="primary">
-								arrow_circle_left
-							</Box>
-							<Link href="/" variant="plain">
-								Back to login
-							</Link>
-						</Flex>
-					</Fieldset.Root>
-				</motion.div>
-				) : null}
+							<Fieldset.Root
+								size="lg"
+								w={{ base: "100%", lg: "lg" }}
+								px={{ base: "4", lg: "8" }}
+								pb={{ base: "4", lg: "6" }}
+								pt={{ base: "4", lg: "8" }}
+								borderStyle="solid"
+								borderWidth="thin"
+								borderColor="outline/40"
+								borderRadius="md"
+								bgGradient="to-t"
+								gradientFrom="transparent"
+								gradientTo="primary/15"
+								overflow="hidden"
+								backdropFilter={"blur(1.25px)"}
+							>
+								<Stack alignItems="flex-start" role="banner" w="100%">
+									<Fieldset.Legend
+										role="heading"
+										fontWeight="bold"
+										color="onSurface"
+										fontSize="2xl"
+										display="flex"
+										alignItems="center"
+										gap="2"
+										aria-level={1}
+										mb="4px"
+									>
+										Password recovery
+									</Fieldset.Legend>
+									<Fieldset.HelperText lineHeight="tall">
+										Please enter your account email, and we&apos;ll send an OTP
+										to reset your password.
+									</Fieldset.HelperText>
+								</Stack>
+
+								<Fieldset.Content colorPalette="green">
+									<Field.Root {...getFieldErrorProps("email")}>
+										<Field.Label htmlFor="email">
+											Email Address
+											<Field.RequiredIndicator />
+										</Field.Label>
+										<InputGroup
+											flex="1"
+											startElement={
+												<Box
+													className="material-symbols-outlined"
+													style={{ fontSize: "22px" }}
+												>
+													mail
+												</Box>
+											}
+											width="100%"
+										>
+											<Input
+												id="email"
+												autoFocus
+												placeholder="Enter your email"
+												name="email"
+												type="email"
+												aria-label="Email Address"
+												ps="42px"
+												value={formik.values.email}
+												onChange={formik.handleChange}
+												onBlur={formik.handleBlur}
+											/>
+										</InputGroup>
+										<Field.ErrorText id="email-error">
+											{formik.errors.email}
+										</Field.ErrorText>
+									</Field.Root>
+								</Fieldset.Content>
+								<Button
+									type="submit"
+									variant="solid"
+									bgColor="primary"
+									color="onPrimary"
+									fontWeight="bold"
+									_hover={{ bgColor: "primary/85" }}
+									_disabled={{ bgColor: "onSurface/12", color: "onSurface/38" }}
+									focusRingColor="secondary"
+									disabled={!formik.isValid || formik.isSubmitting}
+									aria-disabled={!formik.isValid || formik.isSubmitting}
+									onClick={() => {
+										if (formik.isValid) {
+											formik.handleSubmit();
+											setIsVisible(!isVisible);
+											setTimeout(() => {
+												window.location.href = "/verify-email";
+											}, 500);
+										}
+									}}
+								>
+									Submit
+								</Button>
+								<Flex w="full" fontSize="sm" gap="1" alignItems="center" mt="6">
+									<Box className="material-symbols-outlined" color="primary">
+										arrow_circle_left
+									</Box>
+									<Link href="/" variant="plain">
+										Back to login
+									</Link>
+								</Flex>
+							</Fieldset.Root>
+						</motion.div>
+					) : null}
 				</AnimatePresence>
 			</Box>
 		</form>
