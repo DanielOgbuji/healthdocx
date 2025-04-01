@@ -115,6 +115,8 @@ const ContactPage = () => {
 								textStyle="sm"
 								href="https://maps.app.goo.gl/jiNBdodUFQLuch2XA"
 								pb="3"
+								target="_blank"
+								rel="noopener noreferrer"
 							>
 								13 Dolphine Estate, Ikeja Way, Lagos, NG.
 							</Link>

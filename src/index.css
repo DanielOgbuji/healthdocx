@@ -27,11 +27,7 @@ a:hover {
 	color: #66DE88;
 }
 
-.css-r0qquw:focus-visible {
-	outline: 2px solid #16a34a;
-}
-
-.css-3cousd:focus-visible {
+.chakra-pin-input:focus-visible {
 	outline: 1px solid #16a34a;
 	border-color: #16a34a;
 }
