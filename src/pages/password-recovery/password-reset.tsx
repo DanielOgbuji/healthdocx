@@ -152,7 +152,6 @@ const PasswordResetForm: React.FC<PasswordResetFormProps> = ({ onSuccess }) => {
 				flexDirection="column"
 				justifyContent="center"
 				alignItems="center"
-				py={{ base: "12", lg: "0" }}
 				overflow="hidden"
 			>
 				<motion.div
@@ -197,7 +196,7 @@ const PasswordResetForm: React.FC<PasswordResetFormProps> = ({ onSuccess }) => {
 								gap="2"
 								aria-level={1}
 								mb="4px"
-								color="onBackground"
+								color="onSurface"
 							>
 								Reset Password
 							</Fieldset.Legend>

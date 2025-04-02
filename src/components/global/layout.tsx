@@ -22,8 +22,9 @@ const Layout = ({ children }: LayoutProps) => {
 				_dark: `url("${jeayBackdropDark}")`,
 			}}
 			bgRepeat="no-repeat"
-			bgPos="60% 480px"
-			bgSize="120%"
+			bgAttachment="fixed"
+			bgPos="-5% 480px"
+			bgSize="35%"
 		>
 			{children}
 		</Flex>

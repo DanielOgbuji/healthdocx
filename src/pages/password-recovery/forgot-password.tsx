@@ -73,7 +73,7 @@ const ForgotPassword: React.FC = () => {
 				flexDirection="column"
 				justifyContent="center"
 				alignItems="center"
-				py={{ base: "12", lg: "0" }}
+				py={{ base: "0px", lg: "12" }}
 				px="4"
 				overflow="hidden"
 				css={{
@@ -177,13 +177,15 @@ const ForgotPassword: React.FC = () => {
 									focusRingColor="secondary"
 									disabled={!formik.isValid || formik.isSubmitting}
 									aria-disabled={!formik.isValid || formik.isSubmitting}
-									onClick={() => {
+									onClick={async () => {
 										if (formik.isValid) {
-											formik.handleSubmit();
-											setIsVisible(!isVisible);
-											setTimeout(() => {
-												window.location.href = "/verify-email";
-											}, 500);
+											await formik.submitForm();
+											if (!formik.isSubmitting) {
+												setIsVisible(!isVisible);
+												setTimeout(() => {
+													window.location.href = "/verify-email";
+												}, 500);
+											}
 										}
 									}}
 								>

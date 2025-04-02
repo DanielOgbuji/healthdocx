@@ -37,6 +37,7 @@ body {
 	display: flex;
 	min-width: 320px;
 	min-height: 100vh;
+	background-color: #000000;
 }
 
 h1 {
@@ -135,6 +136,11 @@ h1 {
 		color: #213547;
 		background-color: #ffffff;
 	}
+
+	body {
+		background-color: #ffffff;
+	}
+
 	a:hover {
 		color: #006d34;
 	}
