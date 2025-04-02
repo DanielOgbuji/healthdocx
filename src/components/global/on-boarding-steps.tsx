@@ -57,6 +57,7 @@ const OnBoardingSteps = () => {
 			width="100%"
 			count={4}
 			gap="12px"
+			p="12px"
 		>
 			<Layout>
 				<StepsList minHeight="400px" pointerEvents="none" inert>
