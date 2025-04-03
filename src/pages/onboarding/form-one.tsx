@@ -144,7 +144,7 @@ const OnBoardingFormOne: React.FC<OnBoardingFormOneProps> = ({
 				phone: Yup.string()
 					.matches(
 						/^\d{3}-\d{3}-\d{4}$/,
-						"Phone number must be in the format 999-999-9999"
+						"Phone number must be 10 digits in the format 999-999-9999"
 					)
 					.required("Phone number is required"),
 				password: Yup.string()
@@ -472,16 +472,14 @@ const OnBoardingFormOne: React.FC<OnBoardingFormOneProps> = ({
 									ps="44px"
 								/>
 							</InputGroup>
+							<Field.ErrorText id="password-error">
+								{formik.errors.password}
+							</Field.ErrorText>
 							{formik.values.password && (
-								<>
-									<Field.ErrorText id="password-error">
-										{formik.errors.password}
-									</Field.ErrorText>
-									<PasswordStrengthMeter
-										value={passwordStrength}
-										aria-label="Password Strength"
-									/>
-								</>
+								<PasswordStrengthMeter
+									value={passwordStrength}
+									aria-label="Password Strength"
+								/>
 							)}
 						</Stack>
 					</Field.Root>
