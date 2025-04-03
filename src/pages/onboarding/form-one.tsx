@@ -213,7 +213,7 @@ const OnBoardingFormOne: React.FC<OnBoardingFormOneProps> = ({
 		};
 	}, [debouncedValidate]);
 
-	// Add this effect to handle autofill
+	// Added this effect to handle autofill
 	useEffect(() => {
 		const handleAutofill = () => {
 			const phoneInput = document.getElementById("phone") as HTMLInputElement;
