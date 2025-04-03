@@ -53,18 +53,19 @@ const SIZE_OPTIONS = [
 	"Enterprise (250+ staff)",
 ] as const;
 
-const LICENSE_REGEX = /\d{7}$/;
+const LICENSE_REGEX = /^\d{7}$/;
 
 type InstitutionType = (typeof INSTITUTION_TYPE_OPTIONS)[number];
 type SizeType = (typeof SIZE_OPTIONS)[number];
 
-interface FormValues {
+interface FormThreeValues {
 	institutionName: string;
 	location: string;
 	institutionType: InstitutionType | "";
 	size: SizeType | "";
 	licenseNumber: string;
 }
+export type { FormThreeValues };
 
 interface OnBoardingFormThreeProps {
 	legendText: string;
@@ -77,7 +78,7 @@ const OnBoardingFormThree: React.FC<OnBoardingFormThreeProps> = ({
 	helperText,
 	onSuccess,
 }) => {
-	const { colorMode } = useColorMode(); //Get current color mode
+	const { colorMode } = useColorMode(); // Get current color mode
 	const dispatch = useDispatch();
 	const [rawLocation, setRawLocation] = useState("");
 
@@ -116,7 +117,7 @@ const OnBoardingFormThree: React.FC<OnBoardingFormThreeProps> = ({
 		[]
 	);
 
-	const initialValues: FormValues = {
+	const initialValues: FormThreeValues = {
 		institutionName: "",
 		location: "",
 		institutionType: "",
@@ -124,15 +125,39 @@ const OnBoardingFormThree: React.FC<OnBoardingFormThreeProps> = ({
 		licenseNumber: "",
 	};
 
-	const formik = useFormik<FormValues>({
+	const formik = useFormik<FormThreeValues>({
 		initialValues,
 		validationSchema: memoizedValidationSchema,
 		validateOnChange: false,
 		validateOnMount: true,
-		onSubmit: (values) => {
+		onSubmit: async (values) => {
 			const finalLocation = values.location || rawLocation;
 			const formThreeData = { ...values, location: finalLocation };
+
+			// Local development logic
 			dispatch(updateFormThree(formThreeData));
+
+			// Will uncomment the following block to simulate submission to a real backend in production.
+			/*
+      try {
+        const response = await fetch("/api/submit", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(formThreeData),
+        });
+        if (!response.ok) {
+          throw new Error("Network response was not ok");
+        }
+        const result = await response.json();
+        // Optionally, handle the result (e.g., display a success message)
+      } catch (error) {
+        console.error("Submission error:", error);
+        // Optionally, handle the error (e.g., display an error message)
+      }
+      */
+ 
 			onSuccess?.();
 		},
 	});
@@ -157,7 +182,7 @@ const OnBoardingFormThree: React.FC<OnBoardingFormThreeProps> = ({
 	);
 
 	const getFieldErrorProps = useCallback(
-		(fieldName: keyof FormValues) => ({
+		(fieldName: keyof FormThreeValues) => ({
 			invalid: formik.touched[fieldName] && !!formik.errors[fieldName],
 			required: true,
 			"aria-invalid": formik.touched[fieldName] && !!formik.errors[fieldName],
@@ -220,7 +245,7 @@ const OnBoardingFormThree: React.FC<OnBoardingFormThreeProps> = ({
 							Location
 							<Field.RequiredIndicator />
 						</Field.Label>
-						<GeoapifyContext apiKey="4657b6618d154832ae551a32f100795e">
+						<GeoapifyContext apiKey={import.meta.env.VITE_GEOAPIFY_API_KEY}>
 							<GeoapifyGeocoderAutocomplete
 								type="amenity"
 								lang="en"
@@ -238,7 +263,6 @@ const OnBoardingFormThree: React.FC<OnBoardingFormThreeProps> = ({
 											county && !formatted.includes(county)
 												? `${formatted}, ${county}`
 												: formatted;
-										console.log("Final location value:", locationValue);
 										formik.setFieldValue("location", locationValue);
 									}
 								}}
@@ -308,7 +332,7 @@ const OnBoardingFormThree: React.FC<OnBoardingFormThreeProps> = ({
 							<Field.RequiredIndicator />
 						</Field.Label>
 						<Group attached width="100%">
-							<InputAddon aria-label="Country Code">No.</InputAddon>
+							<InputAddon>No.</InputAddon>
 							<Input
 								id="licenseNumber"
 								placeholder="Enter license or reg number"
