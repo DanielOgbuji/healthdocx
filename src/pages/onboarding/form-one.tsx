@@ -52,7 +52,7 @@ const PASSWORD_REGEX = {
 	NUMBER: /\d/,
 	SPECIAL: /[!@#$.%^&*\-_]/,
 	MULTIPLE_SPECIAL: /[!@#$.%^&*\-_]/g,
-	NO_REPEATING: /(.)\1{2,}/,
+	NO_REPEATING: /(.)\\1{2,}/,
 	MIXED: /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d).*$/,
 };
 
@@ -71,6 +71,18 @@ interface OnBoardingFormOneProps {
 	helperText: string;
 	onSuccess?: () => void;
 }
+
+const formatPhoneNumber = (phone: string) => {
+	// Remove all non-digits
+	const cleaned = phone.replace(/\D/g, "");
+
+	// Format as XXX-XXX-XXXX
+	if (cleaned.length >= 10) {
+		return `${cleaned.slice(0, 3)}-${cleaned.slice(3, 6)}-${cleaned.slice(6, 10)}`;
+	}
+
+	return cleaned;
+};
 
 const getPasswordStrength = (password: string): number => {
 	if (!password) return 0;
@@ -100,11 +112,10 @@ const OnBoardingFormOne: React.FC<OnBoardingFormOneProps> = ({
 	helperText,
 	onSuccess,
 }) => {
-	const { colorMode } = useColorMode(); // Get current color mode
+	const { colorMode } = useColorMode();
 	const dispatch = useDispatch();
 	const [passwordStrength, setPasswordStrength] = useState(0);
 
-	// Memoize the validation schema to prevent its recreation on every render
 	const memoizedValidationSchema = useMemo(
 		() =>
 			Yup.object({
@@ -129,7 +140,10 @@ const OnBoardingFormOne: React.FC<OnBoardingFormOneProps> = ({
 					.max(254, "Email must not exceed 254 characters")
 					.required("Email is required"),
 				phone: Yup.string()
-					.matches(/^\d{10}$/, "Phone number must be exactly 10 digits")
+					.matches(
+						/^\d{3}-\d{3}-\d{4}$/,
+						"Phone number must be in the format 999-999-9999"
+					)
 					.required("Phone number is required"),
 				password: Yup.string()
 					.min(
@@ -183,7 +197,6 @@ const OnBoardingFormOne: React.FC<OnBoardingFormOneProps> = ({
 		validateOnChange: false,
 		validateOnMount: true,
 		onSubmit: (values) => {
-			//console.log("Form Submitted:", values);
 			dispatch(updateFormOne(values as unknown as Record<string, unknown>));
 			onSuccess?.();
 		},
@@ -199,6 +212,25 @@ const OnBoardingFormOne: React.FC<OnBoardingFormOneProps> = ({
 			debouncedValidate.cancel();
 		};
 	}, [debouncedValidate]);
+
+	// Add this effect to handle autofill
+	useEffect(() => {
+		const handleAutofill = () => {
+			const phoneInput = document.getElementById("phone") as HTMLInputElement;
+			if (phoneInput && phoneInput.value) {
+				const formatted = formatPhoneNumber(phoneInput.value);
+				formik.setFieldValue("phone", formatted, false);
+			}
+		};
+
+		const phoneInput = document.getElementById("phone");
+		if (phoneInput) {
+			phoneInput.addEventListener("animationstart", handleAutofill);
+			return () => {
+				phoneInput.removeEventListener("animationstart", handleAutofill);
+			};
+		}
+	}, [formik.setFieldValue]);
 
 	const handleChangeDebounced = useCallback(
 		(e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
@@ -373,7 +405,10 @@ const OnBoardingFormOne: React.FC<OnBoardingFormOneProps> = ({
 								name="phone"
 								type="tel"
 								value={formik.values.phone}
-								onChange={handleChangeDebounced}
+								onChange={(e) => {
+									const formatted = formatPhoneNumber(e.target.value);
+									formik.setFieldValue("phone", formatted);
+								}}
 								onBlur={formik.handleBlur}
 								aria-label="Phone Number"
 							/>
@@ -447,8 +482,18 @@ const OnBoardingFormOne: React.FC<OnBoardingFormOneProps> = ({
 						{!formik.isSubmitting && formik.isValid && (
 							<motion.div
 								initial={{ transform: "translateX(0px)" }}
-								animate={{ transform: ["translateX(10px)", "translate(0px)", "translateX(10px)"] }}
-								transition={{ ease: "easeInOut", duration: 1, repeat: Infinity }}
+								animate={{
+									transform: [
+										"translateX(10px)",
+										"translate(0px)",
+										"translateX(10px)",
+									],
+								}}
+								transition={{
+									ease: "easeInOut",
+									duration: 1,
+									repeat: Infinity,
+								}}
 							>
 								arrow_forward
 							</motion.div>

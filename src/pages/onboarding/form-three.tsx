@@ -32,12 +32,18 @@ import * as motion from "motion/react-client";
 const INSTITUTION_TYPE_OPTIONS = [
 	"Hospital",
 	"Clinic",
-	"Specialist Hospital",
+	"Primary Health Center",
 	"Diagnostic Center",
-	"Laboratory",
 	"Pharmacy",
 	"Rehabilitation Center",
-	"Other",
+	"Public Health Institution",
+	"Health Insurance Organization (HMO)",
+	"Long-Term Care Facility",
+	"Specialty Care Center",
+	"Ambulatory Surgery Center",
+	"Blood Banks & Organ Transplant Center",
+	"Research & Regulatory Institution",
+	"Educational & Training Institution",
 ] as const;
 
 const SIZE_OPTIONS = [
