@@ -20,13 +20,13 @@ interface OnBoardingFormTwoProps {
 
 // Environment variables and constants
 // NOTE to self: Client-side OTP validation is insecure.
-const CORRECT_OTP = import.meta.env.VITE_CORRECT_OTP || "1234"; // Default for testing - remove in production
+const CORRECT_OTP = import.meta.env.VITE_CORRECT_OTP; // Default for testing - remove in production
 const RESEND_TIMER_INCREMENT = parseInt(
-	import.meta.env.VITE_RESEND_TIMER_INCREMENT || "15",
+	import.meta.env.VITE_RESEND_TIMER_INCREMENT,
 	10
 );
 const INITIAL_RESEND_TIMER = parseInt(
-	import.meta.env.VITE_INITIAL_RESEND_TIMER || "30",
+	import.meta.env.VITE_INITIAL_RESEND_TIMER,
 	10
 );
 
