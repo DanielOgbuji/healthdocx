@@ -269,7 +269,6 @@ const PasswordResetForm: React.FC<PasswordResetFormProps> = ({ onSuccess }) => {
 							aria-disabled={!formik.isValid || formik.isSubmitting}
 							onClick={() => {
 								if (formik.isValid) {
-									formik.handleSubmit();
 									window.location.href = "/reset-successful";
 								}
 							}}
