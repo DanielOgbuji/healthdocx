@@ -52,19 +52,20 @@ const PASSWORD_REGEX = {
 	NUMBER: /\d/,
 	SPECIAL: /[!@#$.%^&*\-_]/,
 	MULTIPLE_SPECIAL: /[!@#$.%^&*\-_]/g,
-	NO_REPEATING: /(.)\\1{2,}/,
+	NO_REPEATING: /(.)\1{2,}/,
 	MIXED: /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d).*$/,
 };
 
 type RoleType = (typeof ROLE_OPTIONS)[number];
 
-interface FormValues {
+interface FormOneValues {
 	name: string;
 	email: string;
 	role: RoleType | "";
 	phone: string;
 	password: string;
 }
+export type { FormOneValues };
 
 interface OnBoardingFormOneProps {
 	legendText: string;
@@ -132,6 +133,7 @@ const OnBoardingFormOne: React.FC<OnBoardingFormOneProps> = ({
 								.every((part) => part.length >= 2)
 					)
 					.matches(
+						// Ensure the regex matches your requirements
 						/^(?:\p{L}+(?:[-']\p{L}+)*)\s+(?:\p{L}+(?:[-']\p{L}+)*)\s+(?:\p{L}+(?:[-']\p{L}+)*)$/u,
 						"Enter your first, middle, and last name (letters, hyphens, and apostrophes only)"
 					),
@@ -183,7 +185,7 @@ const OnBoardingFormOne: React.FC<OnBoardingFormOneProps> = ({
 		[]
 	);
 
-	const initialValues: FormValues = {
+	const initialValues: FormOneValues = {
 		name: "",
 		email: "",
 		role: "",
@@ -196,9 +198,25 @@ const OnBoardingFormOne: React.FC<OnBoardingFormOneProps> = ({
 		validationSchema: memoizedValidationSchema,
 		validateOnChange: false,
 		validateOnMount: true,
-		onSubmit: (values) => {
-			dispatch(updateFormOne(values as unknown as Record<string, unknown>));
-			onSuccess?.();
+		onSubmit: async (values) => {
+			try {
+				// Will uncomment the following lines for production
+				// const response = await fetch("/api/onboarding", {
+				// 	method: "POST",
+				// 	headers: {
+				// 		"Content-Type": "application/json",
+				// 	},
+				// 	body: JSON.stringify(values),
+				// });
+				// if (!response.ok) {
+				// 	throw new Error("Network response was not ok");
+				// }
+				dispatch(updateFormOne(values));
+				onSuccess?.();
+			} catch (error) {
+				// Handle error appropriately in production
+				console.error("Error submitting form:", error);
+			}
 		},
 	});
 
@@ -226,8 +244,12 @@ const OnBoardingFormOne: React.FC<OnBoardingFormOneProps> = ({
 		const phoneInput = document.getElementById("phone");
 		if (phoneInput) {
 			phoneInput.addEventListener("animationstart", handleAutofill);
+			phoneInput.addEventListener("animationiteration", handleAutofill);
+			phoneInput.addEventListener("animationend", handleAutofill);
 			return () => {
 				phoneInput.removeEventListener("animationstart", handleAutofill);
+				phoneInput.removeEventListener("animationiteration", handleAutofill);
+				phoneInput.removeEventListener("animationend", handleAutofill);
 			};
 		}
 	}, [formik.setFieldValue]);
@@ -250,7 +272,7 @@ const OnBoardingFormOne: React.FC<OnBoardingFormOneProps> = ({
 	);
 
 	const getFieldErrorProps = useCallback(
-		(fieldName: keyof FormValues) => ({
+		(fieldName: keyof FormOneValues) => ({
 			invalid: formik.touched[fieldName] && !!formik.errors[fieldName],
 			required: true,
 			"aria-invalid": formik.touched[fieldName] && !!formik.errors[fieldName],
