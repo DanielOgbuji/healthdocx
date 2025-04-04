@@ -1,4 +1,5 @@
 import React, { useState, useCallback, useEffect, useMemo } from "react";
+import { useNavigate } from "react-router-dom";
 import { debounce } from "lodash";
 import { Button, Box, Field, Fieldset, Stack } from "@chakra-ui/react";
 import { useFormik } from "formik";
@@ -49,6 +50,7 @@ const getPasswordStrength = (password: string): number => {
 };
 
 const PasswordResetForm: React.FC<PasswordResetFormProps> = ({ onSuccess }) => {
+	const navigate = useNavigate(); // Add this hook to navigate after form submission
 	const [passwordStrength, setPasswordStrength] = useState(0);
 
 	const memoizedValidationSchema = useMemo(
@@ -102,7 +104,41 @@ const PasswordResetForm: React.FC<PasswordResetFormProps> = ({ onSuccess }) => {
 		validationSchema: memoizedValidationSchema,
 		validateOnChange: false,
 		validateOnMount: true,
-		onSubmit: () => {
+		onSubmit: async () => {
+			if (formik.isValid) {
+				try {
+					// Uncomment the following lines to enable real API submission
+					/*
+					const response = await fetch("/api/password-reset", {
+						method: "POST",
+						headers: {
+							"Content-Type": "application/json",
+						},
+						body: JSON.stringify({
+							password: formik.values.password,
+							confirmPassword: formik.values.confirmPassword,
+						}),
+					});
+
+					if (response.ok) {
+						onSuccess?.();
+						setTimeout(() => {
+                        navigate('/reset-successful');  // Use navigate instead
+                    }, 500);
+					} else {
+						const errorData = await response.json();
+						console.error("Password reset failed:", errorData);
+					}
+					*/
+				} catch (error) {
+					console.error("Error during password reset:", error);
+				}
+			}
+
+			// Existing logic
+			setTimeout(() => {
+				navigate("/reset-successful"); // Use navigate instead
+			}, 500);
 			onSuccess?.();
 		},
 	});
@@ -267,11 +303,8 @@ const PasswordResetForm: React.FC<PasswordResetFormProps> = ({ onSuccess }) => {
 							focusRingColor="secondary"
 							disabled={!formik.isValid || formik.isSubmitting}
 							aria-disabled={!formik.isValid || formik.isSubmitting}
-							onClick={() => {
-								if (formik.isValid) {
-									window.location.href = "/reset-successful";
-								}
-							}}
+							loading={formik.isSubmitting} // Add this line for loading state
+							loadingText="Submitting..." // Optional: Text to display while loading
 						>
 							Reset
 						</Button>

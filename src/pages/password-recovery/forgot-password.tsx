@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useCallback, useMemo, useState } from "react";
+import { useNavigate } from 'react-router-dom';
 import {
 	Box,
 	Button,
@@ -21,6 +22,8 @@ interface FormValues {
 }
 
 const ForgotPassword: React.FC = () => {
+	const navigate = useNavigate(); // Add this hook to navigate after form submission
+	const [isVisible, setIsVisible] = useState(true);
 	// Memoize the validation schema
 	const memoizedValidationSchema = useMemo(
 		() =>
@@ -42,9 +45,46 @@ const ForgotPassword: React.FC = () => {
 		validationSchema: memoizedValidationSchema,
 		validateOnChange: true,
 		validateOnMount: true,
-		onSubmit: (values) => {
+		onSubmit: async (values) => {
 			// Handle form submission logic here
 			console.log("Password reset email submitted:", values);
+
+			// Example API call to the backend for sending a password reset email
+			// Uncomment and replace with your actual API endpoint and logic
+			/*
+			try {
+				const response = await fetch('/api/password-recovery', {
+					method: 'POST',
+					headers: {
+						'Content-Type': 'application/json',
+					},
+					body: JSON.stringify({ email: values.email }),
+				});
+
+				if (response.ok) {
+					// Handle successful response
+					setIsVisible(false);
+				setTimeout(() => {
+                        navigate('/verify-email');  // Use navigate instead
+                    }, 500);
+					console.log('Password reset email sent successfully');
+				} else {
+					// Handle error response
+					console.error('Failed to send password reset email');
+				}
+			} catch (error) {
+				// Handle network or other errors
+				console.error('An error occurred:', error);
+			}
+			*/
+
+			// Logic moved from the button's onClick
+			if (formik.isValid) {
+				setIsVisible(false);
+				setTimeout(() => {
+					navigate('/verify-email');  // Use navigate instead
+				}, 500);
+			}
 		},
 	});
 
@@ -57,8 +97,6 @@ const ForgotPassword: React.FC = () => {
 		}),
 		[formik.touched, formik.errors]
 	);
-
-	const [isVisible, setIsVisible] = useState(true);
 
 	return (
 		<form
@@ -177,17 +215,8 @@ const ForgotPassword: React.FC = () => {
 									focusRingColor="secondary"
 									disabled={!formik.isValid || formik.isSubmitting}
 									aria-disabled={!formik.isValid || formik.isSubmitting}
-									onClick={async () => {
-										if (formik.isValid) {
-											await formik.submitForm();
-											if (!formik.isSubmitting) {
-												setIsVisible(!isVisible);
-												setTimeout(() => {
-													window.location.href = "/verify-email";
-												}, 500);
-											}
-										}
-									}}
+									loading={formik.isSubmitting} // Add this line for loading state
+									loadingText="Submitting..." // Optional: Text to display while loading
 								>
 									Submit
 								</Button>

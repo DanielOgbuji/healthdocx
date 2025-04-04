@@ -1,6 +1,7 @@
 "use client";
 
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useRef } from "react";
+import { useNavigate } from "react-router-dom";
 import { Box, Button, Fieldset, Flex, Stack, Text } from "@chakra-ui/react";
 import { PinInput, PinInputField } from "@chakra-ui/pin-input";
 import { useDispatch } from "react-redux";
@@ -13,16 +14,33 @@ interface VerifyEmailProps {
 	onSuccess?: () => void;
 }
 
-const CORRECT_OTP = "1234";
-const RESEND_TIMER_INCREMENT = 15; // Increment time in seconds
-const INITIAL_RESEND_TIMER = 30; // Initial timer in seconds
+// Environment variables and constants
+// NOTE to self: Client-side OTP validation is insecure.
+const CORRECT_OTP = import.meta.env.VITE_CORRECT_OTP; // Default for testing - remove in production
+const RESEND_TIMER_INCREMENT = parseInt(
+	import.meta.env.VITE_RESEND_TIMER_INCREMENT,
+	10
+);
+const INITIAL_RESEND_TIMER = parseInt(
+	import.meta.env.VITE_INITIAL_RESEND_TIMER,
+	10
+);
+
+// Number of resend attempts allowed before resetting the timer
+const MAX_RESEND_ATTEMPTS = 3;
 
 const VerifyEmail: React.FC<VerifyEmailProps> = ({ onSuccess }) => {
+	const navigate = useNavigate(); // Add this hook to navigate after form submission
 	const dispatch = useDispatch();
 	const [otp, setOtp] = useState("");
 	const [error, setError] = useState("");
 	const [timer, setTimer] = useState(0);
 	const [resendTimer, setResendTimer] = useState(INITIAL_RESEND_TIMER);
+	const [isSubmitting, setIsSubmitting] = useState(false);
+	const [isVisible, setIsVisible] = useState(true);
+
+	// Use a ref for resend count instead of state to avoid unnecessary re-renders
+	const resendCountRef = useRef<number>(0);
 
 	// Use useAnimate hook
 	const [scope, animate] = useAnimate();
@@ -48,13 +66,11 @@ const VerifyEmail: React.FC<VerifyEmailProps> = ({ onSuccess }) => {
 
 	// Timer countdown logic
 	useEffect(() => {
-		let interval: NodeJS.Timeout | null = null;
+		let interval: NodeJS.Timeout;
 		if (timer > 0) {
 			interval = setInterval(() => {
 				setTimer((prev) => prev - 1);
 			}, 1000);
-		} else if (interval) {
-			clearInterval(interval);
 		}
 		return () => {
 			if (interval) clearInterval(interval);
@@ -65,20 +81,57 @@ const VerifyEmail: React.FC<VerifyEmailProps> = ({ onSuccess }) => {
 		setOtp(value);
 	};
 
-	const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+	const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
 		e.preventDefault();
 		if (otp.length === 4) {
-			if (otp === CORRECT_OTP) {
-				dispatch(updateFormTwo({ otp }));
-				console.log("Correct OTP submitted");
-				onSuccess?.();
-			} else {
-				setError("Incorrect code. Please try again.");
-				setOtp(""); // Clear all inputs, letting PinInput handle focus reset
+			setIsSubmitting(true);
+			// Simulate network delay
+			setTimeout(() => {
+				// -------------------------------
+				// Simulated Server-Side Validation
+				// Will uncomment and modify this section when integrating with our backend:
+				/*
+			try {
+				const response = await fetch('/api/validate-otp', {
+					method: 'POST',
+					headers: { 'Content-Type': 'application/json' },
+					body: JSON.stringify({ otp, email: userEmail })
+				});
+				const data = await response.json();
+				if (response.ok && data.valid) {
+					dispatch(updateFormTwo({ otp }));
+					setIsVisible(!isVisible);
+					setTimeout(() => {
+                        navigate('/password-reset');  // Use navigate instead
+                    }, 500);
+					onSuccess?.();
+				} else {
+					setError("Incorrect code. Please try again.");
+					setOtp("");
+				}
+			} catch (err) {
+				setError("Server error. Please try again later.");
 			}
+			*/
+				// -------------------------------
+				// Client-Side Validation (Remove for Production)
+				if (otp === CORRECT_OTP) {
+					dispatch(updateFormTwo({ otp }));
+					setIsVisible(!isVisible);
+					setTimeout(() => {
+						navigate("/password-reset"); // Use navigate instead
+					}, 500);
+					onSuccess?.();
+				} else {
+					setError("Incorrect code. Please try again.");
+					setOtp(""); // Clear input for a new try
+				}
+				setIsSubmitting(false); // Reset loading state
+			}, 2000); // Simulated 2-second network delay
 		}
 	};
 
+	// Resend code logic with timer and resend count management
 	const handleResendCode = () => {
 		toaster.create({
 			duration: 3000,
@@ -86,11 +139,21 @@ const VerifyEmail: React.FC<VerifyEmailProps> = ({ onSuccess }) => {
 			description: "Check your inbox or spam for code",
 			type: "success",
 		});
-		setTimer(resendTimer); // Reset the timer
-		setResendTimer((prev) => prev + RESEND_TIMER_INCREMENT); // Increment the resend timer
-	};
 
-	const [isVisible, setIsVisible] = useState(true);
+		// Start the timer
+		setTimer(resendTimer);
+
+		// Increment the resend count using the ref
+		resendCountRef.current += 1;
+
+		// If maximum resend attempts reached, reset timer and count; otherwise, increment the timer
+		if (resendCountRef.current >= MAX_RESEND_ATTEMPTS) {
+			setResendTimer(INITIAL_RESEND_TIMER);
+			resendCountRef.current = 0;
+		} else {
+			setResendTimer((prev) => prev + RESEND_TIMER_INCREMENT);
+		}
+	};
 
 	return (
 		<form
@@ -236,15 +299,9 @@ const VerifyEmail: React.FC<VerifyEmailProps> = ({ onSuccess }) => {
 									focusRingColor="secondary"
 									disabled={otp.length !== 4}
 									aria-disabled={otp.length !== 4}
+									loading={isSubmitting} // Add loading state
+									loadingText="Submitting..." // Optional: Text to display while loading
 									mt="6"
-									onClick={() => {
-										if (otp === CORRECT_OTP) {
-											setIsVisible(!isVisible);
-											setTimeout(() => {
-												window.location.href = "/password-reset";
-											}, 500);
-										}
-									}}
 								>
 									Submit
 								</Button>

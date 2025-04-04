@@ -72,11 +72,15 @@ const OnBoardingFormTwo: React.FC<OnBoardingFormTwoProps> = ({
 
 	// Timer countdown logic
 	useEffect(() => {
-		if (timer <= 0) return;
-		const interval = window.setInterval(() => {
-			setTimer((prev) => prev - 1);
-		}, 1000);
-		return () => clearInterval(interval);
+		let interval: NodeJS.Timeout;
+		if (timer > 0) {
+			interval = setInterval(() => {
+				setTimer((prev) => prev - 1);
+			}, 1000);
+		}
+		return () => {
+			if (interval) clearInterval(interval);
+		};
 	}, [timer]);
 
 	const handleChange = (value: string) => {
