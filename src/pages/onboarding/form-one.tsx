@@ -30,33 +30,14 @@ import { InputGroup } from "@/components/ui/input-group";
 import Logo from "@/assets/Off-Jeay.svg";
 import LogoDark from "@/assets/Off-Jeay-Dark.svg";
 import * as motion from "motion/react-client";
-
-// Constants
-const ROLE_OPTIONS = [
-	"IT Administrator",
-	"Health Records Officer",
-	"Medical Data Analyst",
-	"Operations Manager",
-	"Hospital Administrator",
-	"Medical Researcher",
-	"Healthcare Provider",
-	"Other",
-] as const;
-
-const PASSWORD_MIN_LENGTH = 8;
-const PASSWORD_MAX_LENGTH = 128;
-
-const PASSWORD_REGEX = {
-	UPPERCASE: /[A-Z]/,
-	LOWERCASE: /[a-z]/,
-	NUMBER: /\d/,
-	SPECIAL: /[!@#$.%^&*\-_]/,
-	MULTIPLE_SPECIAL: /[!@#$.%^&*\-_]/g,
-	NO_REPEATING: /(.)\1{2,}/,
-	MIXED: /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d).*$/,
-};
-
-type RoleType = (typeof ROLE_OPTIONS)[number];
+import {
+	RoleType,
+	PASSWORD_MIN_LENGTH,
+	PASSWORD_REGEX,
+	PASSWORD_MAX_LENGTH,
+	ROLE_OPTIONS,
+} from "./formConstants";
+import { formatPhoneNumber, getPasswordStrength } from "./formUtils";
 
 interface FormOneValues {
 	name: string;
@@ -73,41 +54,6 @@ interface OnBoardingFormOneProps {
 	onSuccess?: () => void;
 }
 
-const formatPhoneNumber = (phone: string) => {
-	// Remove all non-digits
-	const cleaned = phone.replace(/\D/g, "");
-
-	// Format as XXX-XXX-XXXX
-	if (cleaned.length >= 10) {
-		return `${cleaned.slice(0, 3)}-${cleaned.slice(3, 6)}-${cleaned.slice(6, 10)}`;
-	}
-
-	return cleaned;
-};
-
-const getPasswordStrength = (password: string): number => {
-	if (!password) return 0;
-	const criteria = {
-		length: password.length >= PASSWORD_MIN_LENGTH,
-		multipleSpecialChars:
-			(password.match(PASSWORD_REGEX.MULTIPLE_SPECIAL) || []).length > 1,
-		uppercase: PASSWORD_REGEX.UPPERCASE.test(password),
-		lowercase: PASSWORD_REGEX.LOWERCASE.test(password),
-		numbers: PASSWORD_REGEX.NUMBER.test(password),
-		specialChar: PASSWORD_REGEX.SPECIAL.test(password),
-		noRepeatingChars: !PASSWORD_REGEX.NO_REPEATING.test(password),
-		mixedChars: PASSWORD_REGEX.MIXED.test(password),
-	};
-
-	const strengthScore = Object.values(criteria).filter(Boolean).length;
-	if (password.length < PASSWORD_MIN_LENGTH) return 0;
-	if (strengthScore <= 2) return 0;
-	if (strengthScore <= 4) return 1;
-	if (strengthScore <= 6) return 2;
-	if (strengthScore <= 7) return 3;
-	return 4;
-};
-
 const OnBoardingFormOne: React.FC<OnBoardingFormOneProps> = ({
 	legendText,
 	helperText,
@@ -117,6 +63,7 @@ const OnBoardingFormOne: React.FC<OnBoardingFormOneProps> = ({
 	const dispatch = useDispatch();
 	const [passwordStrength, setPasswordStrength] = useState(0);
 
+	// Memoized validation schema for form fields
 	const memoizedValidationSchema = useMemo(
 		() =>
 			Yup.object({
@@ -185,6 +132,7 @@ const OnBoardingFormOne: React.FC<OnBoardingFormOneProps> = ({
 		[]
 	);
 
+	// Initial form values
 	const initialValues: FormOneValues = {
 		name: "",
 		email: "",
@@ -193,6 +141,7 @@ const OnBoardingFormOne: React.FC<OnBoardingFormOneProps> = ({
 		password: "",
 	};
 
+	// Formik setup for form handling
 	const formik = useFormik({
 		initialValues,
 		validationSchema: memoizedValidationSchema,
@@ -200,17 +149,21 @@ const OnBoardingFormOne: React.FC<OnBoardingFormOneProps> = ({
 		validateOnMount: true,
 		onSubmit: async (values) => {
 			try {
-				// Will uncomment the following lines for production
-				// const response = await fetch("/api/onboarding", {
-				// 	method: "POST",
-				// 	headers: {
-				// 		"Content-Type": "application/json",
-				// 	},
-				// 	body: JSON.stringify(values),
-				// });
-				// if (!response.ok) {
-				// 	throw new Error("Network response was not ok");
-				// }
+				// Uncomment the following block to simulate submission to a real backend in production.
+				/*
+				const response = await fetch("/api/submit", {
+					method: "POST",
+					headers: {
+						"Content-Type": "application/json",
+					},
+					body: JSON.stringify(values),
+				});
+				if (!response.ok) {
+					throw new Error("Network response was not ok");
+				}
+				const result = await response.json();
+				// Optionally, we can handle the result (display a success message)
+				*/
 				dispatch(updateFormOne(values));
 				onSuccess?.();
 			} catch (error) {
@@ -220,18 +173,20 @@ const OnBoardingFormOne: React.FC<OnBoardingFormOneProps> = ({
 		},
 	});
 
+	// Debounced validation to improve performance
 	const debouncedValidate = useCallback(
 		debounce(() => formik.validateForm(), 400),
 		[formik.validateForm]
 	);
 
+	// Cleanup debounced validation on unmount
 	useEffect(() => {
 		return () => {
 			debouncedValidate.cancel();
 		};
 	}, [debouncedValidate]);
 
-	// Added this effect to handle autofill
+	// Handle autofill for phone input
 	useEffect(() => {
 		const handleAutofill = () => {
 			const phoneInput = document.getElementById("phone") as HTMLInputElement;
@@ -254,6 +209,7 @@ const OnBoardingFormOne: React.FC<OnBoardingFormOneProps> = ({
 		}
 	}, [formik.setFieldValue]);
 
+	// Handle input changes with debounced validation
 	const handleChangeDebounced = useCallback(
 		(e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
 			formik.handleChange(e);
@@ -262,6 +218,7 @@ const OnBoardingFormOne: React.FC<OnBoardingFormOneProps> = ({
 		[formik.handleChange, debouncedValidate]
 	);
 
+	// Handle password input changes and update strength meter
 	const handlePasswordChange = useCallback(
 		(e: React.ChangeEvent<HTMLInputElement>) => {
 			formik.handleChange(e);
@@ -271,6 +228,7 @@ const OnBoardingFormOne: React.FC<OnBoardingFormOneProps> = ({
 		[formik.handleChange, debouncedValidate]
 	);
 
+	// Get error props for form fields
 	const getFieldErrorProps = useCallback(
 		(fieldName: keyof FormOneValues) => ({
 			invalid: formik.touched[fieldName] && !!formik.errors[fieldName],
@@ -284,6 +242,7 @@ const OnBoardingFormOne: React.FC<OnBoardingFormOneProps> = ({
 	return (
 		<form onSubmit={formik.handleSubmit} className="onboarding-form">
 			<Fieldset.Root size="lg" maxW="lg">
+				{/* Form Header */}
 				<Stack alignItems="center" role="banner">
 					<Image
 						src={colorMode === "dark" ? LogoDark : Logo}
@@ -321,7 +280,9 @@ const OnBoardingFormOne: React.FC<OnBoardingFormOneProps> = ({
 					</Fieldset.HelperText>
 				</Stack>
 
+				{/* Form Fields */}
 				<Fieldset.Content colorPalette="green">
+					{/* Full Name Field */}
 					<Field.Root {...getFieldErrorProps("name")}>
 						<Field.Label htmlFor="name">
 							Full Name
@@ -353,6 +314,7 @@ const OnBoardingFormOne: React.FC<OnBoardingFormOneProps> = ({
 						</Field.ErrorText>
 					</Field.Root>
 
+					{/* Email Address Field */}
 					<Field.Root {...getFieldErrorProps("email")}>
 						<Field.Label htmlFor="email">
 							Email Address
@@ -387,6 +349,7 @@ const OnBoardingFormOne: React.FC<OnBoardingFormOneProps> = ({
 						</Field.ErrorText>
 					</Field.Root>
 
+					{/* Role Field */}
 					<Field.Root {...getFieldErrorProps("role")}>
 						<Field.Label htmlFor="role">
 							Role
@@ -410,6 +373,7 @@ const OnBoardingFormOne: React.FC<OnBoardingFormOneProps> = ({
 						</Field.ErrorText>
 					</Field.Root>
 
+					{/* Phone Number Field */}
 					<Field.Root {...getFieldErrorProps("phone")}>
 						<Field.Label htmlFor="phone">
 							Phone Number
@@ -440,6 +404,7 @@ const OnBoardingFormOne: React.FC<OnBoardingFormOneProps> = ({
 						</Field.ErrorText>
 					</Field.Root>
 
+					{/* Password Field */}
 					<Field.Root {...getFieldErrorProps("password")}>
 						<Field.Label htmlFor="password">
 							Password
@@ -485,6 +450,7 @@ const OnBoardingFormOne: React.FC<OnBoardingFormOneProps> = ({
 					</Field.Root>
 				</Fieldset.Content>
 
+				{/* Submit Button */}
 				<Button
 					type="submit"
 					variant="solid"

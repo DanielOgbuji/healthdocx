@@ -10,6 +10,7 @@ import Logo from "@/assets/Off-Jeay.svg";
 import LogoDark from "@/assets/Off-Jeay-Dark.svg";
 import { useAnimate } from "motion/react";
 import { useColorMode } from "@/components/ui/color-mode";
+import { INITIAL_RESEND_TIMER, CORRECT_OTP, MAX_RESEND_ATTEMPTS, RESEND_TIMER_INCREMENT } from "@/pages/onboarding/formConstants";
 
 interface OnBoardingFormTwoProps {
 	legendText: string;
@@ -17,21 +18,6 @@ interface OnBoardingFormTwoProps {
 	userEmail: string;
 	onSuccess?: () => void;
 }
-
-// Environment variables and constants
-// NOTE to self: Client-side OTP validation is insecure.
-const CORRECT_OTP = import.meta.env.VITE_CORRECT_OTP; // Default for testing - remove in production
-const RESEND_TIMER_INCREMENT = parseInt(
-	import.meta.env.VITE_RESEND_TIMER_INCREMENT,
-	10
-);
-const INITIAL_RESEND_TIMER = parseInt(
-	import.meta.env.VITE_INITIAL_RESEND_TIMER,
-	10
-);
-
-// Number of resend attempts allowed before resetting the timer
-const MAX_RESEND_ATTEMPTS = 3;
 
 const OnBoardingFormTwo: React.FC<OnBoardingFormTwoProps> = ({
 	legendText,
@@ -89,10 +75,12 @@ const OnBoardingFormTwo: React.FC<OnBoardingFormTwoProps> = ({
 
 	const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
 		e.preventDefault();
+
+		// Validate OTP length
 		if (otp.length === 4) {
 			// -------------------------------
 			// Simulated Server-Side Validation
-			// Will uncomment and modify this section when integrating with our backend:
+			// Uncomment and modify this section when integrating with the backend:
 			/*
 			try {
 				const response = await fetch('/api/validate-otp', {
@@ -113,6 +101,7 @@ const OnBoardingFormTwo: React.FC<OnBoardingFormTwoProps> = ({
 			}
 			*/
 			// -------------------------------
+
 			// Client-Side Validation (Remove for Production)
 			if (otp === CORRECT_OTP) {
 				dispatch(updateFormTwo({ otp }));

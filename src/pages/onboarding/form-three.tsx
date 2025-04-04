@@ -12,10 +12,6 @@ import {
 	Stack,
 } from "@chakra-ui/react";
 import { useFormik } from "formik";
-import {
-	GeoapifyGeocoderAutocomplete,
-	GeoapifyContext,
-} from "@geoapify/react-geocoder-autocomplete";
 import * as Yup from "yup";
 import { useDispatch } from "react-redux";
 import { updateFormThree } from "@/context/onboardingSlice";
@@ -27,33 +23,12 @@ import Logo from "@/assets/Off-Jeay.svg";
 import LogoDark from "@/assets/Off-Jeay-Dark.svg";
 import { useColorMode } from "@/components/ui/color-mode";
 import * as motion from "motion/react-client";
-
-// Constants
-const INSTITUTION_TYPE_OPTIONS = [
-	"Hospital",
-	"Clinic",
-	"Primary Health Center",
-	"Diagnostic Center",
-	"Pharmacy",
-	"Rehabilitation Center",
-	"Public Health Institution",
-	"Health Insurance Organization (HMO)",
-	"Long-Term Care Facility",
-	"Specialty Care Center",
-	"Ambulatory Surgery Center",
-	"Blood Banks & Organ Transplant Center",
-	"Research & Regulatory Institution",
-	"Educational & Training Institution",
-] as const;
-
-const SIZE_OPTIONS = [
-	"Small (1 - 50 staff)",
-	"Medium (51 - 150 staff)",
-	"Large (151 - 250 staff)",
-	"Enterprise (250+ staff)",
-] as const;
-
-const LICENSE_REGEX = /^\d{7}$/;
+import {
+	INSTITUTION_TYPE_OPTIONS,
+	SIZE_OPTIONS,
+	LICENSE_REGEX,
+} from "@/pages/onboarding/formConstants";
+import LocationInput from "@/components/ui/location-input"; // New component import
 
 type InstitutionType = (typeof INSTITUTION_TYPE_OPTIONS)[number];
 type SizeType = (typeof SIZE_OPTIONS)[number];
@@ -78,11 +53,11 @@ const OnBoardingFormThree: React.FC<OnBoardingFormThreeProps> = ({
 	helperText,
 	onSuccess,
 }) => {
-	const { colorMode } = useColorMode(); // Get current color mode
+	const { colorMode } = useColorMode();
 	const dispatch = useDispatch();
 	const [rawLocation, setRawLocation] = useState("");
 
-	// Memoize the validation schema to prevent its recreation on every render
+	// Memoized validation schema for form validation
 	const memoizedValidationSchema = useMemo(
 		() =>
 			Yup.object({
@@ -117,6 +92,7 @@ const OnBoardingFormThree: React.FC<OnBoardingFormThreeProps> = ({
 		[]
 	);
 
+	// Initial form values
 	const initialValues: FormThreeValues = {
 		institutionName: "",
 		location: "",
@@ -125,6 +101,7 @@ const OnBoardingFormThree: React.FC<OnBoardingFormThreeProps> = ({
 		licenseNumber: "",
 	};
 
+	// Formik setup for form handling
 	const formik = useFormik<FormThreeValues>({
 		initialValues,
 		validationSchema: memoizedValidationSchema,
@@ -133,46 +110,45 @@ const OnBoardingFormThree: React.FC<OnBoardingFormThreeProps> = ({
 		onSubmit: async (values) => {
 			const finalLocation = values.location || rawLocation;
 			const formThreeData = { ...values, location: finalLocation };
-
-			// Local development logic
-			dispatch(updateFormThree(formThreeData));
-
-			// Will uncomment the following block to simulate submission to a real backend in production.
-			/*
-      try {
-        const response = await fetch("/api/submit", {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify(formThreeData),
-        });
-        if (!response.ok) {
-          throw new Error("Network response was not ok");
-        }
-        const result = await response.json();
-        // Optionally, handle the result (e.g., display a success message)
-      } catch (error) {
-        console.error("Submission error:", error);
-        // Optionally, handle the error (e.g., display an error message)
-      }
-      */
- 
-			onSuccess?.();
+			try {
+				// Uncomment the following block to simulate submission to a real backend in production.
+				/*
+				const response = await fetch("/api/submit", {
+					method: "POST",
+					headers: {
+						"Content-Type": "application/json",
+					},
+					body: JSON.stringify(values),
+				});
+				if (!response.ok) {
+					throw new Error("Network response was not ok");
+				}
+				const result = await response.json();
+				// Optionally, we can handle the result (display a success message)
+				*/
+				dispatch(updateFormThree(formThreeData));
+				onSuccess?.();
+			} catch (error) {
+				console.error("Submission error:", error);
+				// Optionally, handle the error (e.g., display an error message)
+			}
 		},
 	});
 
+	// Debounced validation to improve performance
 	const debouncedValidate = useMemo(
 		() => debounce(() => formik.validateForm(), 300),
 		[formik.validateForm]
 	);
 
+	// Cleanup for debounced validation
 	useEffect(() => {
 		return () => {
 			debouncedValidate.cancel();
 		};
 	}, [debouncedValidate]);
 
+	// Handle input changes with debounced validation
 	const handleChangeDebounced = useCallback(
 		(e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
 			formik.handleChange(e);
@@ -181,6 +157,25 @@ const OnBoardingFormThree: React.FC<OnBoardingFormThreeProps> = ({
 		[formik.handleChange, debouncedValidate]
 	);
 
+	// Handle location selection from the LocationInput component
+	const handleLocationSelect = useCallback(
+		(value: string) => {
+			formik.setFieldValue("location", value);
+		},
+		[formik]
+	);
+
+	// Handle user input for location with debounced validation
+	const handleLocationInput = useCallback(
+		(input: string) => {
+			setRawLocation(input);
+			formik.setFieldValue("location", input);
+			debouncedValidate();
+		},
+		[formik, debouncedValidate]
+	);
+
+	// Get error props for fields
 	const getFieldErrorProps = useCallback(
 		(fieldName: keyof FormThreeValues) => ({
 			invalid: formik.touched[fieldName] && !!formik.errors[fieldName],
@@ -193,6 +188,7 @@ const OnBoardingFormThree: React.FC<OnBoardingFormThreeProps> = ({
 
 	return (
 		<form onSubmit={formik.handleSubmit} className="onboarding-form">
+			{/* Form header */}
 			<Fieldset.Root size="lg" maxW="lg">
 				<Stack alignItems="center" role="banner">
 					<Image
@@ -218,7 +214,9 @@ const OnBoardingFormThree: React.FC<OnBoardingFormThreeProps> = ({
 					</Fieldset.HelperText>
 				</Stack>
 
+				{/* Form fields */}
 				<Fieldset.Content colorPalette="green">
+					{/* Institution Name Field */}
 					<Field.Root {...getFieldErrorProps("institutionName")}>
 						<Field.Label htmlFor="institutionName">
 							Institution Name
@@ -240,46 +238,24 @@ const OnBoardingFormThree: React.FC<OnBoardingFormThreeProps> = ({
 						</Field.ErrorText>
 					</Field.Root>
 
+					{/* Location Field */}
 					<Field.Root {...getFieldErrorProps("location")}>
 						<Field.Label htmlFor="location">
 							Location
 							<Field.RequiredIndicator />
 						</Field.Label>
-						<GeoapifyContext apiKey={import.meta.env.VITE_GEOAPIFY_API_KEY}>
-							<GeoapifyGeocoderAutocomplete
-								type="amenity"
-								lang="en"
-								limit={10}
-								filterByCountryCode={["ng"]}
-								biasByCountryCode={["ng"]}
-								addDetails
-								allowNonVerifiedHouseNumber
-								allowNonVerifiedStreet
-								debounceDelay={100}
-								placeSelect={(feature) => {
-									if (feature.properties) {
-										const { formatted, county } = feature.properties;
-										const locationValue =
-											county && !formatted.includes(county)
-												? `${formatted}, ${county}`
-												: formatted;
-										formik.setFieldValue("location", locationValue);
-									}
-								}}
-								aria-label="Institution Location"
-								placeholder="Add the location of your institution"
-								onUserInput={(input: string) => {
-									setRawLocation(input);
-									formik.setFieldValue("location", input);
-									debouncedValidate();
-								}}
-							/>
-						</GeoapifyContext>
+						<LocationInput
+							value={formik.values.location}
+							error={formik.errors.location}
+							onPlaceSelect={handleLocationSelect}
+							onUserInput={handleLocationInput}
+						/>
 						<Field.ErrorText id="location-error">
 							{formik.errors.location}
 						</Field.ErrorText>
 					</Field.Root>
 
+					{/* Institution Type Field */}
 					<Field.Root {...getFieldErrorProps("institutionType")}>
 						<Field.Label htmlFor="institutionType">
 							Institution Type
@@ -303,6 +279,7 @@ const OnBoardingFormThree: React.FC<OnBoardingFormThreeProps> = ({
 						</Field.ErrorText>
 					</Field.Root>
 
+					{/* Institution Size Field */}
 					<Field.Root {...getFieldErrorProps("size")}>
 						<Field.Label htmlFor="size">
 							Institution Size
@@ -326,6 +303,7 @@ const OnBoardingFormThree: React.FC<OnBoardingFormThreeProps> = ({
 						</Field.ErrorText>
 					</Field.Root>
 
+					{/* License Number Field */}
 					<Field.Root {...getFieldErrorProps("licenseNumber")}>
 						<Field.Label htmlFor="licenseNumber">
 							License Number
@@ -353,6 +331,7 @@ const OnBoardingFormThree: React.FC<OnBoardingFormThreeProps> = ({
 					</Field.Root>
 				</Fieldset.Content>
 
+				{/* Submit Button */}
 				<Button
 					type="submit"
 					variant="solid"
