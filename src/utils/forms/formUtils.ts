@@ -1,4 +1,4 @@
-import { PASSWORD_MIN_LENGTH, PASSWORD_REGEX } from "./formConstants";
+import { PASSWORD_MIN_LENGTH, PASSWORD_REGEX } from "@/pages/onboarding/formConstants";
 
 export const formatPhoneNumber = (phone: string) => {
 	// Remove all non-digits

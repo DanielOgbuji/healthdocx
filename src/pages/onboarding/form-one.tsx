@@ -37,7 +37,7 @@ import {
 	PASSWORD_MAX_LENGTH,
 	ROLE_OPTIONS,
 } from "./formConstants";
-import { formatPhoneNumber, getPasswordStrength } from "./formUtils";
+import { formatPhoneNumber, getPasswordStrength } from "@/utils/forms/formUtils";
 
 interface FormOneValues {
 	name: string;

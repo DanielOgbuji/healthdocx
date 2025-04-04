@@ -9,6 +9,7 @@ import {
 	PasswordStrengthMeter,
 } from "@/components/ui/password-input";
 import * as motion from "motion/react-client";
+import { getPasswordStrength } from "@/utils/forms/formUtils";
 
 const PASSWORD_MIN_LENGTH = 8;
 const PASSWORD_MAX_LENGTH = 128;
@@ -29,25 +30,6 @@ interface FormValues {
 interface PasswordResetFormProps {
 	onSuccess?: () => void;
 }
-
-const getPasswordStrength = (password: string): number => {
-	if (!password) return 0;
-	const criteria = {
-		length: password.length >= PASSWORD_MIN_LENGTH,
-		uppercase: PASSWORD_REGEX.UPPERCASE.test(password),
-		lowercase: PASSWORD_REGEX.LOWERCASE.test(password),
-		numbers: PASSWORD_REGEX.NUMBER.test(password),
-		specialChar: PASSWORD_REGEX.SPECIAL.test(password),
-		noRepeatingChars: !PASSWORD_REGEX.NO_REPEATING.test(password),
-	};
-
-	const strengthScore = Object.values(criteria).filter(Boolean).length;
-	if (password.length < PASSWORD_MIN_LENGTH) return 0;
-	if (strengthScore <= 2) return 0;
-	if (strengthScore <= 4) return 1;
-	if (strengthScore <= 5) return 2;
-	return 3;
-};
 
 const PasswordResetForm: React.FC<PasswordResetFormProps> = ({ onSuccess }) => {
 	const navigate = useNavigate(); // Add this hook to navigate after form submission
