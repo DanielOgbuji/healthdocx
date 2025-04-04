@@ -5,7 +5,7 @@ import { useNavigate } from "react-router-dom";
 import { Box, Button, Fieldset, Flex, Stack, Text } from "@chakra-ui/react";
 import { PinInput, PinInputField } from "@chakra-ui/pin-input";
 import { useDispatch } from "react-redux";
-import { updateFormTwo } from "@/store/onboardingSlice";
+import { updateFormTwo } from "@/context/onboardingSlice";
 import { toaster } from "@/components/ui/toaster";
 import { useAnimate } from "motion/react";
 import { AnimatePresence, motion } from "motion/react";
@@ -127,7 +127,7 @@ const VerifyEmail: React.FC<VerifyEmailProps> = ({ onSuccess }) => {
 					setOtp(""); // Clear input for a new try
 				}
 				setIsSubmitting(false); // Reset loading state
-			}, 2000); // Simulated 2-second network delay
+			}, 500); // Simulated network delay
 		}
 	};
 

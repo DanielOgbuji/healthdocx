@@ -1,6 +1,6 @@
 // src/store/store.ts
 import { configureStore } from '@reduxjs/toolkit';
-import onboardingReducer from './onboardingSlice';
+import onboardingReducer from '../onboardingSlice';
 
 const store = configureStore({
   reducer: {

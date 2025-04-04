@@ -134,8 +134,7 @@ const PasswordResetForm: React.FC<PasswordResetFormProps> = ({ onSuccess }) => {
 					console.error("Error during password reset:", error);
 				}
 			}
-
-			// Existing logic
+			// Remove the following lines when using real API
 			setTimeout(() => {
 				navigate("/reset-successful"); // Use navigate instead
 			}, 500);

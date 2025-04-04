@@ -18,7 +18,7 @@ import {
 } from "@geoapify/react-geocoder-autocomplete";
 import * as Yup from "yup";
 import { useDispatch } from "react-redux";
-import { updateFormThree } from "@/store/onboardingSlice";
+import { updateFormThree } from "@/context/onboardingSlice";
 import {
 	NativeSelectField,
 	NativeSelectRoot,

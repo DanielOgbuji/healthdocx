@@ -1,6 +1,6 @@
 import { useState, Suspense, lazy, useEffect, useCallback } from "react";
 import { Text, Link, Stack, Spinner, VStack } from "@chakra-ui/react";
-import Layout from "./layout";
+import Layout from "../components/global/layout";
 import {
 	StepsCompletedContent,
 	StepsContent,
@@ -9,14 +9,14 @@ import {
 	StepsRoot,
 } from "@/components/ui/steps";
 import { useSelector } from "react-redux";
-import { RootState } from "@/store/store";
+import { RootState } from "@/context/store/store";
 
 const lazySteps: { [key: number]: ReturnType<typeof lazy> } = {
-	0: lazy(() => import("../../pages/onboarding/form-one")),
-	1: lazy(() => import("../../pages/onboarding/form-two")),
-	2: lazy(() => import("../../pages/onboarding/form-three")),
+	0: lazy(() => import("@/pages/onboarding/form-one")),
+	1: lazy(() => import("@/pages/onboarding/form-two")),
+	2: lazy(() => import("@/pages/onboarding/form-three")),
 	3: lazy(() => import("@/pages/onboarding/verification-pending")),
-	4: lazy(() => import("../../pages/onboarding/welcome")),
+	4: lazy(() => import("@/pages/onboarding/welcome")),
 };
 
 const OnBoardingSteps = () => {

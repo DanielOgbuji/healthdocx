@@ -4,7 +4,7 @@ import React, { useEffect, useState, useRef } from "react";
 import { Fieldset, Stack, Image, Text, Button, Box } from "@chakra-ui/react";
 import { PinInput, PinInputField } from "@chakra-ui/pin-input";
 import { useDispatch } from "react-redux";
-import { updateFormTwo } from "@/store/onboardingSlice";
+import { updateFormTwo } from "@/context/onboardingSlice";
 import { toaster } from "@/components/ui/toaster";
 import Logo from "@/assets/Off-Jeay.svg";
 import LogoDark from "@/assets/Off-Jeay-Dark.svg";

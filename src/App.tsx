@@ -1,9 +1,9 @@
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import { Provider } from "react-redux";
 import { Toaster } from "@/components/ui/toaster";
-import store from "./store/store";
+import store from "./context/store/store";
 import "./App.css";
-import OnBoardingSteps from "@/components/global/on-boarding-steps";
+import OnBoardingSteps from "@/containers/on-boarding-steps";
 import ForgotPassword from "@/pages/password-recovery/forgot-password";
 import ContactPage from "./pages/onboarding/contact-page";
 import VerifyEmail from "./pages/password-recovery/verify-email";

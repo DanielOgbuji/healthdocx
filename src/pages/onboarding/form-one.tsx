@@ -16,7 +16,7 @@ import {
 import { useFormik } from "formik";
 import * as Yup from "yup";
 import { useDispatch } from "react-redux";
-import { updateFormOne } from "@/store/onboardingSlice";
+import { updateFormOne } from "@/context/onboardingSlice";
 import {
 	NativeSelectField,
 	NativeSelectRoot,
