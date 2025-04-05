@@ -1,4 +1,7 @@
-import { GeoapifyGeocoderAutocomplete, GeoapifyContext } from "@geoapify/react-geocoder-autocomplete";
+import {
+  GeoapifyGeocoderAutocomplete,
+  GeoapifyContext,
+} from "@geoapify/react-geocoder-autocomplete";
 import { Field } from "@chakra-ui/react";
 
 interface LocationInputProps {
@@ -6,12 +9,26 @@ interface LocationInputProps {
   error?: string;
   onPlaceSelect: (value: string) => void;
   onUserInput: (value: string) => void;
+  onBlur?: () => void;
+  onChange?: (value: string) => void; // Update onChange to accept a value
 }
 
-const LocationInput = ({ value, error, onPlaceSelect, onUserInput }: LocationInputProps) => {
+const LocationInput = ({
+  value,
+  error,
+  onPlaceSelect,
+  onUserInput,
+  onBlur,
+  onChange,
+}: LocationInputProps) => {
   return (
-    <Field.Root invalid={!!error} aria-invalid={!!error} aria-describedby="location-error">
-      <GeoapifyContext apiKey={import.meta.env.VITE_GEOAPIFY_API_KEY}>
+    <Field.Root
+      invalid={!!error} // Reflect the error state
+      aria-invalid={!!error}
+      aria-describedby="location-error"
+      onBlur={onBlur}
+    >
+      <GeoapifyContext apiKey={import.meta.env.VITE_GEOAPIFY_API_KEY} style={{}}>
         <GeoapifyGeocoderAutocomplete
           type="amenity"
           lang="en"
@@ -27,13 +44,18 @@ const LocationInput = ({ value, error, onPlaceSelect, onUserInput }: LocationInp
           placeSelect={(feature) => {
             if (feature?.properties) {
               const { formatted, county } = feature.properties;
-              const locationValue = county && !formatted.includes(county)
-                ? `${formatted}, ${county}`
-                : formatted;
+              const locationValue =
+                county && !formatted.includes(county)
+                  ? `${formatted}, ${county}`
+                  : formatted;
               onPlaceSelect(locationValue);
+              onChange?.(locationValue); // Trigger onChange when a place is selected
             }
           }}
-          onUserInput={onUserInput}
+          onUserInput={(input) => {
+            onUserInput(input);
+            onChange?.(input); // Trigger onChange when the user types
+          }}
           aria-label="Institution Location"
         />
       </GeoapifyContext>

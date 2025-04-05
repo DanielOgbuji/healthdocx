@@ -175,6 +175,21 @@ const OnBoardingFormThree: React.FC<OnBoardingFormThreeProps> = ({
 		[formik, debouncedValidate]
 	);
 
+	// Handle blur event for the location field to mark it as touched
+	const handleLocationBlur = useCallback(() => {
+		formik.setFieldTouched("location", true); // Mark the field as touched
+	}, [formik]);
+
+	// Handle change event for the location field
+	const handleLocationChange = useCallback(
+		(value: string) => {
+			setRawLocation(value);
+			formik.setFieldValue("location", value); // Update the formik value
+			debouncedValidate(); // Trigger validation
+		},
+		[formik, debouncedValidate]
+	);
+
 	// Get error props for fields
 	const getFieldErrorProps = useCallback(
 		(fieldName: keyof FormThreeValues) => ({
@@ -249,6 +264,8 @@ const OnBoardingFormThree: React.FC<OnBoardingFormThreeProps> = ({
 							error={formik.errors.location}
 							onPlaceSelect={handleLocationSelect}
 							onUserInput={handleLocationInput}
+							onBlur={handleLocationBlur}
+							onChange={handleLocationChange} // Pass handleLocationChange to LocationInput
 						/>
 						<Field.ErrorText id="location-error">
 							{formik.errors.location}
