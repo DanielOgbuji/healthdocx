@@ -86,10 +86,12 @@ const PasswordResetForm: React.FC<PasswordResetFormProps> = ({ onSuccess }) => {
 		validationSchema: memoizedValidationSchema,
 		validateOnChange: false,
 		validateOnMount: true,
-		onSubmit: async () => {
-			if (formik.isValid) {
-				try {
-					// Uncomment the following lines to enable real API submission
+		onSubmit: async (values) => {
+			// Handle form submission logic here
+			console.log("Password reset successfully:", values);
+			// Uncomment the following lines to enable real API submission
+			//if (formik.isValid) {
+				//try {
 					/*
 					const response = await fetch("/api/password-reset", {
 						method: "POST",
@@ -112,11 +114,11 @@ const PasswordResetForm: React.FC<PasswordResetFormProps> = ({ onSuccess }) => {
 						console.error("Password reset failed:", errorData);
 					}
 					*/
-				} catch (error) {
-					console.error("Error during password reset:", error);
-				}
-			}
-			// Remove the following lines when using real API
+				//} catch (error) {
+				//	console.error("Error during password reset:", error);
+				//}
+			//}
+			// Remove the following lines when using real API submission
 			setTimeout(() => {
 				navigate("/reset-successful"); // Use navigate instead
 			}, 500);

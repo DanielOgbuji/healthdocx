@@ -48,8 +48,6 @@ const ForgotPassword: React.FC = () => {
 		onSubmit: async (values) => {
 			// Handle form submission logic here
 			console.log("Password reset email submitted:", values);
-
-			// Example API call to the backend for sending a password reset email
 			// Uncomment and replace with your actual API endpoint and logic
 			/*
 			try {
