@@ -23,12 +23,12 @@ const LocationInput = ({
 }: LocationInputProps) => {
   return (
     <Field.Root
-      invalid={!!error} // Reflect the error state
+      //invalid={!!error} // Reflect the error state
       aria-invalid={!!error}
       aria-describedby="location-error"
       onBlur={onBlur}
     >
-      <GeoapifyContext apiKey={import.meta.env.VITE_GEOAPIFY_API_KEY} style={{}}>
+      <GeoapifyContext apiKey={import.meta.env.VITE_GEOAPIFY_API_KEY}>
         <GeoapifyGeocoderAutocomplete
           type="amenity"
           lang="en"
@@ -50,6 +50,7 @@ const LocationInput = ({
                   : formatted;
               onPlaceSelect(locationValue);
               onChange?.(locationValue); // Trigger onChange when a place is selected
+              onBlur?.(); // Call onBlur if provided
             }
           }}
           onUserInput={(input) => {

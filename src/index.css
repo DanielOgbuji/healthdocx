@@ -51,17 +51,17 @@ h1 {
 }
 
 .css-1a7v5ig[data-current] {
-	background-color: #344c38; /*secondary container*/
-	color: #66de88; /*primary*/
+	background-color: #344c38;
+	color: #66de88;
 }
 
 .css-1a7v5ig[data-incomplete] {
-	background-color: rgba(205, 234, 206, 0.04); /*secondary container*/
-	color: rgba(205, 234, 206, 0.4); /*on secondary container*/
+	background-color: rgba(205, 234, 206, 0.04);
+	color: rgba(205, 234, 206, 0.4);
 }
 
 .css-1a7v5ig[data-complete] {
-	background-color: #66de88; /*primary*/
+	background-color: #66de88;
 }
 
 .css-et5dtk .css-0 .css-g5uffv {
@@ -69,29 +69,29 @@ h1 {
 }
 
 .css-et5dtk[data-current] .css-0 .css-ggk2e6 {
-	color: #66de88; /*primary*/
+	color: #66de88;
 	font-weight: bold;
 }
 
 .css-et5dtk[data-current] .css-0 .css-g5uffv {
-	color: rgba(226, 227, 222, 0.8); /*on surface*/
+	color: rgba(226, 227, 222, 0.8);
 }
 
 .css-et5dtk[data-incomplete] .css-0 .css-ggk2e6 {
-	color: rgba(178, 206, 179, 0.8); /*secondary*/
+	color: rgba(178, 206, 179, 0.8);
 }
 
 .css-et5dtk[data-incomplete] .css-0 .css-g5uffv {
-	color: rgba(226, 227, 222, 0.4); /*on surface*/
+	color: rgba(226, 227, 222, 0.4);
 }
 
 .css-et5dtk[data-complete] .css-0 .css-ggk2e6 {
-	color: #e2e3de /*on surface*/;
+	color: #e2e3de;
 	font-weight: bold;
 }
 
 .css-jov7l4 {
-	background-color: #344c38; /*secondary container*/
+	background-color: #344c38;
 }
 
 .css-jov7l4[data-incomplete] {
@@ -123,6 +123,15 @@ h1 {
 	margin-top: 2px;
 }
 
+.chakra-field__root[data-invalid]:focus-within .geoapify-autocomplete-input {
+	border-color: #f87171;
+	outline: 1px solid #f87171;
+}
+
+.chakra-field__root[data-invalid] .geoapify-autocomplete-input {
+	border-color: #f87171;
+}
+
 .password-recovery {
 	background-color: #000000;
 	background-image:
@@ -151,7 +160,7 @@ h1 {
 
 	.css-1a7v5ig[data-current] {
 		background-color: #cdeace;
-		color: #006d34; /*primary*/
+		color: #006d34;
 		border: none;
 	}
 	.css-1a7v5ig[data-incomplete] {
@@ -161,7 +170,7 @@ h1 {
 	}
 
 	.css-1a7v5ig[data-complete] {
-		background-color: rgba(0, 109, 52, 1); /*primary*/
+		background-color: rgba(0, 109, 52, 1);
 		border: none;
 	}
 
@@ -170,12 +179,12 @@ h1 {
 	}
 
 	.css-et5dtk[data-current] .css-0 .css-ggk2e6 {
-		color: #006d34; /*primary*/
+		color: #006d34;
 		font-weight: bold;
 	}
 
 	.css-et5dtk[data-current] .css-0 .css-g5uffv {
-		color: rgba(25, 28, 25, 0.8); /*on surface*/
+		color: rgba(25, 28, 25, 0.8);
 	}
 
 	.css-et5dtk[data-incomplete] .css-0 .css-ggk2e6 {
@@ -183,11 +192,11 @@ h1 {
 	}
 
 	.css-et5dtk[data-incomplete] .css-0 .css-g5uffv {
-		color: rgba(25, 28, 25, 0.4); /*on surface*/
+		color: rgba(25, 28, 25, 0.4);
 	}
 
 	.css-et5dtk[data-complete] .css-0 .css-ggk2e6 {
-		color: #191c19 /*on surface*/;
+		color: #191c19;
 		font-weight: bold;
 	}
 
@@ -291,5 +300,14 @@ h1 {
 			linear-gradient(30deg, rgba(0, 109, 52, 0.2) 1px, transparent 1px),
 			linear-gradient(30deg, rgba(0, 109, 52, 0.2) 1px, #ffffff 1px);
 		background-size: 10px 10px;
+	}
+
+	.chakra-field__root[data-invalid]:focus-within .geoapify-autocomplete-input {
+		border-color: #ef4444; /*error*/
+		outline: 1px solid #ef4444;
+	}
+
+	.chakra-field__root[data-invalid] .geoapify-autocomplete-input {
+		border-color: #ef4444; /*error*/
 	}
 }
