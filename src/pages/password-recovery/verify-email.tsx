@@ -127,7 +127,7 @@ const VerifyEmail: React.FC<VerifyEmailProps> = ({ onSuccess }) => {
 					setOtp(""); // Clear input for a new try
 				}
 				setIsSubmitting(false); // Reset loading state
-			}, 500); // Simulated network delay
+			}, 250); // Simulated network delay
 		}
 	};
 
