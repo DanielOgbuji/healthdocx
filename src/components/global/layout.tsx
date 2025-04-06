@@ -1,7 +1,7 @@
 import { Flex } from "@chakra-ui/react";
 import { ReactNode } from "react";
-import jeayBackdrop from "@/assets/jeay-backdrop.svg";
-import jeayBackdropDark from "@/assets/jeay-backdrop-dark.svg";
+import jeayBackdrop from "@/assets/images/jeay-backdrop.svg";
+import jeayBackdropDark from "@/assets/images/jeay-backdrop-dark.svg";
 
 interface LayoutProps {
     children: ReactNode;

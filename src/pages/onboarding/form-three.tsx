@@ -19,8 +19,8 @@ import {
   NativeSelectField,
   NativeSelectRoot,
 } from "@/components/ui/native-select";
-import Logo from "@/assets/Off-Jeay.svg";
-import LogoDark from "@/assets/Off-Jeay-Dark.svg";
+import Logo from "@/assets/images/Off-Jeay.svg";
+import LogoDark from "@/assets/images/Off-Jeay-Dark.svg";
 import { useColorMode } from "@/components/ui/color-mode";
 import * as motion from "motion/react-client";
 import {

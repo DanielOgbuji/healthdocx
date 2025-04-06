@@ -9,8 +9,8 @@ import {
 } from "@chakra-ui/react";
 import React from "react";
 import { useColorMode } from "@/components/ui/color-mode";
-import pendingImage from "@/assets/animate.svg";
-import pendingImageDark from "@/assets/animate-dark.svg";
+import pendingImage from "@/assets/images/animate.svg";
+import pendingImageDark from "@/assets/images/animate-dark.svg";
 
 interface VerificationPendingProps {
 	legendText: string;

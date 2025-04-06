@@ -1,8 +1,8 @@
 import React from "react";
 import { useColorMode } from "@/components/ui/color-mode";
 import { Button, Container, Image, Stack, Text, Link } from "@chakra-ui/react";
-import handshake from "@/assets/successful-light.svg";
-import handshakeDark from "@/assets/successful-dark.svg";
+import handshake from "@/assets/images/successful-light.svg";
+import handshakeDark from "@/assets/images/successful-dark.svg";
 
 const ResetSuccessful: React.FC = () => {
 	const { colorMode } = useColorMode(); // Get current color mode

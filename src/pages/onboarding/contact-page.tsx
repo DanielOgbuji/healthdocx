@@ -1,11 +1,11 @@
 import { Stack, Text, Link, Box, Flex, Badge } from "@chakra-ui/react";
 import Layout from "../../components/global/layout";
 import ContactForm from "./contact-form";
-import Youtube from "@/assets/youtube.svg";
-import Instagram from "@/assets/instagram.svg";
-import Linkedin from "@/assets/linkedin.svg";
-import Whatsapp from "@/assets/whatsapp.svg";
-import X from "@/assets/x.svg";
+import Youtube from "@/assets/images/youtube.svg";
+import Instagram from "@/assets/images/instagram.svg";
+import Linkedin from "@/assets/images/linkedin.svg";
+import Whatsapp from "@/assets/images/whatsapp.svg";
+import X from "@/assets/images/x.svg";
 
 const ContactPage = () => {
 	return (

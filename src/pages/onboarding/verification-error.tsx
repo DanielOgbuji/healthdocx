@@ -9,7 +9,7 @@ import {
 	Box,
 } from "@chakra-ui/react";
 import React from "react";
-import errorImage from "@/assets/oc-puzzle.svg";
+import errorImage from "@/assets/images/oc-puzzle.svg";
 
 interface VerificationErrorProps {
 	legendText: string;

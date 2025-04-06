@@ -27,8 +27,9 @@ import {
 } from "@/components/ui/password-input";
 import { InfoTip } from "@/components/ui/toggle-tip";
 import { InputGroup } from "@/components/ui/input-group";
-import Logo from "@/assets/Off-Jeay.svg";
-import LogoDark from "@/assets/Off-Jeay-Dark.svg";
+import Logo from "@/assets/images/Off-Jeay.svg";
+import LogoDark from "@/assets/images/Off-Jeay-Dark.svg";
+import NigerianFlag from "@/assets/images/ng.png";
 import * as motion from "motion/react-client";
 import {
 	RoleType,
@@ -381,7 +382,7 @@ const OnBoardingFormOne: React.FC<OnBoardingFormOneProps> = ({
 						</Field.Label>
 						<Group attached width="100%">
 							<InputAddon aria-label="Country Code">
-								<img src="https://flagcdn.com/w20/ng.png" alt="Nigerian Flag" />
+								<img src={NigerianFlag} alt="Nigerian Flag" />
 								&nbsp;+234
 							</InputAddon>
 							<Input

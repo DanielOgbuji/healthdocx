@@ -1,8 +1,8 @@
 import React from "react";
 import { useColorMode } from "@/components/ui/color-mode";
 import { Button, Container, Image, Stack, Text, Link } from "@chakra-ui/react";
-import handshake from "@/assets/welcome-light.svg";
-import handshakeDark from "@/assets/welcome-dark.svg";
+import handshake from "@/assets/images/welcome-light.svg";
+import handshakeDark from "@/assets/images/welcome-dark.svg";
 
 interface WelcomeProps {
 	legendText: string;
