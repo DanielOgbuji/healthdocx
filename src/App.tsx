@@ -5,11 +5,12 @@ import store from "./store/store";
 import "./App.css";
 import OnBoardingSteps from "@/components/global/on-boarding-steps";
 import ContactPage from "./pages/onboarding/contact-page";
+import SignIn from "./pages/sign-in/sign-in";
 
 function App() {
 	return (
 		<>
-			<Provider store={store}>
+		{/*	<Provider store={store}>
 				<Toaster />
 				<Router>
 					<Routes>
@@ -17,7 +18,10 @@ function App() {
 						<Route path="/contact-form" element={<ContactPage />} />
 					</Routes>
 				</Router>
-			</Provider>
+			</Provider>  */}
+			<SignIn
+			    legendText="Welcome back"
+				helperText="Enter your details to access your workspace"/>
 		</>
 	);
 }
