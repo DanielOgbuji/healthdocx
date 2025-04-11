@@ -13,7 +13,7 @@ import ResetSuccessful from "./pages/password-recovery/reset-successful";
 function App() {
 	return (
 		<>
-			<Provider store={store}>
+		{/*	<Provider store={store}>
 				<Toaster />
 				<Router>
 					<Routes>
@@ -25,7 +25,10 @@ function App() {
 						<Route path="/verify-email" element={<VerifyEmail />} />
 					</Routes>
 				</Router>
-			</Provider>
+			</Provider>  */}
+			<SignIn
+			    legendText="Welcome back"
+				helperText="Enter your details to access your workspace"/>
 		</>
 	);
 }
