@@ -51,11 +51,8 @@ const ResetSuccessful: React.FC = () => {
 				_hover={{ bgColor: "primary/85" }}
 				_disabled={{ bgColor: "onSurface/12", color: "onSurface/38" }}
 				focusRingColor="secondary"
-				onClick={() => {
-					window.location.href = "/reset-successful";
-				}}
 			>
-				<Link textDecoration="none" _hover={{ color: "onPrimary" }}>
+				<Link href="/" textDecoration="none" _hover={{ color: "onPrimary" }}>
 					Proceed to log in
 				</Link>
 			</Button>

@@ -233,6 +233,8 @@ const PasswordResetForm: React.FC<PasswordResetFormProps> = ({ onSuccess }) => {
 								<Stack width="100%">
 									<PasswordInput
 										id="password"
+										autoComplete="off"
+										autoFocus
 										placeholder="Create a password"
 										name="password"
 										value={formik.values.password}

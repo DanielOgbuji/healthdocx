@@ -101,7 +101,7 @@ const OnBoardingSteps = () => {
 				</StepsList>
 				<Text textStyle="sm" textAlign="center">
 					Already have an account?{" "}
-					<Link href="#" ml="1" color="onSurface">
+					<Link href="/" ml="1" color="onSurface">
 						Log in
 					</Link>
 				</Text>

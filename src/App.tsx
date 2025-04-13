@@ -9,26 +9,33 @@ import ContactPage from "./pages/onboarding/contact-page";
 import VerifyEmail from "./pages/password-recovery/verify-email";
 import PasswordResetForm from "./pages/password-recovery/password-reset";
 import ResetSuccessful from "./pages/password-recovery/reset-successful";
+import SignIn from "./pages/sign-in/sign-in";
 
 function App() {
 	return (
 		<>
-		{/*	<Provider store={store}>
+			<Provider store={store}>
 				<Toaster />
 				<Router>
 					<Routes>
 						<Route path="/forgot-password" element={<ForgotPassword />} />
 						<Route path="/password-reset" element={<PasswordResetForm />} />
 						<Route path="/reset-successful" element={<ResetSuccessful />} />
-						<Route path="/" element={<OnBoardingSteps />} />
+						<Route path="/home" element={<OnBoardingSteps />} />
 						<Route path="/contact-form" element={<ContactPage />} />
 						<Route path="/verify-email" element={<VerifyEmail />} />
+						<Route
+							path="/"
+							element={
+								<SignIn
+									legendText="Welcome back"
+									helperText="Enter your details to access your workspace"
+								/>
+							}
+						/>
 					</Routes>
 				</Router>
-			</Provider>  */}
-			<SignIn
-			    legendText="Welcome back"
-				helperText="Enter your details to access your workspace"/>
+			</Provider>
 		</>
 	);
 }
