@@ -40,7 +40,6 @@ const OnBoardingSteps = () => {
 				const message = "Leaving this page will interrupt your onboarding process. Are you sure you want to leave?";
 				e.preventDefault();
 				e.returnValue = message;
-				return message;
 			}
 		},
 		[step]
@@ -65,7 +64,7 @@ const OnBoardingSteps = () => {
 			orientation="vertical"
 			height="100%"
 			width="100%"
-			count={4}
+			count={Object.keys(lazySteps).length}
 			gap="12px"
 			p="12px"
 		>
@@ -139,11 +138,11 @@ const OnBoardingSteps = () => {
 					py={{ base: "12", lg: "0" }}
 				>
 					{
-						[
-							{
-								step: 0,
-								content: (
-									<StepsContent index={0} width={{ base: "80%", lg: "50%" }}>
+						new Map([
+							[
+								0,
+								(
+									<StepsContent key={0} index={0} width={{ base: "80%", lg: "50%" }}>
 										<StepComponent
 											legendText="Create an account"
 											helperText="Fill in any required details as they appears on your National ID."
@@ -151,11 +150,11 @@ const OnBoardingSteps = () => {
 										/>
 									</StepsContent>
 								),
-							},
-							{
-								step: 1,
-								content: (
-									<StepsContent index={1} width={{ base: "80%", lg: "50%" }}>
+							],
+							[
+								1,
+								(
+									<StepsContent key={1} index={1} width={{ base: "80%", lg: "50%" }}>
 										<StepComponent
 											legendText="Verify your email"
 											helperText="We sent a code to"
@@ -164,11 +163,11 @@ const OnBoardingSteps = () => {
 										/>
 									</StepsContent>
 								),
-							},
-							{
-								step: 2,
-								content: (
-									<StepsContent index={2} width={{ base: "80%", lg: "50%" }}>
+							],
+							[
+								2,
+								(
+									<StepsContent key={2} index={2} width={{ base: "80%", lg: "50%" }}>
 										<StepComponent
 											legendText="Setup institution details"
 											helperText="Fill in your institution details correctly."
@@ -176,21 +175,21 @@ const OnBoardingSteps = () => {
 										/>
 									</StepsContent>
 								),
-							},
-							{
-								step: 3,
-								content: (
-									<StepsContent index={3}>
+							],
+							[
+								3,
+								(
+									<StepsContent key={3} index={3}>
 										<Stack>
 											<StepComponent legendText="Your institution is under review." />
 										</Stack>
 									</StepsContent>
 								),
-							},
-							{
-								step: 4,
-								content: (
-									<StepsCompletedContent width={{ base: "80%", lg: "50%" }}>
+							],
+							[
+								4,
+								(
+									<StepsCompletedContent key={4} width={{ base: "80%", lg: "50%" }}>
 										<StepComponent
 											legendText="Welcome to Healthdocx!"
 											helperText={`Great news! Your institution has been successfully verified.
@@ -198,8 +197,8 @@ You're now ready to streamline your medical record management with secure, digit
 										/>
 									</StepsCompletedContent>
 								),
-							},
-						].find((s) => s.step === step)?.content
+							],
+						]).get(step)
 					}
 				</Stack>
 			</Suspense>
