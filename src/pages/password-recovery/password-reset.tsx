@@ -91,8 +91,8 @@ const PasswordResetForm: React.FC<PasswordResetFormProps> = ({ onSuccess }) => {
 			console.log("Password reset successfully:", values);
 			// Uncomment the following lines to enable real API submission
 			//if (formik.isValid) {
-				//try {
-					/*
+			//try {
+			/*
 					const response = await fetch("/api/password-reset", {
 						method: "POST",
 						headers: {
@@ -114,9 +114,9 @@ const PasswordResetForm: React.FC<PasswordResetFormProps> = ({ onSuccess }) => {
 						console.error("Password reset failed:", errorData);
 					}
 					*/
-				//} catch (error) {
-				//	console.error("Error during password reset:", error);
-				//}
+			//} catch (error) {
+			//	console.error("Error during password reset:", error);
+			//}
 			//}
 			// Remove the following lines when using real API submission
 			setTimeout(() => {
@@ -174,7 +174,7 @@ const PasswordResetForm: React.FC<PasswordResetFormProps> = ({ onSuccess }) => {
 				overflow="hidden"
 			>
 				<motion.div
-					initial={{ y: "100%", opacity: 0 }}
+					initial={{ y: "50%", opacity: 0 }}
 					animate={{ y: "0", opacity: 1 }}
 					transition={{ duration: 0.5, ease: "easeOut" }}
 					style={{
