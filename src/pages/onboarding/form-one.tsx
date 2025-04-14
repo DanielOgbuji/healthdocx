@@ -154,6 +154,7 @@ const OnBoardingFormOne: React.FC<OnBoardingFormOneProps> = ({
 		validateOnMount: true,
 		onSubmit: async (values: FormOneValues) => {
 			// Uncomment and modify this section when integrating with the backend:
+			formik.setSubmitting(true);
 			/*try {
 				const response = await axios.post("/api/submit", values, {
 					headers: {
@@ -465,6 +466,7 @@ const OnBoardingFormOne: React.FC<OnBoardingFormOneProps> = ({
 				<Button
 					type="submit"
 					variant="solid"
+					loading={formik.isSubmitting}
 					bgColor="primary"
 					color="onPrimary"
 					fontWeight="bold"
@@ -473,8 +475,9 @@ const OnBoardingFormOne: React.FC<OnBoardingFormOneProps> = ({
 					focusRingColor="secondary"
 					disabled={!formik.isValid || formik.isSubmitting}
 					aria-disabled={!formik.isValid || formik.isSubmitting}
+					aria-label="Confirm form submission"
 				>
-					Get Started
+					{formik.isSubmitting ? "Submitting..." : "Get Started"}
 					<Box className="material-symbols-outlined" fontSize="lg">
 						{!formik.isSubmitting && formik.isValid && (
 							<motion.div

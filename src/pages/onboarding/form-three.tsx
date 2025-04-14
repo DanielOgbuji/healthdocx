@@ -1,4 +1,4 @@
-import React, { useState, useMemo, useEffect, useCallback } from "react";
+import React, { useMemo, useEffect, useCallback } from "react";
 import { debounce } from "lodash";
 import {
 	Button,
@@ -19,6 +19,8 @@ import {
 	NativeSelectField,
 	NativeSelectRoot,
 } from "@/components/ui/native-select";
+import { toaster } from "@/components/ui/toaster";
+import axios from "axios";
 import Logo from "@/assets/images/Off-Jeay.svg";
 import LogoDark from "@/assets/images/Off-Jeay-Dark.svg";
 import { useColorMode } from "@/components/ui/color-mode";
@@ -97,7 +99,6 @@ const OnBoardingFormThree: React.FC<OnBoardingFormThreeProps> = ({
 }) => {
 	const { colorMode } = useColorMode();
 	const dispatch = useDispatch();
-	const [rawLocation, setRawLocation] = useState("");
 
 	// Initial form values
 	const initialValues: FormThreeValues = {
@@ -116,29 +117,32 @@ const OnBoardingFormThree: React.FC<OnBoardingFormThreeProps> = ({
 		validateOnMount: true,
 		onSubmit: async (values) => {
 			// Ensure the latest location is used
-			const finalLocation = values.location || rawLocation;
-			const formThreeData = { ...values, location: finalLocation };
+			const formThreeData = { ...values };
+			formik.setSubmitting(true);
+			// Uncomment the following block to simulate submission to a real backend in production.
 			try {
-				// Uncomment the following block to simulate submission to a real backend in production.
 				/*
-        const response = await fetch("/api/submit", {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify(values),
-        });
-        if (!response.ok) {
-          throw new Error("Network response was not ok");
-        }
-        const result = await response.json();
-        // Optionally, we can handle the result (display a success message)
-        */
+				const response = await axios.post("/api/random", values);
+				if (response.status !== 200) {
+					throw new Error("Network response was not ok");
+				}
+				const result = response.data;
+				*/
 				dispatch(updateFormThree(formThreeData));
 				onSuccess?.();
 			} catch (error) {
 				console.error("Submission error:", error);
-				// Optionally, handle the error (e.g., display an error message)
+				const errorMessage = axios.isAxiosError(error)
+					? error.message
+					: "An error occurred while submitting the form. Please try again later.";
+				toaster.create({
+					duration: 3000,
+					title: "Error",
+					description: errorMessage,
+					type: "error",
+				});
+			} finally {
+				formik.setSubmitting(false);
 			}
 		},
 	});
@@ -149,7 +153,6 @@ const OnBoardingFormThree: React.FC<OnBoardingFormThreeProps> = ({
 	// Consolidated location update handler for both user input and change events
 	const handleLocationUpdate = useCallback(
 		(value: string) => {
-			setRawLocation(value);
 			formik.setFieldValue("location", value);
 			debouncedValidate();
 		},
@@ -226,7 +229,7 @@ const OnBoardingFormThree: React.FC<OnBoardingFormThreeProps> = ({
 							value={formik.values.institutionName}
 							onChange={handleChangeDebounced}
 							onBlur={formik.handleBlur}
-							aria-label="Institution Name"
+							aria-label="Institution Name - Add the corporate name"
 						/>
 						<Field.ErrorText id="institutionName-error">
 							{formik.errors.institutionName}
@@ -271,7 +274,7 @@ const OnBoardingFormThree: React.FC<OnBoardingFormThreeProps> = ({
 								onChange={handleChangeDebounced}
 								onBlur={formik.handleBlur}
 								items={[...INSTITUTION_TYPE_OPTIONS]}
-								aria-label="Institution Type"
+								aria-label="Institution Type - Choose type"
 							/>
 						</NativeSelectRoot>
 						<Field.ErrorText id="institutionType-error">
@@ -295,7 +298,7 @@ const OnBoardingFormThree: React.FC<OnBoardingFormThreeProps> = ({
 								onChange={handleChangeDebounced}
 								onBlur={formik.handleBlur}
 								items={[...SIZE_OPTIONS]}
-								aria-label="Institution Size"
+								aria-label="Institution Size - Choose size category"
 							/>
 						</NativeSelectRoot>
 						<Field.ErrorText id="size-error">
@@ -319,7 +322,7 @@ const OnBoardingFormThree: React.FC<OnBoardingFormThreeProps> = ({
 								value={formik.values.licenseNumber}
 								onChange={handleChangeDebounced}
 								onBlur={formik.handleBlur}
-								aria-label="License Number"
+								aria-label="License Number - Enter license or reg number"
 							/>
 						</Group>
 						<Field.HelperText>
@@ -335,6 +338,7 @@ const OnBoardingFormThree: React.FC<OnBoardingFormThreeProps> = ({
 				<Button
 					type="submit"
 					variant="solid"
+					loading={formik.isSubmitting}
 					disabled={!formik.isValid || formik.isSubmitting}
 					aria-disabled={!formik.isValid || formik.isSubmitting}
 					color="onPrimary"
@@ -343,9 +347,10 @@ const OnBoardingFormThree: React.FC<OnBoardingFormThreeProps> = ({
 					_hover={{ bgColor: "primary/85" }}
 					_disabled={{ bgColor: "onSurface/12", color: "onSurface/38" }}
 					focusRingColor="secondary"
+					aria-label="Confirm form submission"
 				>
-					Confirm
-					<Box className="material-symbols-outlined" fontSize="xl">
+					{formik.isSubmitting ? "Submitting..." : "Confirm"}
+					<Box className="material-symbols-outlined" fontSize="xl" aria-hidden>
 						{!formik.isSubmitting && formik.isValid && (
 							<motion.div
 								initial={{ transform: "translateX(0px)" }}
