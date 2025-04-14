@@ -1,4 +1,5 @@
 import React, { useState, useCallback, useEffect, useMemo } from "react";
+//import axios from "axios"; // Uncomment if you need to use axios for API calls
 import { useColorMode } from "@/components/ui/color-mode";
 import { debounce } from "lodash";
 import {
@@ -38,7 +39,10 @@ import {
 	PASSWORD_MAX_LENGTH,
 	ROLE_OPTIONS,
 } from "./formConstants";
-import { formatPhoneNumber, getPasswordStrength } from "@/utils/forms/formUtils";
+import {
+	formatPhoneNumber,
+	getPasswordStrength,
+} from "@/utils/forms/formUtils";
 
 interface FormOneValues {
 	name: string;
@@ -64,7 +68,7 @@ const OnBoardingFormOne: React.FC<OnBoardingFormOneProps> = ({
 	const dispatch = useDispatch();
 	const [passwordStrength, setPasswordStrength] = useState(0);
 
-	// Memoized validation schema for form fields
+	// Memoized validation schema to avoid re-creation on every render
 	const memoizedValidationSchema = useMemo(
 		() =>
 			Yup.object({
@@ -148,33 +152,35 @@ const OnBoardingFormOne: React.FC<OnBoardingFormOneProps> = ({
 		validationSchema: memoizedValidationSchema,
 		validateOnChange: false,
 		validateOnMount: true,
-		onSubmit: async (values) => {
-			try {
-				// Uncomment the following block to simulate submission to a real backend in production.
-				/*
-				const response = await fetch("/api/submit", {
-					method: "POST",
+		onSubmit: async (values: FormOneValues) => {
+			// Uncomment and modify this section when integrating with the backend:
+			/*try {
+				const response = await axios.post("/api/submit", values, {
 					headers: {
 						"Content-Type": "application/json",
 					},
-					body: JSON.stringify(values),
 				});
-				if (!response.ok) {
+				if (response.status !== 200) {
 					throw new Error("Network response was not ok");
 				}
-				const result = await response.json();
-				// Optionally, we can handle the result (display a success message)
-				*/
 				dispatch(updateFormOne(values));
 				onSuccess?.();
 			} catch (error) {
-				// Handle error appropriately in production
 				console.error("Error submitting form:", error);
+			}
+				
+		}, */
+			if (values) {
+				dispatch(updateFormOne(values));
+				onSuccess?.();
+			} else {
+				console.log("Form not submitted. Please try again.");
 			}
 		},
 	});
 
-	// Debounced validation to improve performance
+	// Debounced validation to improve performance and avoid excessive validation calls.
+	// It delays the validation until the user has stopped typing for a specified amount of time.
 	const debouncedValidate = useCallback(
 		debounce(() => formik.validateForm(), 400),
 		[formik.validateForm]
@@ -308,6 +314,7 @@ const OnBoardingFormOne: React.FC<OnBoardingFormOneProps> = ({
 								onBlur={formik.handleBlur}
 								aria-label="Full Name"
 								ps="42px"
+								aria-describedby="name-error"
 							/>
 						</InputGroup>
 						<Field.ErrorText id="name-error">
@@ -343,6 +350,7 @@ const OnBoardingFormOne: React.FC<OnBoardingFormOneProps> = ({
 								onBlur={formik.handleBlur}
 								aria-label="Email Address"
 								ps="42px"
+								aria-describedby="email-error"
 							/>
 						</InputGroup>
 						<Field.ErrorText id="email-error">
@@ -398,6 +406,7 @@ const OnBoardingFormOne: React.FC<OnBoardingFormOneProps> = ({
 								}}
 								onBlur={formik.handleBlur}
 								aria-label="Phone Number"
+								aria-describedby="phone-error"
 							/>
 						</Group>
 						<Field.ErrorText id="phone-error">
@@ -436,6 +445,7 @@ const OnBoardingFormOne: React.FC<OnBoardingFormOneProps> = ({
 									onBlur={formik.handleBlur}
 									aria-label="Password"
 									ps="44px"
+									aria-describedby="password-error"
 								/>
 							</InputGroup>
 							<Field.ErrorText id="password-error">
