@@ -1,5 +1,5 @@
 import React, { useState, useCallback, useEffect, useMemo } from "react";
-//import axios from "axios"; // Uncomment if you need to use axios for API calls
+import axios from "axios";
 import { useColorMode } from "@/components/ui/color-mode";
 import { debounce } from "lodash";
 import {
@@ -14,6 +14,7 @@ import {
 	Link,
 	Stack,
 } from "@chakra-ui/react";
+import { toaster } from "@/components/ui/toaster";
 import { useFormik } from "formik";
 import * as Yup from "yup";
 import { useDispatch } from "react-redux";
@@ -155,7 +156,8 @@ const OnBoardingFormOne: React.FC<OnBoardingFormOneProps> = ({
 		onSubmit: async (values: FormOneValues) => {
 			// Uncomment and modify this section when integrating with the backend:
 			formik.setSubmitting(true);
-			/*try {
+			try {
+				/*
 				const response = await axios.post("/api/submit", values, {
 					headers: {
 						"Content-Type": "application/json",
@@ -164,18 +166,23 @@ const OnBoardingFormOne: React.FC<OnBoardingFormOneProps> = ({
 				if (response.status !== 200) {
 					throw new Error("Network response was not ok");
 				}
+				const result = response.data;
+				*/
 				dispatch(updateFormOne(values));
 				onSuccess?.();
 			} catch (error) {
-				console.error("Error submitting form:", error);
-			}
-				
-		}, */
-			if (values) {
-				dispatch(updateFormOne(values));
-				onSuccess?.();
-			} else {
-				console.log("Form not submitted. Please try again.");
+				console.error("Submission error:", error);
+				const errorMessage = axios.isAxiosError(error)
+					? error.message
+					: "An error occurred while submitting the form. Please try again later.";
+				toaster.create({
+					duration: 3000,
+					title: "Error",
+					description: errorMessage,
+					type: "error",
+				});
+			} finally {
+				formik.setSubmitting(false);
 			}
 		},
 	});

@@ -122,7 +122,10 @@ const OnBoardingFormThree: React.FC<OnBoardingFormThreeProps> = ({
 			// Uncomment the following block to simulate submission to a real backend in production.
 			try {
 				/*
-				const response = await axios.post("/api/random", values);
+				const response = await axios.post("/api/random", values, {
+					headers: {
+						"Content-Type": "application/json",
+					});
 				if (response.status !== 200) {
 					throw new Error("Network response was not ok");
 				}
