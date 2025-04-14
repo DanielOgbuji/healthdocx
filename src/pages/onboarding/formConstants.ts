@@ -13,7 +13,7 @@ export const ROLE_OPTIONS = [
 	"Other",
 ] as const;
 export const PASSWORD_MIN_LENGTH = 8;
-export const PASSWORD_MAX_LENGTH = 128;
+export const PASSWORD_MAX_LENGTH = 50;
 export const PASSWORD_REGEX = {
 	UPPERCASE: /[A-Z]/,
 	LOWERCASE: /[a-z]/,

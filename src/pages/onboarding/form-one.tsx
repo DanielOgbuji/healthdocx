@@ -92,7 +92,7 @@ const OnBoardingFormOne: React.FC<OnBoardingFormOneProps> = ({
 					),
 				email: Yup.string()
 					.email("Invalid email format")
-					.max(254, "Email must not exceed 254 characters")
+					.max(75, "Email must not exceed 75 characters")
 					.required("Email is required"),
 				phone: Yup.string()
 					.matches(

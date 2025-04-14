@@ -45,7 +45,7 @@ const validationSchema = Yup.object({
 	location: Yup.string()
 		.required("Location is required")
 		.min(5, "Must be at least 5 characters")
-		.max(200, "Must not exceed 200 characters"),
+		.max(100, "Must not exceed 100 characters"),
 	institutionType: Yup.string()
 		.oneOf(
 			[...INSTITUTION_TYPE_OPTIONS],
