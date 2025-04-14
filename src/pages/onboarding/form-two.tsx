@@ -101,12 +101,26 @@ const OnBoardingFormTwo: React.FC<OnBoardingFormTwoProps> = ({
 				if (response.status === 200 && response.data.valid) {
 					dispatch(updateFormTwo({ otp }));
 					onSuccess?.();
+					toaster.create({
+						duration: 3000,
+						title: "Success",
+						description: "Your account has been verified successfully.",
+						type: "success",
+					});
 				} else {
 					setError(response.data.message || "Incorrect code. Please try again.");
 					setOtp("");
 				}
 			} catch (error: any) {
 				setError(error.response?.data?.message || "Server error. Please try again later.");
+				console.error("Submission error:", error);
+				const errorMessage = "An error occurred verifying the code. Please try again later.";
+				toaster.create({
+					duration: 3000,
+					title: "Error",
+					description: errorMessage,
+					type: "error",
+				});
 			} finally {
 				setLoading(false);
 			}

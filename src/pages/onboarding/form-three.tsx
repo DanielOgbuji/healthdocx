@@ -20,7 +20,7 @@ import {
 	NativeSelectRoot,
 } from "@/components/ui/native-select";
 import { toaster } from "@/components/ui/toaster";
-import axios from "axios";
+//import axios from "axios";
 import Logo from "@/assets/images/Off-Jeay.svg";
 import LogoDark from "@/assets/images/Off-Jeay-Dark.svg";
 import { useColorMode } from "@/components/ui/color-mode";
@@ -119,25 +119,25 @@ const OnBoardingFormThree: React.FC<OnBoardingFormThreeProps> = ({
 			// Ensure the latest location is used
 			const formThreeData = { ...values };
 			formik.setSubmitting(true);
-			// Uncomment the following block to simulate submission to a real backend in production.
 			try {
+				// Uncomment the following block to simulate submission to a real backend in production.
 				/*
-				const response = await axios.post("/api/random", values, {
-					headers: {
-						"Content-Type": "application/json",
-					});
+				const response = await axios.post("/api/random", values);
 				if (response.status !== 200) {
 					throw new Error("Network response was not ok");
 				}
-				const result = response.data;
 				*/
 				dispatch(updateFormThree(formThreeData));
 				onSuccess?.();
+				toaster.create({
+					duration: 3000,
+					title: "Success",
+					description: "Your account has been verified successfully.",
+					type: "success",
+				});
 			} catch (error) {
 				console.error("Submission error:", error);
-				const errorMessage = axios.isAxiosError(error)
-					? error.message
-					: "An error occurred while submitting the form. Please try again later.";
+				const errorMessage = "An error occurred while submitting the form. Please try again later.";
 				toaster.create({
 					duration: 3000,
 					title: "Error",

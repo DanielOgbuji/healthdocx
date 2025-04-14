@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useCallback, useMemo, useState } from "react";
-import { useNavigate } from 'react-router-dom';
+import { useNavigate } from "react-router-dom";
 import {
 	Box,
 	Button,
@@ -12,6 +12,8 @@ import {
 	Input,
 	Link,
 } from "@chakra-ui/react";
+//import axios from "axios";
+import { toaster } from "@/components/ui/toaster";
 import { InputGroup } from "@/components/ui/input-group";
 import { useFormik } from "formik";
 import * as Yup from "yup";
@@ -48,41 +50,49 @@ const ForgotPassword: React.FC = () => {
 		onSubmit: async (values) => {
 			// Handle form submission logic here
 			console.log("Password reset email submitted:", values);
-			// Uncomment and replace with your actual API endpoint and logic
-			/*
-			try {
-				const response = await fetch('/api/password-recovery', {
-					method: 'POST',
-					headers: {
-						'Content-Type': 'application/json',
-					},
-					body: JSON.stringify({ email: values.email }),
-				});
-
-				if (response.ok) {
+			formik.setSubmitting(true);
+			/* try {
+				const response = await axios.post('/api/password-recovery', { email: values.email });
+				if (response.status === 200) {
 					// Handle successful response
 					setIsVisible(false);
-				setTimeout(() => {
-                        navigate('/verify-email');  // Use navigate instead
-                    }, 500);
+					setTimeout(() => {
+						navigate('/verify-email');  // Use navigate instead
+					}, 500);
 					console.log('Password reset email sent successfully');
-				} else {
-					// Handle error response
-					console.error('Failed to send password reset email');
+					toaster.create({
+						duration: 3000,
+						title: "Success",
+						description: "Password reset email sent successfully",
+						type: "success",
+					});
 				}
 			} catch (error) {
 				// Handle network or other errors
 				console.error('An error occurred:', error);
-			}
-			*/
+				const errorMessage = "An error occurred while submitting the form. Please try again later.";
+				toaster.create({
+					duration: 3000,
+					title: "Error",
+					description: errorMessage,
+					type: "error",
+				});
+			} finally {
+				formik.setSubmitting(false);
+			} */
 
-			// Logic moved from the button's onClick
-			if (formik.isValid) {
-				setIsVisible(false);
-				setTimeout(() => {
-					navigate('/verify-email');  // Use navigate instead
-				}, 500);
-			}
+			//For testing purposes, I simulated a successful submission
+
+			setIsVisible(false);
+			setTimeout(() => {
+				navigate("/verify-email"); // Use navigate instead
+			}, 500);
+			toaster.create({
+				duration: 3000,
+				title: "Success",
+				description: "Password reset email sent successfully",
+				type: "success",
+			});
 		},
 	});
 

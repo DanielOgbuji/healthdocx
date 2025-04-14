@@ -90,29 +90,26 @@ const VerifyEmail: React.FC<VerifyEmailProps> = ({ onSuccess }) => {
 				// -------------------------------
 				// Simulated Server-Side Validation
 				// Will uncomment and modify this section when integrating with our backend:
-				/*
+				
+			/*
 			try {
-				const response = await fetch('/api/validate-otp', {
-					method: 'POST',
-					headers: { 'Content-Type': 'application/json' },
-					body: JSON.stringify({ otp, email: userEmail })
-				});
-				const data = await response.json();
-				if (response.ok && data.valid) {
-					dispatch(updateFormTwo({ otp }));
+				const response = await axios.post('/api/validate-otp', otp);
+
+				if (response.status === 200) {
 					setIsVisible(!isVisible);
 					setTimeout(() => {
-                        navigate('/password-reset');  // Use navigate instead
-                    }, 500);
+						navigate("/password-reset"); // Use navigate instead
+					}, 500);
 					onSuccess?.();
 				} else {
 					setError("Incorrect code. Please try again.");
 					setOtp("");
 				}
-			} catch (err) {
+			} catch (error: any) {
 				setError("Server error. Please try again later.");
 			}
 			*/
+				
 				// -------------------------------
 				// Client-Side Validation (Remove for Production)
 				if (otp === CORRECT_OTP) {

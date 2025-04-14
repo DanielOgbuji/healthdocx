@@ -3,12 +3,14 @@ import { useNavigate } from "react-router-dom";
 import { debounce } from "lodash";
 import { Button, Box, Field, Fieldset, Stack } from "@chakra-ui/react";
 import { useFormik } from "formik";
+//import axios from "axios";
 import * as Yup from "yup";
 import {
 	PasswordInput,
 	PasswordStrengthMeter,
 } from "@/components/ui/password-input";
 import * as motion from "motion/react-client";
+import { toaster } from "@/components/ui/toaster";
 import { getPasswordStrength } from "@/utils/forms/formUtils";
 
 const PASSWORD_MIN_LENGTH = 8;
@@ -86,43 +88,56 @@ const PasswordResetForm: React.FC<PasswordResetFormProps> = ({ onSuccess }) => {
 		validationSchema: memoizedValidationSchema,
 		validateOnChange: false,
 		validateOnMount: true,
+
 		onSubmit: async (values) => {
 			// Handle form submission logic here
 			console.log("Password reset successfully:", values);
+			formik.setSubmitting(true);
 			// Uncomment the following lines to enable real API submission
-			//if (formik.isValid) {
-			//try {
-			/*
-					const response = await fetch("/api/password-reset", {
-						method: "POST",
-						headers: {
-							"Content-Type": "application/json",
-						},
-						body: JSON.stringify({
-							password: formik.values.password,
-							confirmPassword: formik.values.confirmPassword,
-						}),
+			/*try {
+					const response = await axios.post("/api/password-reset", {
+						password: formik.values.password,
+						confirmPassword: formik.values.confirmPassword,
 					});
 
-					if (response.ok) {
+					if (response.status === 200) {
 						onSuccess?.();
 						setTimeout(() => {
-                        navigate('/reset-successful');  // Use navigate instead
-                    }, 500);
-					} else {
-						const errorData = await response.json();
-						console.error("Password reset failed:", errorData);
+							navigate("/reset-successful"); // Use navigate instead
+						}, 500);
+						console.log("Password reset email sent successfully");
+						toaster.create({
+							duration: 3000,
+							title: "Success",
+							description: "Your password has been reset succesfully",
+							type: "success",
+						});
 					}
-					*/
-			//} catch (error) {
-			//	console.error("Error during password reset:", error);
-			//}
-			//}
-			// Remove the following lines when using real API submission
+				} catch (error) {
+					console.error("Error during password reset:", error);
+					const errorMessage =
+						"An error occurred while submitting the form. Please try again later.";
+					toaster.create({
+						duration: 3000,
+						title: "Error",
+						description: errorMessage,
+						type: "error",
+					});
+				} finally {
+					formik.setSubmitting(false);
+				}
+				 */
+			//Remove the following lines when using real API submission
 			setTimeout(() => {
 				navigate("/reset-successful"); // Use navigate instead
 			}, 500);
 			onSuccess?.();
+			toaster.create({
+				duration: 3000,
+				title: "Success",
+				description: "Your password has been successfully reset",
+				type: "success",
+			});
 		},
 	});
 

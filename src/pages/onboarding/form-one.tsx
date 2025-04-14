@@ -1,5 +1,5 @@
 import React, { useState, useCallback, useEffect, useMemo } from "react";
-import axios from "axios";
+//import axios from "axios";
 import { useColorMode } from "@/components/ui/color-mode";
 import { debounce } from "lodash";
 import {
@@ -154,27 +154,26 @@ const OnBoardingFormOne: React.FC<OnBoardingFormOneProps> = ({
 		validateOnChange: false,
 		validateOnMount: true,
 		onSubmit: async (values: FormOneValues) => {
-			// Uncomment and modify this section when integrating with the backend:
 			formik.setSubmitting(true);
 			try {
+				// Uncomment and modify this section when integrating with the backend:
 				/*
-				const response = await axios.post("/api/submit", values, {
-					headers: {
-						"Content-Type": "application/json",
-					},
-				});
+				const response = await axios.post("/api/submit", values);
 				if (response.status !== 200) {
 					throw new Error("Network response was not ok");
 				}
-				const result = response.data;
 				*/
 				dispatch(updateFormOne(values));
 				onSuccess?.();
+				toaster.create({
+					duration: 3000,
+					title: "Success",
+					description: "Your account has been created successfully.",
+					type: "success",
+				});
 			} catch (error) {
 				console.error("Submission error:", error);
-				const errorMessage = axios.isAxiosError(error)
-					? error.message
-					: "An error occurred while submitting the form. Please try again later.";
+				const errorMessage = "An error occurred while submitting the form. Please try again later.";
 				toaster.create({
 					duration: 3000,
 					title: "Error",
