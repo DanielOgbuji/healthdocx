@@ -10,7 +10,13 @@ import Logo from "@/assets/images/Off-Jeay.svg";
 import LogoDark from "@/assets/images/Off-Jeay-Dark.svg";
 import { useAnimate } from "motion/react";
 import { useColorMode } from "@/components/ui/color-mode";
-import { INITIAL_RESEND_TIMER, CORRECT_OTP, MAX_RESEND_ATTEMPTS, RESEND_TIMER_INCREMENT } from "@/pages/onboarding/formConstants";
+import {
+	INITIAL_RESEND_TIMER,
+	CORRECT_OTP,
+	MAX_RESEND_ATTEMPTS,
+	RESEND_TIMER_INCREMENT,
+} from "@/pages/onboarding/formConstants";
+//import axios from "axios";
 
 interface OnBoardingFormTwoProps {
 	legendText: string;
@@ -31,6 +37,7 @@ const OnBoardingFormTwo: React.FC<OnBoardingFormTwoProps> = ({
 	const [error, setError] = useState("");
 	const [timer, setTimer] = useState(0);
 	const [resendTimer, setResendTimer] = useState(INITIAL_RESEND_TIMER);
+	const [loading, setLoading] = useState(false);
 
 	// Use a ref for resend count instead of state to avoid unnecessary re-renders
 	const resendCountRef = useRef<number>(0);
@@ -78,26 +85,30 @@ const OnBoardingFormTwo: React.FC<OnBoardingFormTwoProps> = ({
 
 		// Validate OTP length
 		if (otp.length === 4) {
+			setLoading(true);
+			setError(""); // Clear previous errors
+
 			// -------------------------------
 			// Simulated Server-Side Validation
 			// Uncomment and modify this section when integrating with the backend:
 			/*
 			try {
-				const response = await fetch('/api/validate-otp', {
-					method: 'POST',
-					headers: { 'Content-Type': 'application/json' },
-					body: JSON.stringify({ otp, email: userEmail })
+				const response = await axios.post('/api/validate-otp', {
+					otp,
+					email: userEmail,
 				});
-				const data = await response.json();
-				if (response.ok && data.valid) {
+
+				if (response.status === 200 && response.data.valid) {
 					dispatch(updateFormTwo({ otp }));
 					onSuccess?.();
 				} else {
-					setError("Incorrect code. Please try again.");
+					setError(response.data.message || "Incorrect code. Please try again.");
 					setOtp("");
 				}
-			} catch (err) {
-				setError("Server error. Please try again later.");
+			} catch (error: any) {
+				setError(error.response?.data?.message || "Server error. Please try again later.");
+			} finally {
+				setLoading(false);
 			}
 			*/
 			// -------------------------------
@@ -110,6 +121,7 @@ const OnBoardingFormTwo: React.FC<OnBoardingFormTwoProps> = ({
 				setError("Incorrect code. Please try again.");
 				setOtp(""); // Clear input for a new try
 			}
+			setLoading(false);
 		}
 	};
 
@@ -238,8 +250,8 @@ const OnBoardingFormTwo: React.FC<OnBoardingFormTwoProps> = ({
 				<Button
 					type="submit"
 					variant="solid"
-					disabled={otp.length !== 4}
-					aria-disabled={otp.length !== 4}
+					disabled={otp.length !== 4 || loading}
+					aria-disabled={otp.length !== 4 || loading}
 					width={{ base: "100%", lg: "75%" }}
 					color="onPrimary"
 					fontWeight="bold"
@@ -248,7 +260,7 @@ const OnBoardingFormTwo: React.FC<OnBoardingFormTwoProps> = ({
 					_disabled={{ bgColor: "onSurface/12", color: "onSurface/38" }}
 					focusRingColor="secondary"
 				>
-					Continue
+					{loading ? "Verifying..." : "Continue"}
 				</Button>
 			</Fieldset.Root>
 		</form>
