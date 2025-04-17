@@ -32,7 +32,7 @@ const OnBoardingSteps = () => {
 	const formOneData = useSelector(
 		(state: RootState) => state.onboarding.formOne
 	);
-	const email = formOneData?.email || "your email";
+	const email = formOneData?.user.email || "your email";
 
 	const handleBeforeUnload = useCallback(
 		(e: BeforeUnloadEvent) => {

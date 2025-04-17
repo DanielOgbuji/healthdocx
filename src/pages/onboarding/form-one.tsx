@@ -1,4 +1,5 @@
 import React, { useState, useCallback, useEffect, useMemo } from "react";
+import { FormOneResponse } from "@/context/onboardingSlice";
 //import axios from "axios";
 import { useColorMode } from "@/components/ui/color-mode";
 import { debounce } from "lodash";
@@ -52,7 +53,6 @@ interface FormOneValues {
 	phone: string;
 	password: string;
 }
-export type { FormOneValues };
 
 interface OnBoardingFormOneProps {
 	legendText: string;
@@ -155,25 +155,65 @@ const OnBoardingFormOne: React.FC<OnBoardingFormOneProps> = ({
 		validateOnMount: true,
 		onSubmit: async (values: FormOneValues) => {
 			formik.setSubmitting(true);
-			try {
-				// Uncomment and modify this section when integrating with the backend:
-				/*
-				const response = await axios.post("/api/submit", values);
-				if (response.status !== 200) {
+			/*try {
+				const response = await axios.post("/api/v1/auth/create-account", values);
+				if (response.status === 200) {
+					// Dispatch the action to update the Redux store with the user data
+					dispatch(updateFormOne(response.data as FormOneResponse));
+					onSuccess?.();
+					toaster.create({
+						duration: 3000,
+						title: "Success",
+						description: "Your account has been created successfully.",
+						type: "success",
+					});
+				} else if (response.status === 422) {
+					// Handle validation errors
+					const errors: ValidationError[] = response.data.detail;
+					errors.forEach((error: ValidationError) => {
+						formik.setFieldError(error.loc[0], error.msg);
+					});
+					toaster.create({
+						duration: 3000,
+						title: "Error",
+						description: "There were errors in your submission. Please correct them.",
+						type: "error",
+					});
+				} else {
 					throw new Error("Network response was not ok");
 				}
-				*/
-				dispatch(updateFormOne(values));
-				onSuccess?.();
-				toaster.create({
-					duration: 3000,
-					title: "Success",
-					description: "Your account has been created successfully.",
-					type: "success",
-				});
-			} catch (error) {
+			} catch (error: unknown) {
 				console.error("Submission error:", error);
-				const errorMessage = "An error occurred while submitting the form. Please try again later.";
+				let errorMessage = "An error occurred while submitting the form.";
+
+				// Check if the error is an Axios error
+				if (axios.isAxiosError(error)) {
+					// Check if the error has a response
+					if (error.response) {
+						// The request was made and the server responded with a status code
+						// that falls out of the range of 2xx
+						errorMessage =
+							error.response.data.detail?.[0]?.msg ||
+							`Request failed with status code ${error.response.status}. Please try again later.`;
+						console.log("Response data:", error.response.data);
+						console.log("Response status:", error.response.status);
+						console.log("Response headers:", error.response.headers);
+					} else if (error.request) {
+						// The request was made but no response was received
+						// `error.request` is an instance of XMLHttpRequest in the browser and an instance of
+						// http.ClientRequest in node.js
+						errorMessage =
+							"No response received from the server. Please check your network connection and try again.";
+						console.log("Request:", error.request);
+					} else {
+						// Something happened in setting up the request that triggered an Error
+						errorMessage = `An unexpected error occurred: ${error.message}. Please try again.`;
+						console.log("Error", error.message);
+					}
+				} else if (error instanceof Error) {
+					// If it is a known error, use its message
+					errorMessage = `An unexpected error occurred: ${error.message}. Please try again.`;
+				}
 				toaster.create({
 					duration: 3000,
 					title: "Error",
@@ -183,8 +223,52 @@ const OnBoardingFormOne: React.FC<OnBoardingFormOneProps> = ({
 			} finally {
 				formik.setSubmitting(false);
 			}
+		*/
+			//For development purposes only, remove in production
+			// Simulate a successful form submission
+			if (formik.isValid) {
+				// Perform any additional actions if needed when the form is valid
+				console.log("Form is valid:", values);
+				const formOneResponse: FormOneResponse = {
+					user: {
+						name: values.name,
+						email: values.email,
+						role: values.role,
+						phone: values.phone,
+						id: 0, // Replace with actual ID if available
+						is_active: true, // Replace with actual value if available
+						email_verified: false, // Replace with actual value if available
+						organization: {
+							id: 0, // Replace with actual organization ID if available
+							name: "Default Organization", // Replace with actual organization name if available
+							status: "active", // Replace with actual status if available
+							is_active: true, // Replace with actual value if available
+						},
+						is_organization_admin: false, // Replace with actual value if available
+						registration_completed: false, // Replace with actual value if available
+						onboarding_completed: false, // Replace with actual value if available
+						last_onboarding_step: 1, // Replace with actual step if available
+					}, // Adjust as per your actual structure
+					access_token: "dummy_token", // Replace with actual token if available
+					token_type: "Bearer", // Replace with actual token type if available
+				};
+				dispatch(updateFormOne(formOneResponse));
+				onSuccess?.();
+				toaster.create({
+					duration: 3000,
+					title: "Success",
+					description: "Your account has been created successfully.",
+					type: "success",
+				});
+			}
 		},
 	});
+
+	/*interface ValidationError {
+	loc: string[];
+	msg: string;
+	type: string;
+}*/
 
 	// Debounced validation to improve performance and avoid excessive validation calls.
 	// It delays the validation until the user has stopped typing for a specified amount of time.
@@ -483,7 +567,7 @@ const OnBoardingFormOne: React.FC<OnBoardingFormOneProps> = ({
 					aria-disabled={!formik.isValid || formik.isSubmitting}
 					aria-label="Confirm form submission"
 				>
-					{formik.isSubmitting ? "Submitting..." : "Get Started"}
+					Get Started
 					<Box className="material-symbols-outlined" fontSize="lg">
 						{!formik.isSubmitting && formik.isValid && (
 							<motion.div

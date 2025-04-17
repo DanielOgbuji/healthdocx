@@ -12,7 +12,6 @@ import { useAnimate } from "motion/react";
 import { useColorMode } from "@/components/ui/color-mode";
 import {
 	INITIAL_RESEND_TIMER,
-	CORRECT_OTP,
 	MAX_RESEND_ATTEMPTS,
 	RESEND_TIMER_INCREMENT,
 } from "@/pages/onboarding/formConstants";
@@ -87,19 +86,19 @@ const OnBoardingFormTwo: React.FC<OnBoardingFormTwoProps> = ({
 		if (otp.length === 4) {
 			setLoading(true);
 			setError(""); // Clear previous errors
-
-			// -------------------------------
-			// Simulated Server-Side Validation
-			// Uncomment and modify this section when integrating with the backend:
 			/*
 			try {
-				const response = await axios.post('/api/validate-otp', {
+				const response = await axios.post("/api/v1/auth/verify-otp", {
 					otp,
 					email: userEmail,
 				});
 
-				if (response.status === 200 && response.data.valid) {
-					dispatch(updateFormTwo({ otp }));
+				if (response.status === 200) {
+					dispatch(
+						updateFormTwo({
+							is_verified: true,
+						})
+					);
 					onSuccess?.();
 					toaster.create({
 						duration: 3000,
@@ -107,35 +106,81 @@ const OnBoardingFormTwo: React.FC<OnBoardingFormTwoProps> = ({
 						description: "Your account has been verified successfully.",
 						type: "success",
 					});
-				} else {
-					setError(response.data.message || "Incorrect code. Please try again.");
+				} else if (response.status === 422) {
+					// Handle validation errors
+					const errors = response.data.detail;
+					errors.forEach((error: { msg: string }) => {
+						setError(error.msg);
+					});
+					toaster.create({
+						duration: 3000,
+						title: "Error",
+						description: "There were errors in your submission. Please correct them.",
+						type: "error",
+					});
 					setOtp("");
+				} else {
+					throw new Error("Network response was not ok");
 				}
-			} catch (error: any) {
-				setError(error.response?.data?.message || "Server error. Please try again later.");
+			} catch (error: unknown) {
 				console.error("Submission error:", error);
-				const errorMessage = "An error occurred verifying the code. Please try again later.";
+				let errorMessage = "An error occurred while verifying the code. Please try again later.";
+
+				if (axios.isAxiosError(error)) {
+					if (error.response) {
+						errorMessage =
+							error.response.data.detail?.[0]?.msg ||
+							`Request failed with status code ${error.response.status}. Please try again later.`;
+						console.log("Response data:", error.response.data);
+						console.log("Response status:", error.response.status);
+						console.log("Response headers:", error.response.headers);
+					} else if (error.request) {
+						errorMessage =
+							"No response received from the server. Please check your network connection and try again.";
+						console.log("Request:", error.request);
+					} else {
+						errorMessage = `An unexpected error occurred: ${error.message}. Please try again.`;
+						console.log("Error", error.message);
+					}
+				} else if (error instanceof Error) {
+					errorMessage = `An unexpected error occurred: ${error.message}. Please try again.`;
+				}
+
 				toaster.create({
 					duration: 3000,
 					title: "Error",
 					description: errorMessage,
 					type: "error",
 				});
+				setOtp("");
 			} finally {
 				setLoading(false);
 			}
-			*/
-			// -------------------------------
-
-			// Client-Side Validation (Remove for Production)
-			if (otp === CORRECT_OTP) {
-				dispatch(updateFormTwo({ otp }));
-				onSuccess?.();
+		} */
+			// Simulating OTP verification for development purposes, remove in production
+			if (otp !== "1234") {
+				setError("Please enter a valid 4-digit OTP.");
+				toaster.create({
+					duration: 3000,
+					title: "Error",
+					description: "Please enter a valid 4-digit OTP.",
+					type: "error",
+				});
 			} else {
-				setError("Incorrect code. Please try again.");
-				setOtp(""); // Clear input for a new try
+				dispatch(
+					updateFormTwo({
+						is_verified: true,
+					})
+				);
+				toaster.create({
+					duration: 3000,
+					title: "Success",
+					description: "Your OTP has been verified successfully.",
+					type: "success",
+				});
+				console.log("OTP verified successfully:", otp);
+				onSuccess?.();
 			}
-			setLoading(false);
 		}
 	};
 

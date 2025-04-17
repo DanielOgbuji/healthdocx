@@ -1,4 +1,5 @@
 import React, { useMemo, useEffect, useCallback } from "react";
+import { FormThreeResponse } from "@/context/onboardingSlice";
 import { debounce } from "lodash";
 import {
 	Button,
@@ -117,27 +118,71 @@ const OnBoardingFormThree: React.FC<OnBoardingFormThreeProps> = ({
 		validateOnMount: true,
 		onSubmit: async (values) => {
 			// Ensure the latest location is used
-			const formThreeData = { ...values };
+			//const formThreeData = { ...values };
 			formik.setSubmitting(true);
+			/*
 			try {
-				// Uncomment the following block to simulate submission to a real backend in production.
-				/*
-				const response = await axios.post("/api/random", values);
-				if (response.status !== 200) {
+				const response = await axios.post(
+					"/api/v1/organizations",
+					formThreeData
+				);
+				if (response.status === 200) {
+					dispatch(updateFormThree(response.data as FormThreeResponse));
+					onSuccess?.();
+					toaster.create({
+						duration: 3000,
+						title: "Success",
+						description: "Your organization has been created successfully.",
+						type: "success",
+					});
+				} else if (response.status === 422) {
+					// Handle validation errors
+					const errors: ValidationError[] = response.data.detail;
+					errors.forEach((error: ValidationError) => {
+						formik.setFieldError(error.loc[0], error.msg);
+					});
+					toaster.create({
+						duration: 3000,
+						title: "Error",
+						description:
+							"There were errors in your submission. Please correct them.",
+						type: "error",
+					});
+				} else {
 					throw new Error("Network response was not ok");
 				}
-				*/
-				dispatch(updateFormThree(formThreeData));
-				onSuccess?.();
-				toaster.create({
-					duration: 3000,
-					title: "Success",
-					description: "Your account has been verified successfully.",
-					type: "success",
-				});
-			} catch (error) {
+			} catch (error: unknown) {
 				console.error("Submission error:", error);
-				const errorMessage = "An error occurred while submitting the form. Please try again later.";
+				let errorMessage = "An error occurred while submitting the form.";
+
+				// Check if the error is an Axios error
+				if (axios.isAxiosError(error)) {
+					// Check if the error has a response
+					if (error.response) {
+						// The request was made and the server responded with a status code
+						// that falls out of the range of 2xx
+						errorMessage =
+							error.response.data.detail?.[0]?.msg ||
+							`Request failed with status code ${error.response.status}. Please try again later.`;
+						console.log("Response data:", error.response.data);
+						console.log("Response status:", error.response.status);
+						console.log("Response headers:", error.response.headers);
+					} else if (error.request) {
+						// The request was made but no response was received
+						// `error.request` is an instance of XMLHttpRequest in the browser and an instance of
+						// http.ClientRequest in node.js
+						errorMessage =
+							"No response received from the server. Please check your network connection and try again.";
+						console.log("Request:", error.request);
+					} else {
+						// Something happened in setting up the request that triggered an Error
+						errorMessage = `An unexpected error occurred: ${error.message}. Please try again.`;
+						console.log("Error", error.message);
+					}
+				} else if (error instanceof Error) {
+					// If it is a known error, use its message
+					errorMessage = `An unexpected error occurred: ${error.message}. Please try again.`;
+				}
 				toaster.create({
 					duration: 3000,
 					title: "Error",
@@ -147,8 +192,50 @@ const OnBoardingFormThree: React.FC<OnBoardingFormThreeProps> = ({
 			} finally {
 				formik.setSubmitting(false);
 			}
-		},
+		}*/
+		if (formik.isValid) {
+			// Perform any additional actions if needed when the form is valid
+			console.log("Form is valid:", values);
+
+			const formThreeResponse: FormThreeResponse = {
+				institutionName: values.institutionName,
+				location: values.location,
+				institutionType: values.institutionType,
+				size: values.size,
+				licenseNumber: values.licenseNumber,
+				adminstration_id: "", // Provide appropriate value
+				phone: "", // Provide appropriate value
+				email: "", // Provide appropriate value
+				website: "", // Provide appropriate value
+				description: "", // Provide appropriate value
+				id: 0, // Provide appropriate value
+				is_active: true, // Default to true or provide appropriate value
+				status: "Pending", // Provide appropriate value
+				created_at: new Date().toISOString(), // Provide appropriate value
+				updated_at: new Date().toISOString(), // Provide appropriate value
+				verification_notes: "", // Provide appropriate value
+				verified_at: "", // Provide appropriate value
+				created_by: 0, // Provide appropriate value
+				updated_by: 0, // Provide appropriate value
+				verified_by: "", // Provide appropriate value
+			};
+			dispatch(updateFormThree(formThreeResponse));
+			onSuccess?.();
+			toaster.create({
+				duration: 3000,
+				title: "Success",
+				description: "Your institution has been created successfully.",
+				type: "success",
+			});
+		}
+	}
 	});
+
+	/*interface ValidationError {
+		loc: string[];
+		msg: string;
+		type: string;
+	}*/
 
 	// Debounced validation to improve performance using custom hook
 	const debouncedValidate = useDebouncedValidation(formik.validateForm, 300);
@@ -352,7 +439,7 @@ const OnBoardingFormThree: React.FC<OnBoardingFormThreeProps> = ({
 					focusRingColor="secondary"
 					aria-label="Confirm form submission"
 				>
-					{formik.isSubmitting ? "Submitting..." : "Confirm"}
+					Confirm
 					<Box className="material-symbols-outlined" fontSize="xl" aria-hidden>
 						{!formik.isSubmitting && formik.isValid && (
 							<motion.div
