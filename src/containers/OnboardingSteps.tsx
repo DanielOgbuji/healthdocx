@@ -78,6 +78,25 @@ export const OnboardingSteps = () => {
         formComponent: idx === step ? stepData.formComponent : <></>
     }));
 
+    // Warn user about unsaved data on reload for FormOne and FormThree
+    useEffect(() => {
+        const handleBeforeUnload = (e: BeforeUnloadEvent) => {
+            e.preventDefault();
+            e.returnValue = "Your information will not be saved. Are you sure you want to leave?";
+        };
+
+        if (step === 0 || step === 2) {
+            window.addEventListener("beforeunload", handleBeforeUnload);
+        } else {
+            window.removeEventListener("beforeunload", handleBeforeUnload);
+        }
+
+        // Cleanup
+        return () => {
+            window.removeEventListener("beforeunload", handleBeforeUnload);
+        };
+    }, [step]);
+
     useEffect(() => {
         if (completedSteps[step]) {
             setStep((prev) => prev + 1);
