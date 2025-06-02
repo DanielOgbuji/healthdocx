@@ -56,7 +56,7 @@ export const StepsContent = ({ steps }: StepsContentProps) => {
             ))}
             <Steps.CompletedContent>All steps are complete!</Steps.CompletedContent>
 
-            <ButtonGroup size="sm" variant="outline">
+            <ButtonGroup size="sm" variant="outline" display="none">
                 <Steps.PrevTrigger asChild>
                     <Button>Prev</Button>
                 </Steps.PrevTrigger>
