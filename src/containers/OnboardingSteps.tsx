@@ -1,0 +1,103 @@
+import { useEffect, useState, lazy, Suspense } from "react";
+import { Box, Steps, Stack, VStack, Spinner, Text } from "@chakra-ui/react";
+import { MdOutlinePersonOutline, MdOutlineMarkEmailRead, MdOutlineWorkOutline, MdOutlineTimelapse, MdOutlineVerified } from 'react-icons/md';
+import { StepsList } from "@/components/StepsList.tsx";
+import { StepsContent } from "@/components/StepsContent.tsx";
+import { useSelector } from 'react-redux';
+import type { RootState } from '@/store/store';
+
+const FormOne = lazy(() => import("@/components/forms/FormOne.tsx"));
+const FormTwo = lazy(() => import("@/components/forms/FormTwo.tsx"));
+const FormThree = lazy(() => import("@/components/forms/FormThree.tsx"));
+const AccountVerification = lazy(() => import("@/components/forms/AccountVerification.tsx"));
+const FormFive = lazy(() => import("@/components/forms/Welcome"));
+
+const LoadingFallback = () => (
+    <Stack flexGrow="1" height="100%" alignItems="center" justifyContent="center">
+        <VStack>
+            <Spinner borderWidth="4px" color="primary" />
+            <Text color="primary">Loading...</Text>
+        </VStack>
+    </Stack>
+);
+
+export const OnboardingSteps = () => {
+    const [step, setStep] = useState(0);
+    const completedSteps = useSelector((state: RootState) => state.onboarding.completedSteps);
+    const userEmail = useSelector((state: RootState) => state.formOne.email || "");
+    const stepsData = [
+        {
+            title: "Your details",
+            description: "Provide your essential details",
+            icon: MdOutlinePersonOutline,
+            formComponent: <FormOne />,
+            formLegend: "Create an account",
+            formHelperText: "Fill in your details as it is in your National ID."
+        },
+        {
+            title: "Verify your email",
+            description: "Enter your verification code",
+            icon: MdOutlineMarkEmailRead,
+            formComponent: <FormTwo />,
+            formLegend: "Verify your email",
+            formHelperText: (
+                <>
+                    We sent a code to{" "}
+                    {userEmail ? <Box as="span" fontWeight="bold" fontStyle="italic" color="primary">{userEmail}</Box> : "your email"}.
+                </>
+            ),
+        },
+        {
+            title: "Your institution details",
+            description: "Provide your hospital information",
+            icon: MdOutlineWorkOutline,
+            formComponent: <FormThree />,
+            formLegend: "Add institution details",
+            formHelperText: "Fill in your institution details correctly."
+        },
+        {
+            title: "Institution verification",
+            description: "Wait for a quick verification",
+            icon: MdOutlineTimelapse,
+            formComponent: <AccountVerification />,
+            formLegend: "",
+            formHelperText: "",
+        },
+        {
+            title: "Welcome to Healthdocx!",
+            description: "Your account is up and running",
+            icon: MdOutlineVerified,
+            formComponent: <FormFive />,
+            formLegend: "Create an account",
+            formHelperText: "Fill in your details as it is in your National ID."
+        }
+    ];
+    // Only load the current step
+    const steps = stepsData.map((stepData, idx) => ({
+        ...stepData,
+        formComponent: idx === step ? stepData.formComponent : <></>
+    }));
+
+    useEffect(() => {
+        if (completedSteps[step]) {
+            setStep((prev) => prev + 1);
+        }
+    }, [completedSteps, step]);
+
+    return (
+        <Steps.Root
+            step={step}
+            onStepChange={(e) => setStep(e.step)}
+            display="flex"
+            orientation="vertical"
+            width="100%"
+            defaultStep={0}
+            count={steps.length}
+        >
+            <StepsList steps={steps} currentStep={step} />
+            <Suspense fallback={<LoadingFallback />}>
+                <StepsContent steps={steps} />
+            </Suspense>
+        </Steps.Root>
+    );
+};
