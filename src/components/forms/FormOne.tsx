@@ -146,8 +146,18 @@ export default function FormOne() {
                                 placeholder="+234 123 456 7890"
                                 {...registerWithMask(
                                     "phone",
-                                    ["+234 999 999 9999", "0 999 999 9999"],
-                                    { required: "Phone is required" }
+                                    ["+234 999 999 9999"],
+                                    {
+                                        required: "Phone is required",
+                                        validate: (value: string) => {
+                                            // Remove non-digits for length check
+                                            const digits = value.replace(/\D/g, "");
+                                            if (digits.length === 13) {
+                                                return true;
+                                            }
+                                            return "Enter a valid Nigerian phone number";
+                                        }
+                                    }
                                 )}
                             />
                         </InputGroup>

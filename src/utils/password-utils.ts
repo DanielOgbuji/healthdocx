@@ -6,29 +6,29 @@ const PASSWORD_REGEX = {
 	UPPER: /[A-Z]/,
 	LOWER: /[a-z]/,
 	NUMBER: /[0-9]/,
-	SPECIAL_CHAR: /[!@#$%^&*(),._?":{}|<>]/g,
+	SPECIAL_CHAR: /[!@#$%^&*(),._?":{}|<>]/,
 	REPEATING_CHARS: /(.)\1\1/,
 };
 
 const { UPPER, LOWER, NUMBER, SPECIAL_CHAR, REPEATING_CHARS } = PASSWORD_REGEX;
 
 export const calculatePasswordStrength = (pwd: string) => {
-	if (!pwd) return 0;
+    if (!pwd) return 0;
 
-	const hasUpper = UPPER.test(pwd);
-	const hasLower = LOWER.test(pwd);
-	const hasNumber = NUMBER.test(pwd);
-	const hasSpecialChar = SPECIAL_CHAR.test(pwd);
-	const specialChars = (pwd.match(SPECIAL_CHAR) || []).length;
+    const hasUpper = UPPER.test(pwd);
+    const hasLower = LOWER.test(pwd);
+    const hasNumber = NUMBER.test(pwd);
+    const specialChars = (pwd.match(/[!@#$%^&*(),._?":{}|<>]/g) || []).length;
+    const hasSpecialChar = specialChars > 0;
 
-	let strength = 0;
-	if (hasUpper && hasLower) strength++;
-	if (hasNumber && hasSpecialChar) strength++;
+    let strength = 0;
+    if (hasUpper && hasLower) strength++;
+    if (hasNumber && hasSpecialChar) strength++;
     if (specialChars >= 2) strength++;
-	if (pwd.length >= PASSWORD_MIN_LENGTH) strength++;
-	if (REPEATING_CHARS.test(pwd) && strength > 0) strength--;
+    if (pwd.length >= PASSWORD_MIN_LENGTH) strength++;
+    if (REPEATING_CHARS.test(pwd) && strength > 0) strength--;
 
-	return Math.min(strength, 4);
+    return Math.min(strength, 4);
 };
 
 export const validatePassword = (value: string) => {
