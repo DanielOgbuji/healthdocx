@@ -40,7 +40,7 @@ export default function SignIn() {
 
     const onSubmit = handleSubmit((data) => {
         console.log("Form submitted with values:", data);
-        navigate("/sign-up");
+        navigate("/");
     });
 
     return (
@@ -95,6 +95,7 @@ export default function SignIn() {
                                 startElement={<Icon size="md" color="outline"><MdOutlinePersonOutline /></Icon>}>
                                 <Input
                                     aria-describedby={errors.email ? "email-error" : undefined}
+                                    autoFocus
                                     placeholder="Enter your email or Admin ID"
                                     {...register("email", {
                                         required: "Email is required",

@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import { useState } from "react";
 import { useNavigate } from "react-router";
 import {
     Box,
@@ -23,7 +23,7 @@ interface FormValues {
     email: string;
 }
 
-const ForgotPassword: React.FC = () => {
+const ForgotPassword = () => {
     const navigate = useNavigate();
     const [isVisible, setIsVisible] = useState(true);
     const [isSubmitting, setIsSubmitting] = useState(false);

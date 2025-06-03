@@ -15,11 +15,7 @@ interface FormValues {
     confirmPassword: string;
 }
 
-interface PasswordResetFormProps {
-    onSuccess?: () => void;
-}
-
-const PasswordResetForm: React.FC<PasswordResetFormProps> = ({ onSuccess }) => {
+const PasswordResetForm = () => {
     const navigate = useNavigate();
     const [isSubmitting, setIsSubmitting] = useState(false);
 
@@ -46,7 +42,6 @@ const PasswordResetForm: React.FC<PasswordResetFormProps> = ({ onSuccess }) => {
 
             setTimeout(() => {
                 navigate("/reset-successful");
-                onSuccess?.();
                 toaster.create({
                     duration: 3000,
                     title: "Success",
