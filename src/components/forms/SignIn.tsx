@@ -59,7 +59,7 @@ export default function SignIn() {
                     size="lg"
                     w={{ base: "90%", md: "md", lg: "lg" }}
                     px={{ base: "4", lg: "8" }}
-                    pt={{ base: "8", lg: "10" }}
+                    pt={{ base: "6", lg: "8" }}
                     pb={{ base: "4", lg: "8" }}
                     borderStyle="solid"
                     borderWidth="thin"
