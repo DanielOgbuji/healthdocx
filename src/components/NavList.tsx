@@ -40,7 +40,7 @@ const NavList = () => {
                     </List.Item>
                 </List.Root>
             </Box>
-            <Box my="auto" colorPalette="brand" display={{ mdTo2xl: "none" }}>
+            <Box my="auto" colorPalette="brand" display={{ base: "none", mdDown: "flex" }}>
                 <Menu.Root onOpenChange={(details: { open: boolean }) => setIsOpen(details.open)}>
                     <Menu.Trigger asChild>
                         <Button variant="outline" size="sm">

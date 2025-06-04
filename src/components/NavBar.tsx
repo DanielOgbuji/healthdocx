@@ -13,13 +13,14 @@ const NavBar = () => {
     return (
         <Flex
             position="fixed"
+            bgColor="currentBg"
             width="full"
             px={{ xl: "6vw", lg: "6vw", md: "6vw", sm:"6vw", base: "4" }}
             height="72px"
             borderBottom="1px solid"
             borderColor="outline/20"
         >
-            <Flex gap="4" alignItems="center" height="full" pr={{ mdDown: "4", mdTo2xl: "12" }}>
+            <Flex gap="4" alignItems="center" height="full" pr={{ mdDown: "4", base: "12" }}>
                 <Image
                     src={colorMode === "dark" ? LogoDark : Logo}
                     width="36px"
