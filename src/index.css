@@ -34,7 +34,8 @@ body {
 
 a.active {
 	background-color: rgba(102, 222, 136, 0.05);
-	border-bottom: 1px solid #66de88;
+	border-bottom: 1px solid;
+	border-color: #66de88;
 	border-radius: none;
 	color: #66de88;
 	box-sizing: content-box;
@@ -60,7 +61,16 @@ a.active {
 
 	a.active {
 		background-color: rgba(0, 109, 52, 0.05);
-		border-bottom: 1px solid #006d34;
+		border-bottom: 1px solid;
+		border-bottom: #006d34;
 		color: #006d34;
+	}
+}
+
+@media screen and (max-width: 47.9975rem) {
+	a.active {
+		box-sizing: border-box;
+		border-bottom: none;
+		border-right: 1px solid;
 	}
 }

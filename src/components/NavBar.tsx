@@ -14,12 +14,12 @@ const NavBar = () => {
         <Flex
             position="fixed"
             width="full"
-            px={{ xl: "8vw", lg: "6vw", md: "8vw" }}
+            px={{ xl: "6vw", lg: "6vw", md: "6vw", sm:"6vw", base: "4" }}
             height="72px"
             borderBottom="1px solid"
             borderColor="outline/20"
         >
-            <Flex gap="4" alignItems="center" height="full" pr="12">
+            <Flex gap="4" alignItems="center" height="full" pr={{ mdDown: "4", mdTo2xl: "12" }}>
                 <Image
                     src={colorMode === "dark" ? LogoDark : Logo}
                     width="36px"
@@ -60,7 +60,7 @@ const NavBar = () => {
                 </IconButton>
                 <Avatar.Root size="sm">
                     <Avatar.Fallback name="Peace Amarachi" />
-                    <Avatar.Image src="" />
+                    <Avatar.Image src="#" />
                 </Avatar.Root>
             </Flex>
         </Flex>
