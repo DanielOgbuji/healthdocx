@@ -62,7 +62,7 @@ a.active {
 	a.active {
 		background-color: rgba(0, 109, 52, 0.05);
 		border-bottom: 1px solid;
-		border-bottom: #006d34;
+		border-color: #006d34;
 		color: #006d34;
 	}
 }
