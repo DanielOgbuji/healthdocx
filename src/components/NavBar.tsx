@@ -1,6 +1,7 @@
 import { memo } from "react";
 import { Button, Box, Flex, Image, Separator, Text, HStack, IconButton, Icon, Avatar } from "@chakra-ui/react";
-import { MdOutlineNotifications, MdAdd } from "react-icons/md";
+import { MdOutlineNotifications } from "react-icons/md";
+import { IoMdAdd } from "react-icons/io";
 import { RxLightningBolt } from "react-icons/rx";
 import NavList from "@/components/NavList";
 import Logo from "@/assets/images/Off-Jeay.svg";
@@ -49,11 +50,11 @@ const NavBar = () => {
                 gap="4"
             >
                 <HStack gap="4">
-                    <Button variant="outline" size="sm" p={{ xlDown: "0" }} >
+                    <Button variant="plain" size="sm" p={{ xlDown: "0" }} >
                         <RxLightningBolt /> <Box as="span" fontSize="sm" display={{ xlDown: "none" }}>Upgrade now</Box>
                     </Button>
-                    <Button variant="solid" size="sm" p={{ lgDown: "0" }}>
-                        <Icon size="md"><MdAdd /></Icon> <Box as="span" fontSize="sm" display={{ lgDown: "none" }}>Invite team</Box>
+                    <Button variant="surface" size="sm" p={{ lgDown: "0" }}>
+                        <Icon size="md"><IoMdAdd /></Icon> <Box as="span" fontSize="sm" display={{ lgDown: "none" }}>Invite team</Box>
                     </Button>
                 </HStack>
                 <IconButton variant="ghost" size="sm" aria-label="Notifications" borderRadius="full">
