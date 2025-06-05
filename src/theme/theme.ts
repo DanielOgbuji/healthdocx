@@ -185,6 +185,9 @@ const config = defineConfig({
                 onSurface: {
                     value: {base: "{colors.neutral.10}", _dark: "{colors.neutral.90}"},
                 },
+                backface: {
+                    value: {base: "{colors.white}", _dark: "{colors.black}"},
+                },
 
                 surfaceVariant: {
                     value: {
