@@ -50,7 +50,7 @@ const NavBar = () => {
                 gap="4"
             >
                 <HStack gap="4">
-                    <Button variant="plain" size="sm" p={{ xlDown: "0" }} >
+                    <Button variant="ghost" size="sm" p={{ xlDown: "0" }} >
                         <RxLightningBolt /> <Box as="span" fontSize="sm" display={{ xlDown: "none" }}>Upgrade now</Box>
                     </Button>
                     <Button variant="surface" size="sm" p={{ lgDown: "0" }}>
