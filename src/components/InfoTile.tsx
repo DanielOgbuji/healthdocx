@@ -26,14 +26,14 @@ const InfoTile = () => {
                     </Menu.Trigger>
                     <Portal>
                         <Menu.Positioner>
-                            <Menu.Content bgColor="backface" borderWidth="1px" borderColor="primary/20">
-                                <Menu.Item value="new-txt" asChild _hover={{ bgColor: "primary/8" }} color="primary">
+                            <Menu.Content borderWidth="1px" borderColor="primary/20">
+                                <Menu.Item value="new-txt" asChild _hover={{ bgColor: "brand.subtle" }} color="brand.fg">
                                     <NavLink to="/" end>
                                         <FiCamera />
                                         Camera
                                     </NavLink>
                                 </Menu.Item>
-                                <Menu.Item value="new-file" asChild _hover={{ bgColor: "primary/8" }} color="primary">
+                                <Menu.Item value="new-file" asChild _hover={{ bgColor: "brand.subtle" }} color="brand.fg">
                                     <NavLink to="/" end>
                                         <GrScan />
                                         Scanner

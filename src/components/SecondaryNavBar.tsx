@@ -11,6 +11,7 @@ const SecondaryNavBar = () => {
                 borderBottom="1px solid"
                 borderColor="outline/20"
                 position="fixed"
+                zIndex="docked"
                 top="72px"
                 px={{ xl: "6vw", lg: "6vw", md: "6vw", sm: "6vw", base: "4" }}
             >

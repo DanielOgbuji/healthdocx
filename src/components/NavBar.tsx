@@ -14,6 +14,7 @@ const NavBar = () => {
     return (
         <Flex
             position="fixed"
+            zIndex="docked"
             bgColor="currentBg"
             width="full"
             px={{ xl: "6vw", lg: "6vw", md: "6vw", sm:"6vw", base: "4" }}
