@@ -10,7 +10,7 @@ interface CostStatsProps {
 const CostStats = ({ label, value, percentage, isIncrease = false }: CostStatsProps) => {
     return (
         <Flex flexGrow="1">
-            <Stat.Root>
+            <Stat.Root alignItems={{ base: "start", lgDown: "center" }}>
                 <Stat.Label textWrap="nowrap">{label}</Stat.Label>
                 <Flex gap="2">
                     <Stat.ValueText>{value}</Stat.ValueText>

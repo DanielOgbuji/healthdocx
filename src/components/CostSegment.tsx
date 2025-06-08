@@ -13,7 +13,7 @@ const CostSegment = () => {
             <Flex direction={{ base: "row", lgDown: "column" }}>
                 <CostTrend period={selectedPeriod} />
                 <CostCharts />
-                <Flex direction="column" display={{ base: "flex", lgDown: "none" }} gap="2">
+                <Flex direction={{ base: "column", lgDown: "row" }} display={{ base: "flex", mdDown: "none" }} gap="2">
                     <CostStats label="Total Records Digitized" value="0" percentage={0} />
                     <CostStats label="Pending Review Count" value="0" percentage={0} />
                     <CostStats label="Extraction Accuracy Rate" value="0%" percentage={0} />
