@@ -39,6 +39,7 @@ const ForgotPassword = () => {
         },
     });
 
+    // Handle submission for development
     const onSubmit = async (values: FormValues) => {
         setIsSubmitting(true);
         try {
@@ -68,6 +69,50 @@ const ForgotPassword = () => {
             setIsSubmitting(false);
         }
     };
+
+    /* Handle submission for production
+    const onSubmit = async (values) => {
+    setIsSubmitting(true);
+    try {
+        const response = await axios.post('/api/password-reset', { email: values.email });
+
+        if (response.status === 200) {
+            console.log('Password reset email submitted:', values);
+            setIsVisible(false);
+            setTimeout(() => {
+                navigate("/verify-email");
+            }, 500);
+
+            toaster.create({
+                duration: 3000,
+                title: "Success",
+                description: "Password reset email sent successfully",
+                type: "success",
+            });
+        }
+    } catch (error) {
+        if (error.response && error.response.status === 404) {
+            console.error('User not found');
+            toaster.create({
+                duration: 3000,
+                title: "Error",
+                description: "User not found.",
+                type: "error",
+            });
+        } else {
+            console.error('An error occurred:', error);
+            toaster.create({
+                duration: 3000,
+                title: "Error",
+                description: "An error occurred while submitting the form. Please try again later.",
+                type: "error",
+            });
+        }
+    } finally {
+        setIsSubmitting(false);
+    }
+};
+     */
 
     return (
         <form

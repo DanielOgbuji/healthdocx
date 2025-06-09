@@ -4,6 +4,7 @@ import { FiUploadCloud, FiEdit3 } from "react-icons/fi";
 import { Banner } from "@/components/Banner";
 import SecondaryNavBar from "@/components/SecondaryNavBar";
 import CostSegment from "@/components/CostSegment";
+import RecentRecordsPane from "@/components/RecentRecordsPane";
 
 const Home = () => {
     return (
@@ -16,34 +17,47 @@ const Home = () => {
                     <CostSegment />
                     <Flex direction="column">
                         <Text>Digitize your records</Text>
-                        <Separator my="2" />
-                        <Flex my="2" gap="4" direction={{ base: "row", mdDown: "column" }} >
-                            <Card.Root flex={1}>
-                                <Card.Body gap="3" flexDirection="row" p="3" alignItems="center">
-                                    <Flex h="44px" w="44px" bgColor="primary" justifyContent="center" alignItems="center" rounded="sm">
-                                        <Icon size="md" color="onPrimary"><FiUploadCloud /></Icon>
+                        <Separator mt="2" />
+                        <Flex direction={{ base: "column", xl: "row" }} gap="4" my="4">
+                            <Flex h="fit-content" direction="column">
+                                <Flex w={{ base: "full", xl: "65vw" }} gap="4" direction={{ base: "row", mdDown: "column" }} >
+                                    <Card.Root flex={1}>
+                                        <Card.Body gap="3" flexDirection="row" p="3" alignItems="center">
+                                            <Flex h="44px" w="44px" bgColor="primary" justifyContent="center" alignItems="center" rounded="sm">
+                                                <Icon size="md" color="onPrimary"><FiUploadCloud /></Icon>
+                                            </Flex>
+                                            <Flex direction="column" gap="1">
+                                                <Card.Title fontSize="sm" lineHeight="short">Click to upload <Box as="span" fontWeight="normal">or drag and drop</Box></Card.Title>
+                                                <Card.Description fontSize="xs">
+                                                    PNG, JPG or PDF
+                                                </Card.Description>
+                                            </Flex>
+                                        </Card.Body>
+                                    </Card.Root>
+                                    <Card.Root flex={1}>
+                                        <Card.Body gap="3" flexDirection="row" p="3" alignItems="center">
+                                            <Flex h="44px" w="44px" bgColor="primary" justifyContent="center" alignItems="center" rounded="sm">
+                                                <Icon size="md" color="onPrimary"><FiEdit3 /></Icon>
+                                            </Flex>
+                                            <Flex direction="column" gap="1">
+                                                <Card.Title fontSize="sm" lineHeight="short">Create a record</Card.Title>
+                                                <Card.Description fontSize="xs">
+                                                    Open the editor to start or use a template
+                                                </Card.Description>
+                                            </Flex>
+                                        </Card.Body>
+                                    </Card.Root>
+                                </Flex>
+                                <Flex direction="column" w="full" mt="8">
+                                    <Flex justifyContent="space-between">
+                                        <Text>Recent records</Text>
+                                        <Text color="primary" fontSize="sm">See all</Text>
                                     </Flex>
-                                    <Flex direction="column" gap="1">
-                                        <Card.Title fontSize="sm" lineHeight="short">Click to upload <Box as="span" fontWeight="normal">or drag and drop</Box></Card.Title>
-                                        <Card.Description fontSize="xs">
-                                            PNG, JPG or PDF
-                                        </Card.Description>
-                                    </Flex>
-                                </Card.Body>
-                            </Card.Root>
-                            <Card.Root flex={1}>
-                                <Card.Body gap="3" flexDirection="row" p="3" alignItems="center">
-                                    <Flex h="44px" w="44px" bgColor="primary" justifyContent="center" alignItems="center" rounded="sm">
-                                        <Icon size="md" color="onPrimary"><FiEdit3 /></Icon>
-                                    </Flex>
-                                    <Flex direction="column" gap="1">
-                                        <Card.Title fontSize="sm" lineHeight="short">Create a record</Card.Title>
-                                        <Card.Description fontSize="xs">
-                                            Open the editor to start or use a template
-                                        </Card.Description>
-                                    </Flex>
-                                </Card.Body>
-                            </Card.Root>
+                                    <Separator mt="2" />
+                                    <RecentRecordsPane />
+                                </Flex>
+                            </Flex>
+                            <Flex w={{ base: "full", xl: "35vw" }} height="70vh" bgColor="primary/5"></Flex>
                         </Flex>
                     </Flex>
                 </Flex>

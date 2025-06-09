@@ -53,6 +53,7 @@ export default function FormTwo() {
         }
     }, [otpError, animate, scope]);
 
+    // Handle submit for development
     const onSubmit = handleSubmit(async ({ pin }) => {
         dispatch(setIsSubmitting(true))
         setOtpError(null)
@@ -79,6 +80,51 @@ export default function FormTwo() {
         }
     })
 
+    /* Handle submission for production 
+    const onSubmit = handleSubmit(async ({ pin, email }) => {
+    dispatch(setIsSubmitting(true));
+    setOtpError(null);
+    const otp = pin.join('');
+    const email = useSelector((state: RootState) => state.formOne.email || ""); 
+    try {
+        const response = await axios.post('/api/verify-email', { email, otp });
+
+        if (response.status === 200) {
+            console.log('OTP verified successfully');
+            toaster.create({
+                duration: 3000,
+                title: "Success",
+                description: "Email verified successfully.",
+                type: "success",
+            });
+            dispatch(completeStep(1)); // Mark the second step as completed
+            reset({ pin: defaultPin }); // Reset the form to default pin
+        }
+    } catch (error) {
+        if (error.response) {
+            if (error.response.status === 400) {
+                setOtpError("Invalid OTP");
+                setError("pin", { type: "manual", message: "Invalid OTP" });
+            } else if (error.response.status === 404) {
+                setOtpError("OTP not found or expired");
+                setError("pin", { type: "manual", message: "OTP not found or expired" });
+            }
+        } else {
+            console.error('OTP verification failed:', error);
+            toaster.create({
+                duration: 3000,
+                title: "Error",
+                description: "OTP verification failed.",
+                type: "error",
+            });
+        }
+    } finally {
+        dispatch(setIsSubmitting(false));
+    }
+});
+    */
+
+    //Handle resend for development
     const handleResend = () => {
         if (resendAttempts >= MAX_RESEND_ATTEMPTS) {
             dispatch(resetResendAttempts())
@@ -96,6 +142,50 @@ export default function FormTwo() {
             type: "success",
         });
     }
+
+    /* Handle resend for production
+    const handleResend = async (email) => {
+    if (resendAttempts >= MAX_RESEND_ATTEMPTS) {
+        dispatch(resetResendAttempts());
+        dispatch(setResendTimer(INITIAL_RESEND_TIMER));
+    } else {
+        dispatch(incrementResendAttempts());
+        dispatch(setResendTimer(INITIAL_RESEND_TIMER + resendAttempts * RESEND_TIMER_INCREMENT));
+    }
+
+    try {
+        const response = await axios.post('/api/resend-otp', { email });
+
+        if (response.status === 200) {
+            console.log('Resending code...');
+            toaster.create({
+                duration: 3000,
+                title: "Code has been resent",
+                description: "Check your inbox or spam for code",
+                type: "success",
+            });
+        }
+    } catch (error) {
+        if (error.response && error.response.status === 404) {
+            console.error('User not found');
+            toaster.create({
+                duration: 3000,
+                title: "Error",
+                description: "User not found.",
+                type: "error",
+            });
+        } else {
+            console.error('Resend failed:', error);
+            toaster.create({
+                duration: 3000,
+                title: "Error",
+                description: "Resend failed.",
+                type: "error",
+            });
+        }
+    }
+};
+     */
 
     return (
         <form onSubmit={onSubmit} onReset={() => reset({ pin: defaultPin })}>

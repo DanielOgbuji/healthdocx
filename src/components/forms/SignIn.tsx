@@ -38,10 +38,54 @@ export default function SignIn() {
     });
     const { errors, isValid, isSubmitting } = formState;
 
+    // Handle the submission for development
     const onSubmit = handleSubmit((data) => {
         console.log("Form submitted with values:", data);
         navigate("/");
     });
+
+    /* Handle the submission for production 
+    const onSubmit = handleSubmit(async (data) => {
+    try {
+        const response = await axios.post('/api/login', data);
+
+        if (response.status === 200) {
+            console.log('Login successful:', response.data);
+            // Store the token or user information as needed
+            navigate("/");
+        }
+    } catch (error) {
+        if (error.response) {
+            if (error.response.status === 400) {
+                console.error('Invalid credentials');
+                toaster.create({
+                    duration: 3000,
+                    title: "Error",
+                    description: "Invalid credentials.",
+                    type: "error",
+                });
+            } else if (error.response.status === 401) {
+                console.error('Authentication failed');
+                toaster.create({
+                    duration: 3000,
+                    title: "Error",
+                    description: "Authentication failed.",
+                    type: "error",
+                });
+            }
+        } else {
+            console.error('Login failed:', error);
+            toaster.create({
+                duration: 3000,
+                title: "Error",
+                description: "Login failed.",
+                type: "error",
+            });
+        }
+    }
+});
+    */
+
 
     return (
         <Flex width="full" height="full" justifyContent="center" alignItems="center" className="auth-layout">

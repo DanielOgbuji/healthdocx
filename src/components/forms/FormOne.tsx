@@ -23,6 +23,7 @@ import type { RootState } from "@/store/store";
 import { submitForm, setSubmitting, initialState, type FormOneData, ROLE_OPTIONS } from "@/features/forms/FormOneSlice";
 import { completeStep } from "@/features/OnboardingSlice";
 import { PASSWORD_MIN_LENGTH, calculatePasswordStrength, validatePassword } from "@/utils/password-utils";
+//import axios from 'axios';
 
 export default function FormOne() {
     const dispatch = useDispatch();
@@ -34,7 +35,7 @@ export default function FormOne() {
     const { errors } = formState;
     const registerWithMask = useHookFormMask(register);
     const password = watch("password", "");
-    // Handle form submission
+    // Handle form submission in development
     const onSubmit = handleSubmit((data) => {
         dispatch(setSubmitting(true));
         setTimeout(() => {
@@ -55,6 +56,56 @@ export default function FormOne() {
             }
         }, 500);
     });
+    /* Handle submission in production
+    const onSubmit = handleSubmit(async (data) => {
+    dispatch(setSubmitting(true));
+    try {
+        const response = await axios.post('/api/register', data);
+
+        if (response.status === 201) {
+            console.log('Form submitted successfully:', response.data);
+            toaster.create({
+                duration: 3000,
+                title: "Success",
+                description: "Account created successfully.",
+                type: "success",
+            });
+            dispatch(completeStep(0)); // Mark the first step as completed
+            reset(initialState);
+        }
+    } catch (error) {
+        if (error.response) {
+            if (error.response.status === 400) {
+                console.error('Invalid input');
+                toaster.create({
+                    duration: 3000,
+                    title: "Error",
+                    description: "Invalid input.",
+                    type: "error",
+                });
+            } else if (error.response.status === 409) {
+                console.error('User already exists');
+                toaster.create({
+                    duration: 3000,
+                    title: "Error",
+                    description: "User already exists.",
+                    type: "error",
+                });
+            }
+        } else {
+            console.error('Form submission failed:', error);
+            toaster.create({
+                duration: 3000,
+                title: "Error",
+                description: "Form submission failed.",
+                type: "error",
+            });
+        }
+    } finally {
+        dispatch(setSubmitting(false));
+    }
+});
+     */
 
     return (
         <form onSubmit={onSubmit} onReset={() => reset(initialState)} noValidate aria-label="User registration form">

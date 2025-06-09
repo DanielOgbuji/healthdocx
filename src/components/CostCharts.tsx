@@ -1,12 +1,13 @@
-import { EmptyState, VStack, Icon } from "@chakra-ui/react"
-import { MdAddChart } from "react-icons/md";
+import { EmptyState, VStack, Image } from "@chakra-ui/react"
+//import { MdAddChart } from "react-icons/md";
+import cradle from "@/assets/images/cradle.svg"
 
 const CostCharts = () => {
     return (
         <EmptyState.Root>
             <EmptyState.Content>
                 <EmptyState.Indicator>
-                    <Icon h="64px" w="64px" color="outlineVariant"><MdAddChart /></Icon>
+                    <Image src={cradle} />
                 </EmptyState.Indicator>
                 <VStack textAlign="center">
                     <EmptyState.Title>No Cost Comparison Yet</EmptyState.Title>
