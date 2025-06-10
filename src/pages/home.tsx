@@ -5,6 +5,7 @@ import { Banner } from "@/components/Banner";
 import SecondaryNavBar from "@/components/SecondaryNavBar";
 import CostSegment from "@/components/CostSegment";
 import RecentRecordsPane from "@/components/RecentRecordsPane";
+import RecentActivityPane from "@/components/RecentActivityPane";
 
 const Home = () => {
     return (
@@ -16,7 +17,7 @@ const Home = () => {
                     <InfoTile />
                     <CostSegment />
                     <Flex direction="column">
-                        <Text>Digitize your records</Text>
+                        <Text fontWeight="semibold">Digitize your records</Text>
                         <Separator mt="2" />
                         <Flex direction={{ base: "column", xl: "row" }} gap="4" my="4">
                             <Flex h="fit-content" direction="column">
@@ -50,14 +51,21 @@ const Home = () => {
                                 </Flex>
                                 <Flex direction="column" w="full" mt="8">
                                     <Flex justifyContent="space-between">
-                                        <Text>Recent records</Text>
-                                        <Text color="primary" fontSize="sm">See all</Text>
+                                        <Text fontWeight="semibold">Recent records</Text>
+                                        <Text color="primary" fontSize="sm" fontWeight="semibold">See all</Text>
                                     </Flex>
                                     <Separator mt="2" />
                                     <RecentRecordsPane />
                                 </Flex>
                             </Flex>
-                            <Flex w={{ base: "full", xl: "35vw" }} height="70vh" bgColor="primary/5"></Flex>
+                            <Flex direction="column" w={{ base: "full", xl: "35vw" }} pl={{ base: "0", xl: "4" }}>
+                                <Flex justifyContent="space-between">
+                                    <Text fontWeight="semibold">Recent activity</Text>
+                                    <Text color="primary" fontSize="sm" fontWeight="semibold">See all</Text>
+                                </Flex>
+                                <Separator mt="2" display={{ base: "none", xlDown: "flex" }} />
+                                <RecentActivityPane />
+                            </Flex>
                         </Flex>
                     </Flex>
                 </Flex>
