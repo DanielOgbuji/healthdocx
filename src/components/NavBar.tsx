@@ -51,10 +51,10 @@ const NavBar = () => {
                 gap="4"
             >
                 <HStack gap="4">
-                    <Button variant="ghost" size="sm" p={{ xlDown: "0" }} >
+                    <Button variant="ghost" size="sm" p={{ xlDown: "0" }} disabled>
                         <RxLightningBolt /> <Box as="span" fontSize="sm" display={{ xlDown: "none" }}>Upgrade now</Box>
                     </Button>
-                    <Button variant="surface" size="sm" p={{ lgDown: "0" }}>
+                    <Button variant="surface" size="sm" p={{ lgDown: "0" }} disabled>
                         <Icon size="md"><IoMdAdd /></Icon> <Box as="span" fontSize="sm" display={{ lgDown: "none" }}>Invite team</Box>
                     </Button>
                 </HStack>

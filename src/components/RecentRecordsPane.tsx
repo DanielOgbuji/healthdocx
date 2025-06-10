@@ -1,14 +1,17 @@
 import { Button, ButtonGroup, EmptyState, VStack, Box, Icon, Image } from "@chakra-ui/react"
 import noRecord from "@/assets/images/norecord.svg";
+import noRecordDark from "@/assets/images/norecord-dark.svg";
+import { useColorMode } from "@/components/ui/color-mode";
 import { IoMdAdd } from "react-icons/io";
 import { FiUploadCloud } from "react-icons/fi";
 
 const RecentRecordsPane = () => {
+    const { colorMode } = useColorMode();
     return (
         <EmptyState.Root>
             <EmptyState.Content>
                 <EmptyState.Indicator>
-                    <Image src={noRecord} />
+                    <Image src={colorMode === "dark" ? noRecordDark : noRecord} />
                 </EmptyState.Indicator>
                 <VStack textAlign="center">
                     <EmptyState.Title>No Recent Records</EmptyState.Title>

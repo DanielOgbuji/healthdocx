@@ -1,13 +1,16 @@
 import { EmptyState, VStack, Image } from "@chakra-ui/react"
 //import { MdAddChart } from "react-icons/md";
-import cradle from "@/assets/images/cradle.svg"
+import { useColorMode } from "@/components/ui/color-mode";
+import cradle from "@/assets/images/cradle.svg";
+import cradleDark from "@/assets/images/cradle-dark.svg";
 
 const CostCharts = () => {
+    const { colorMode } = useColorMode();
     return (
         <EmptyState.Root>
             <EmptyState.Content>
                 <EmptyState.Indicator>
-                    <Image src={cradle} />
+                    <Image src={colorMode === "dark" ? cradleDark : cradle} />
                 </EmptyState.Indicator>
                 <VStack textAlign="center">
                     <EmptyState.Title>No Cost Comparison Yet</EmptyState.Title>
