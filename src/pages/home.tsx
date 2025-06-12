@@ -1,11 +1,11 @@
 import { Flex, Text, Separator, Card, Box, Icon } from "@chakra-ui/react";
-import InfoTile from "@/components/InfoTile";
+import InfoTile from "@/components/home/InfoTile";
 import { FiUploadCloud, FiEdit3 } from "react-icons/fi";
-import { Banner } from "@/components/Banner";
-import SecondaryNavBar from "@/components/SecondaryNavBar";
-import CostSegment from "@/components/CostSegment";
-import RecentRecordsPane from "@/components/RecentRecordsPane";
-import RecentActivityPane from "@/components/RecentActivityPane";
+import { Banner } from "@/components/home/Banner";
+import SecondaryNavBar from "@/components/navigation/SecondaryNavBar";
+import CostSegment from "@/components/home/CostSegment";
+import RecentRecordsPane from "@/components/home/RecentRecordsPane";
+import RecentActivityPane from "@/components/home/RecentActivityPane";
 
 const Home = () => {
     return (

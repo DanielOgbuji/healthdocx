@@ -3,7 +3,7 @@ import { Button, Box, Flex, Image, Separator, Text, HStack, IconButton, Icon, Av
 import { MdOutlineNotifications } from "react-icons/md";
 import { IoMdAdd } from "react-icons/io";
 import { RxLightningBolt } from "react-icons/rx";
-import NavList from "@/components/NavList";
+import NavList from "@/components/navigation/NavList";
 import Logo from "@/assets/images/Off-Jeay.svg";
 import LogoDark from "@/assets/images/Off-Jeay-Dark.svg";
 import { useColorMode } from "@/components/ui/color-mode";

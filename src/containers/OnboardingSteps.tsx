@@ -1,8 +1,8 @@
 import { useEffect, useState, lazy, Suspense } from "react";
 import { Box, Steps, Stack, VStack, Spinner, Text } from "@chakra-ui/react";
 import { MdOutlinePersonOutline, MdOutlineMarkEmailRead, MdOutlineWorkOutline, MdOutlineTimelapse, MdOutlineVerified } from 'react-icons/md';
-import { StepsList } from "@/components/StepsList.tsx";
-import { StepsContent } from "@/components/StepsContent.tsx";
+import { StepsList } from "@/components/onboarding/StepsList";
+import { StepsContent } from "@/components/onboarding/StepsContent";
 import { useSelector } from 'react-redux';
 import type { RootState } from '@/store/store';
 

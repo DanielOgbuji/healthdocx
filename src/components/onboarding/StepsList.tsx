@@ -1,6 +1,6 @@
 import { Flex, Icon, Steps, StepsStatus } from "@chakra-ui/react";
 import { MdOutlineCheck, MdOutlineCircle } from 'react-icons/md';
-import StepsLayout from "@/components/StepsLayout.tsx";
+import StepsLayout from "@/components/onboarding/StepsLayout";
 import type { IconType } from "react-icons";
 
 interface Step {

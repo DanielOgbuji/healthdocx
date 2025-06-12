@@ -3,7 +3,7 @@ import type { ReactNode } from "react";
 import type { IconType } from "react-icons";
 import Backdrop from "@/assets/images/jeay-backdrop-dotted.svg";
 import BackdropDark from "@/assets/images/jeay-backdrop-dotted-dark.svg";
-import { StepsProgress } from "@/components/StepsProgress";
+import { StepsProgress } from "@/components/onboarding/StepsProgress";
 
 interface Step {
     title: string;

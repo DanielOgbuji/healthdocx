@@ -1,9 +1,9 @@
 import { useState } from "react";
 import { Flex } from "@chakra-ui/react";
-import CostSegmentControl from "@/components/CostSegmentControl";
-import CostTrend from "@/components/CostTrend";
-import CostCharts from "@/components/CostCharts";
-import CostStats from "@/components/CostStats";
+import CostSegmentControl from "@/components/home/CostSegmentControl";
+import CostTrend from "@/components/home/CostTrend";
+import CostCharts from "@/components/home/CostCharts";
+import CostStats from "@/components/home/CostStats";
 
 const CostSegment = () => {
     const [selectedPeriod, setSelectedPeriod] = useState("Monthly");
