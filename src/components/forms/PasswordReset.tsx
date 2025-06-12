@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React from "react";
 import { useNavigate } from "react-router";
 import { Button, Box, Field, Fieldset, Stack } from "@chakra-ui/react";
 import { useForm } from "react-hook-form";
@@ -17,13 +17,11 @@ interface FormValues {
 
 const PasswordResetForm = () => {
     const navigate = useNavigate();
-    const [isSubmitting, setIsSubmitting] = useState(false);
-
     const {
         register,
         handleSubmit,
         watch,
-        formState: { errors, isValid }
+        formState: { errors, isValid, isSubmitting }
     } = useForm<FormValues>({
         mode: "onChange",
         defaultValues: {
@@ -35,7 +33,6 @@ const PasswordResetForm = () => {
     const password = watch("password", "");
 
     const onSubmit = async (data: FormValues) => {
-        setIsSubmitting(true);
         try {
             // API call would go here
             console.log("Password reset successfully:", data);
@@ -57,8 +54,6 @@ const PasswordResetForm = () => {
                 description: "An error occurred while resetting your password",
                 type: "error",
             });
-        } finally {
-            setIsSubmitting(false);
         }
     };
 

@@ -14,33 +14,37 @@ import {
 import { MdOutlineUndo, MdOutlineArrowForward, MdOutlineAddBusiness, MdOutlineAddLocationAlt, MdOutlineNumbers } from "react-icons/md";
 import { useForm } from "react-hook-form";
 import { useHookFormMask } from "use-mask-input";
-import { useDispatch, useSelector } from "react-redux";
+import { useDispatch } from "react-redux";
 import { toaster } from "@/components/ui/toaster";
 import * as motion from "motion/react-client";
-import type { RootState } from "@/store/store";
-import {
-    submitForm,
-    setSubmitting,
-    initialState,
-    type FormThreeData,
-    INSTITUTION_TYPE_OPTIONS,
-    SIZE_OPTIONS
-} from "@/features/forms/FormThreeSlice";
 import { completeStep } from "@/features/OnboardingSlice";
 import { useEffect, useRef, useState } from "react";
+import { INSTITUTION_TYPE_OPTIONS, SIZE_OPTIONS } from "@/constants/formConstants";
 import axios from "axios";
 
 const API_KEY = import.meta.env.VITE_GEOAPIFY_API_KEY;
 
 export default function FormThree() {
     const dispatch = useDispatch();
-    const { isSubmitting } = useSelector((state: RootState) => state.formThree);
-    const { register, handleSubmit, formState, reset, setValue } = useForm<FormThreeData>({
+    const {
+        register,
+        handleSubmit,
+        formState,
+        reset,
+        setValue,
+    } = useForm({
         mode: 'onChange',
-        defaultValues: initialState
+        defaultValues: {
+            institutionName: "",
+            location: "",
+            institutionType: undefined,
+            size: undefined,
+            licenseNumber: "",
+        }
     });
-    const { errors } = formState;
     const registerWithMask = useHookFormMask(register);
+
+    const { errors, isSubmitting, isValid } = formState;
 
     const [locationInput, setLocationInput] = useState("");
     type Suggestion = {
@@ -97,32 +101,31 @@ export default function FormThree() {
         }, 400);
     }, [locationInput]);
 
-    const onSubmit = handleSubmit((data) => {
-        dispatch(setSubmitting(true));
-        setTimeout(() => {
-            try {
-                dispatch(submitForm(data));
-                console.log('Form submitted successfully:', data);
-                toaster.create({
-                    duration: 3000,
-                    title: "Success",
-                    description: "Institution details saved successfully.",
-                    type: "success",
-                });
-                dispatch(completeStep(2)); // Mark the third step as completed
-                reset(initialState);
-                setLocationInput("");
-                setSuggestions([]);
-                setShowSuggestions(false);
-            } catch (error) {
-                dispatch(setSubmitting(false));
-                console.error('Form submission failed:', error);
-            }
-        }, 500);
+    const onSubmit = handleSubmit(async (data) => {
+        try {
+            // Simulate API call
+            await new Promise(resolve => setTimeout(resolve, 500));
+
+            console.log('Form submitted successfully:', data);
+            toaster.create({
+                duration: 3000,
+                title: "Success",
+                description: "Institution details saved successfully.",
+                type: "success",
+            });
+
+            dispatch(completeStep(2)); // Mark the third step as completed
+            reset();
+            setLocationInput("");
+            setSuggestions([]);
+            setShowSuggestions(false);
+        } catch (error) {
+            console.error('Form submission failed:', error);
+        }
     });
 
     return (
-        <form onSubmit={onSubmit} onReset={() => reset(initialState)} noValidate aria-label="Institution registration form">
+        <form onSubmit={onSubmit} onReset={() => reset({})} noValidate aria-label="Institution registration form">
             <Fieldset.Root size="lg" width={{ base: "xs", md: "lg", lg: "lg" }}>
                 <Fieldset.Content>
                     <Field.Root invalid={!!errors.institutionName} required>
@@ -273,11 +276,11 @@ export default function FormThree() {
                         fontWeight="bold"
                         loading={isSubmitting}
                         loadingText="Submitting"
-                        disabled={!formState.isValid || isSubmitting}
+                        disabled={!isValid || isSubmitting}
                         _disabled={{ bgColor: "onSurface/12", color: "onSurface/38" }}
                     >
                         Save Institution Details
-                        {!isSubmitting && formState.isValid && (
+                        {!isSubmitting && isValid && (
                             <motion.div
                                 initial={{ transform: "translateX(0px)" }}
                                 animate={{

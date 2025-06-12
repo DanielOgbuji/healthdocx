@@ -16,99 +16,54 @@ import Flag from "@/assets/images/ng.png";
 import { PasswordInput, PasswordStrengthMeter } from "@/components/ui/password-input";
 import { useForm } from "react-hook-form";
 import { useHookFormMask } from "use-mask-input";
-import { useDispatch, useSelector } from "react-redux";
 import { toaster } from "@/components/ui/toaster";
+import { useDispatch } from "react-redux";
 import * as motion from "motion/react-client";
-import type { RootState } from "@/store/store";
-import { submitForm, setSubmitting, initialState, type FormOneData, ROLE_OPTIONS } from "@/features/forms/FormOneSlice";
 import { completeStep } from "@/features/OnboardingSlice";
 import { PASSWORD_MIN_LENGTH, calculatePasswordStrength, validatePassword } from "@/utils/password-utils";
-//import axios from 'axios';
+import { ROLE_OPTIONS } from "@/constants/formConstants";
 
 export default function FormOne() {
-    const dispatch = useDispatch();
-    const { isSubmitting } = useSelector((state: RootState) => state.formOne);
-    const { register, handleSubmit, formState, watch, reset } = useForm<FormOneData>({
+    const { register, handleSubmit, formState, watch, reset } = useForm({
         mode: 'onChange',
-        defaultValues: initialState
+        defaultValues: {
+            name: "",
+            email: "",
+            role: undefined,
+            phone: "",
+            password: "",
+        }
     });
-    const { errors } = formState;
+
+    const { errors, isSubmitting, isValid } = formState;
     const registerWithMask = useHookFormMask(register);
     const password = watch("password", "");
-    // Handle form submission in development
-    const onSubmit = handleSubmit((data) => {
-        dispatch(setSubmitting(true));
-        setTimeout(() => {
-            try {
-                dispatch(submitForm(data));
-                console.log('Form submitted successfully:', data);
-                toaster.create({
-                    duration: 3000,
-                    title: "Success",
-                    description: "Account created successfully.",
-                    type: "success",
-                });
-                dispatch(completeStep(0)); // Mark the first step as completed
-                reset(initialState);
-            } catch (error) {
-                dispatch(setSubmitting(false));
-                console.error('Form submission failed:', error);
-            }
-        }, 500);
-    });
-    /* Handle submission in production
-    const onSubmit = handleSubmit(async (data) => {
-    dispatch(setSubmitting(true));
-    try {
-        const response = await axios.post('/api/register', data);
+    const dispatch = useDispatch();
 
-        if (response.status === 201) {
-            console.log('Form submitted successfully:', response.data);
+    // Handle form submission
+    const onSubmit = handleSubmit(async (data) => {
+        // Simulate form submission
+        try {
+            // Simulate API call
+            await new Promise(resolve => setTimeout(resolve, 500));
+            
+            console.log('Form submitted successfully:', data);
             toaster.create({
                 duration: 3000,
                 title: "Success",
                 description: "Account created successfully.",
                 type: "success",
             });
-            dispatch(completeStep(0)); // Mark the first step as completed
-            reset(initialState);
-        }
-    } catch (error) {
-        if (error.response) {
-            if (error.response.status === 400) {
-                console.error('Invalid input');
-                toaster.create({
-                    duration: 3000,
-                    title: "Error",
-                    description: "Invalid input.",
-                    type: "error",
-                });
-            } else if (error.response.status === 409) {
-                console.error('User already exists');
-                toaster.create({
-                    duration: 3000,
-                    title: "Error",
-                    description: "User already exists.",
-                    type: "error",
-                });
-            }
-        } else {
+            // Mark the first step as completed
+            dispatch(completeStep(0));
+            reset();
+        } catch (error) {
             console.error('Form submission failed:', error);
-            toaster.create({
-                duration: 3000,
-                title: "Error",
-                description: "Form submission failed.",
-                type: "error",
-            });
         }
-    } finally {
-        dispatch(setSubmitting(false));
-    }
-});
-     */
+    });
 
     return (
-        <form onSubmit={onSubmit} onReset={() => reset(initialState)} noValidate aria-label="User registration form">
+        <form onSubmit={onSubmit} onReset={() => reset({})} noValidate aria-label="User registration form">
             <Fieldset.Root size="lg" width={{ base: "full", md: "lg", lg: "lg" }}>
                 <Fieldset.Content>
                     <Field.Root invalid={!!errors.name} required>
@@ -141,7 +96,6 @@ export default function FormOne() {
                         </InputGroup>
                         <Field.ErrorText id="name-error">{errors.name?.message?.toString()}</Field.ErrorText>
                     </Field.Root>
-
                     <Field.Root invalid={!!errors.email} required>
                         <Field.Label>Email Address<Field.RequiredIndicator /></Field.Label>
                         <InputGroup
@@ -163,7 +117,6 @@ export default function FormOne() {
                         </InputGroup>
                         <Field.ErrorText id="email-error">{errors.email?.message?.toString()}</Field.ErrorText>
                     </Field.Root>
-
                     <Field.Root invalid={!!errors.role} required>
                         <Field.Label>Role<Field.RequiredIndicator /></Field.Label>
                         <NativeSelect.Root>
@@ -185,7 +138,6 @@ export default function FormOne() {
                         </NativeSelect.Root>
                         <Field.ErrorText id="role-error">{errors.role?.message?.toString()}</Field.ErrorText>
                     </Field.Root>
-
                     <Field.Root invalid={!!errors.phone} required>
                         <Field.Label>Phone Number<Field.RequiredIndicator /></Field.Label>
                         <InputGroup
@@ -214,7 +166,6 @@ export default function FormOne() {
                         </InputGroup>
                         <Field.ErrorText id="phone-error">{errors.phone?.message?.toString()}</Field.ErrorText>
                     </Field.Root>
-
                     <Field.Root invalid={!!errors.password} required>
                         <Field.Label>Password<Field.RequiredIndicator /></Field.Label>
                         <InputGroup
@@ -248,8 +199,8 @@ export default function FormOne() {
                         type="submit"
                         fontWeight="bold"
                         loading={isSubmitting}
-                        loadingText="Submitting"
-                        disabled={!formState.isValid || isSubmitting}
+                        loadingText="Creating..."
+                        disabled={!isValid || isSubmitting}
                         _disabled={{ bgColor: "onSurface/12", color: "onSurface/38" }}
                     >
                         Get Started
@@ -274,7 +225,7 @@ export default function FormOne() {
                         )}
                     </Button>
                     <IconButton aria-label="Reset form" type="reset" variant="outline" color="error"
-                        borderColor="error" _hover={{ bg: 'errorSubtle' }} title="Reset Form">
+                        borderColor="error" _hover={{ bg: 'errorSubtle' }} title="Reset Form" disabled={isSubmitting}>
                         <MdOutlineUndo />
                     </IconButton>
                 </Flex>

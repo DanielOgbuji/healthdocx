@@ -24,7 +24,7 @@ const LoadingFallback = () => (
 export const OnboardingSteps = () => {
     const [step, setStep] = useState(0);
     const completedSteps = useSelector((state: RootState) => state.onboarding.completedSteps);
-    const userEmail = useSelector((state: RootState) => state.formOne.email || "");
+    const userEmail = /*useSelector((state: RootState) => state.formOne.email || "");*/""
     const stepsData = [
         {
             title: "Your details",
