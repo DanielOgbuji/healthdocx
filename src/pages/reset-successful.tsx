@@ -1,4 +1,4 @@
-import ResetSuccessful from "@/components/forms/ResetSuccessful";
+import ResetSuccessful from "@/components/auth/ResetSuccessful";
 
 const ResetSuccessfulPage = () => {
     return (
