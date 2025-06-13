@@ -1,9 +1,10 @@
 export interface User {
-	id: string;
+	id: number;
 	email: string;
-	firstName: string;
-	lastName: string;
+	fullName: string;
+	phoneNumber: string;
 	role: string;
+	isActive: boolean;
 }
 
 export interface Institution {
@@ -16,27 +17,6 @@ export interface Institution {
 	userId: number;
 	createdAt: string;
 	updatedAt: string;
-}
-
-export interface PatientRecord {
-	id: string;
-	institutionId: string;
-	patientName: string;
-	status: string;
-	data: Record<string, unknown>;
-	createdAt: string;
-	updatedAt: string;
-}
-
-export interface AuthResponse {
-	authenticationToken: string;
-	refreshToken: string;
-	user: User;
-}
-
-export interface LoginCredentials {
-	email: string;
-	password: string;
 }
 
 export interface ApiErrorResponse {
