@@ -9,6 +9,8 @@ import { useAnimate } from "motion/react";
 import { toaster } from "@/components/ui/toaster";
 import { completeStep } from "@/features/OnboardingSlice";
 import { INITIAL_RESEND_TIMER, MAX_RESEND_ATTEMPTS, RESEND_TIMER_INCREMENT } from '@/constants/formConstants';
+import { verifyEmail as verifyUserEmail, resendVerification as resendVerification } from "@/api/auth";
+import { type ApiError } from '@/types/api.types';
 
 interface FormValues {
     pin: string[]
@@ -53,15 +55,15 @@ export default function FormTwo() {
         }
     }, [otpError, animate, scope]);
 
+    const email = sessionStorage.getItem("onboardingEmail");
+
     // Handle submit for development
     const onSubmit = handleSubmit(async ({ pin }) => {
         setOtpError(null)
         const otp = pin.join('')
         try {
-            await new Promise((resolve, reject) =>
-                setTimeout(() => otp === '1234' ? resolve(true) : reject(new Error()), 500)
-            )
-            console.log('OTP verified successfully')
+            const response = await verifyUserEmail(email, otp);
+            console.log('OTP verified successfully:', response)
             toaster.create({
                 duration: 3000,
                 title: "Success",
@@ -70,14 +72,26 @@ export default function FormTwo() {
             });
             dispatch(completeStep(1)); // Mark the second step as completed
             reset({ pin: ['', '', '', ''] }) // Reset the form to default pin
-        } catch {
-            setOtpError("The code you entered is incorrect.")
-            setError("pin", { type: "manual", message: "The code you entered is incorrect." })
+        } catch (err) {
+            console.error('Form submission failed:', err);
+            const apiError = err as ApiError;
+            if (apiError.response?.status === 400) {
+                setOtpError("The code you entered is incorrect.")
+                setError("pin", { type: "manual", message: "The code you entered is incorrect." })
+            }
+            else {
+                toaster.create({
+                    title: "Email Verification Failed",
+                    description: apiError.response?.data?.message ?? "An error occurred during verification. Please try again.",
+                    type: "error",
+                    duration: 5000,
+                })
+            }
         }
     })
 
     //Handle resend for development
-    const handleResend = () => {
+    const handleResend = async () => {
         if (resendAttempts >= MAX_RESEND_ATTEMPTS) {
             setResendAttempts(0)
             setResendTimer(INITIAL_RESEND_TIMER)
@@ -86,13 +100,26 @@ export default function FormTwo() {
             setResendTimer(INITIAL_RESEND_TIMER + resendAttempts * RESEND_TIMER_INCREMENT)
         }
         // Place to trigger resend API
-        console.log('Resending code...')
-        toaster.create({
-            duration: 3000,
-            title: "Code has been resent",
-            description: "Check your inbox or spam for code",
-            type: "success",
-        });
+        try {
+            // Call the resend verification API
+            await resendVerification(email);
+            console.log('Resending code...')
+            toaster.create({
+                duration: 3000,
+                title: "Code has been resent",
+                description: "Check your inbox or spam for code",
+                type: "success",
+            });
+        } catch (err) {
+            console.error('Resend verification failed:', err);
+            const apiError = err as ApiError;
+            toaster.create({
+                duration: 5000,
+                title: "Failed to resend code",
+                description: apiError.response?.data?.message || "An error occurred. Please try again.",
+                type: "error",
+            });
+        }
     }
 
     return (

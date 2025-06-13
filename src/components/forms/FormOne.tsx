@@ -21,16 +21,18 @@ import { useDispatch } from "react-redux";
 import * as motion from "motion/react-client";
 import { completeStep } from "@/features/OnboardingSlice";
 import { PASSWORD_MIN_LENGTH, calculatePasswordStrength, validatePassword } from "@/utils/password-utils";
+import { type ApiError } from '@/types/api.types';
 import { ROLE_OPTIONS } from "@/constants/formConstants";
+import { register as registerUser } from "@/api/auth";
 
 export default function FormOne() {
     const { register, handleSubmit, formState, watch, reset } = useForm({
         mode: 'onChange',
         defaultValues: {
-            name: "",
+            fullName: "",
             email: "",
-            role: undefined,
-            phone: "",
+            role: "",
+            phoneNumber: "",
             password: "",
         }
     });
@@ -42,23 +44,29 @@ export default function FormOne() {
 
     // Handle form submission
     const onSubmit = handleSubmit(async (data) => {
-        // Simulate form submission
         try {
-            // Simulate API call
-            await new Promise(resolve => setTimeout(resolve, 500));
-            
-            console.log('Form submitted successfully:', data);
+            const response = await registerUser(data);
+            console.log('Form submitted successfully:', response);
             toaster.create({
                 duration: 3000,
                 title: "Success",
                 description: "Account created successfully.",
                 type: "success",
             });
+            sessionStorage.setItem("onboardingEmail", data.email);
+            sessionStorage.setItem("userID", response.user.id);
             // Mark the first step as completed
             dispatch(completeStep(0));
             reset();
-        } catch (error) {
-            console.error('Form submission failed:', error);
+        } catch (err) {
+            console.error('Form submission failed:', err);
+            const apiError = err as ApiError;
+            toaster.create({
+                title: "Registration Failed",
+                description: apiError.response?.data?.message ?? "An error occurred during registration. Please try again.",
+                type: "error",
+                duration: 5000,
+            })
         }
     });
 
@@ -66,18 +74,18 @@ export default function FormOne() {
         <form onSubmit={onSubmit} onReset={() => reset({})} noValidate aria-label="User registration form">
             <Fieldset.Root size="lg" width={{ base: "full", md: "lg", lg: "lg" }}>
                 <Fieldset.Content>
-                    <Field.Root invalid={!!errors.name} required>
+                    <Field.Root invalid={!!errors.fullName} required>
                         <Field.Label>Name<Field.RequiredIndicator /></Field.Label>
                         <InputGroup
                             startElement={<Icon size="md" color="outline"><MdOutlinePersonOutline /></Icon>}>
                             <Input
                                 autoFocus
                                 autoCorrect="off"
-                                aria-describedby={errors.name ? "name-error" : undefined}
+                                aria-describedby={errors.fullName ? "name-error" : undefined}
                                 id="name"
                                 type="text"
                                 placeholder="Enter as it appears on official documents"
-                                {...register("name", {
+                                {...register("fullName", {
                                     required: "Name is required",
                                     maxLength: { value: 100, message: "Maximum length is 100" },
                                     pattern: {
@@ -94,7 +102,7 @@ export default function FormOne() {
                                 })}
                             />
                         </InputGroup>
-                        <Field.ErrorText id="name-error">{errors.name?.message?.toString()}</Field.ErrorText>
+                        <Field.ErrorText id="name-error">{errors.fullName?.message?.toString()}</Field.ErrorText>
                     </Field.Root>
                     <Field.Root invalid={!!errors.email} required>
                         <Field.Label>Email Address<Field.RequiredIndicator /></Field.Label>
@@ -138,17 +146,17 @@ export default function FormOne() {
                         </NativeSelect.Root>
                         <Field.ErrorText id="role-error">{errors.role?.message?.toString()}</Field.ErrorText>
                     </Field.Root>
-                    <Field.Root invalid={!!errors.phone} required>
+                    <Field.Root invalid={!!errors.phoneNumber} required>
                         <Field.Label>Phone Number<Field.RequiredIndicator /></Field.Label>
                         <InputGroup
                             startElement={<Image src={Flag} />}>
                             <Input
-                                aria-describedby={errors.phone ? "phone-error" : undefined}
+                                aria-describedby={errors.phoneNumber ? "phone-error" : undefined}
                                 id="phone"
                                 type="tel"
                                 placeholder="+234 123 456 7890"
                                 {...registerWithMask(
-                                    "phone",
+                                    "phoneNumber",
                                     ["+234 999 999 9999"],
                                     {
                                         required: "Phone is required",
@@ -164,7 +172,7 @@ export default function FormOne() {
                                 )}
                             />
                         </InputGroup>
-                        <Field.ErrorText id="phone-error">{errors.phone?.message?.toString()}</Field.ErrorText>
+                        <Field.ErrorText id="phone-error">{errors.phoneNumber?.message?.toString()}</Field.ErrorText>
                     </Field.Root>
                     <Field.Root invalid={!!errors.password} required>
                         <Field.Label>Password<Field.RequiredIndicator /></Field.Label>

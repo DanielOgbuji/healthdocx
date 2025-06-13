@@ -19,6 +19,12 @@ import LogoDark from "@/assets/images/Off-Jeay-Dark.svg";
 import { useColorMode } from "@/components/ui/color-mode";
 import * as motion from "motion/react-client";
 import { MdOutlineArrowForward, MdOutlinePersonOutline, MdOutlinePassword } from "react-icons/md";
+import { toaster } from "@/components/ui/toaster";
+import { useDispatch } from "react-redux";
+import { type AppDispatch } from "@/store/store";
+import { type ApiError } from '@/types/api.types';
+import { login as login } from "@/api/auth";
+import { loginSuccess } from "@/features/authSlice";
 
 interface SignInValues {
     email: string;
@@ -26,6 +32,7 @@ interface SignInValues {
 }
 
 export default function SignIn() {
+    const dispatch = useDispatch<AppDispatch>();
     const { colorMode } = useColorMode();
     const navigate = useNavigate();
 
@@ -39,9 +46,29 @@ export default function SignIn() {
     const { errors, isValid, isSubmitting } = formState;
 
     // Handle the submission for development
-    const onSubmit = handleSubmit((data) => {
-        console.log("Form submitted with values:", data);
-        navigate("/");
+    const onSubmit = handleSubmit(async (data) => {
+        try {
+            const email = data.email;
+            const password = data.password;
+            const response = await login(email, password);
+            console.log("Form submitted successfully:", response);
+            dispatch(loginSuccess(response));
+            toaster.create({
+                title: "Login successful",
+                type: "success",
+                duration: 3000,
+            });
+            navigate("/");
+        } catch (err) {
+            console.error('Form submission failed:', err);
+            const apiError = err as ApiError;
+            toaster.create({
+                title: "Sign In Failed",
+                description: apiError.response?.data?.message ?? "An error occurred while signing you in. Please try again.",
+                type: "error",
+                duration: 5000,
+            })
+        }
     });
 
     return (

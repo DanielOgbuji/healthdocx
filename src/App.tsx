@@ -1,6 +1,7 @@
 import './App.css'
-import {Provider} from 'react-redux';
-import {store} from '@/store/store.ts';
+import { Provider } from 'react-redux';
+import { store } from '@/store/store.ts';
+import { ProtectedRoute } from '@/components/auth/ProtectedRoute';
 import SignUp from '@/pages/sign-up';
 import SignIn from '@/pages/sign-in';
 import RedirectToHome from '@/pages/redirect';
@@ -20,21 +21,21 @@ function App() {
     return (
         <Provider store={store}>
             <BrowserRouter>
-            <Routes>
-                <Route path="/" element={<RedirectToHome />} />
-                <Route path="/sign-up" element={<SignUp />} />
-                <Route path="/sign-in" element={<SignIn />} />
-                <Route path="/forgot-password" element={<ForgotPasswordPage />} />
-                <Route path="/verify-email" element={<VerifyEmailPage />} />
-                <Route path="/password-reset" element={<PasswordResetPage />} />
-                <Route path="/reset-successful" element={<ResetSuccessfulPage />} />
-                <Route element={<WorkSpace />}>
-                    <Route path="home" element={<Home />} /> 
-                    <Route path="records" element={<Records />} />
-                    <Route path="analytics" element={<Analytics />} />
-                    <Route path="settings" element={<Settings />} />
-                </Route>
-            </Routes>
+                <Routes>
+                    <Route path="/" element={<ProtectedRoute><RedirectToHome /></ProtectedRoute>} />
+                    <Route path="/sign-up" element={<SignUp />} />
+                    <Route path="/sign-in" element={<SignIn />} />
+                    <Route path="/forgot-password" element={<ForgotPasswordPage />} />
+                    <Route path="/verify-email" element={<VerifyEmailPage />} />
+                    <Route path="/password-reset" element={<PasswordResetPage />} />
+                    <Route path="/reset-successful" element={<ResetSuccessfulPage />} />
+                    <Route element={<WorkSpace />}>
+                        <Route path="home" element={<ProtectedRoute><Home /></ProtectedRoute>} />
+                        <Route path="records" element={<ProtectedRoute><Records /></ProtectedRoute>} />
+                        <Route path="analytics" element={<ProtectedRoute><Analytics /></ProtectedRoute>} />
+                        <Route path="settings" element={<ProtectedRoute><Settings /></ProtectedRoute>} />
+                    </Route>
+                </Routes>
             </BrowserRouter>
         </Provider>
     )

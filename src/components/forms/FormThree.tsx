@@ -21,6 +21,8 @@ import { completeStep } from "@/features/OnboardingSlice";
 import { useEffect, useRef, useState } from "react";
 import { INSTITUTION_TYPE_OPTIONS, SIZE_OPTIONS } from "@/constants/formConstants";
 import axios from "axios";
+import { type ApiError } from '@/types/api.types';
+import { create as createInstitution } from "@/api/institution";
 
 const API_KEY = import.meta.env.VITE_GEOAPIFY_API_KEY;
 
@@ -37,8 +39,8 @@ export default function FormThree() {
         defaultValues: {
             institutionName: "",
             location: "",
-            institutionType: undefined,
-            size: undefined,
+            institutionType: "",
+            sizeRange: "",
             licenseNumber: "",
         }
     });
@@ -103,24 +105,37 @@ export default function FormThree() {
 
     const onSubmit = handleSubmit(async (data) => {
         try {
-            // Simulate API call
-            await new Promise(resolve => setTimeout(resolve, 500));
-
-            console.log('Form submitted successfully:', data);
+            // You may need to get userId from your auth context or redux store
+            const userId = Number(sessionStorage.getItem("userID"));
+            const payload = {
+                ...data, // or map to correct value if needed
+                userId,
+            };
+            const response = await createInstitution(payload);
+            console.log('Form submitted successfully:', response);
             toaster.create({
                 duration: 3000,
                 title: "Success",
-                description: "Institution details saved successfully.",
+                description: "Account created successfully.",
                 type: "success",
             });
-
+            sessionStorage.setItem("institutionID", response.institution.id);
+            sessionStorage.setItem("institutionName", response.institution.institutionName);
+            sessionStorage.setItem("license", response.institution.licenseNumber);
             dispatch(completeStep(2)); // Mark the third step as completed
             reset();
             setLocationInput("");
             setSuggestions([]);
             setShowSuggestions(false);
-        } catch (error) {
-            console.error('Form submission failed:', error);
+        } catch (err) {
+            console.error('Form submission failed:', err);
+            const apiError = err as ApiError;
+            toaster.create({
+                title: "Registration Failed",
+                description: apiError.response?.data?.message ?? "An error occurred during registration. Please try again.",
+                type: "error",
+                duration: 5000,
+            })
         }
     });
 
@@ -225,14 +240,14 @@ export default function FormThree() {
                         <Field.ErrorText id="institutionType-error">{errors.institutionType?.message?.toString()}</Field.ErrorText>
                     </Field.Root>
 
-                    <Field.Root invalid={!!errors.size} required>
+                    <Field.Root invalid={!!errors.sizeRange} required>
                         <Field.Label>Institution Size<Field.RequiredIndicator /></Field.Label>
                         <NativeSelect.Root>
                             <NativeSelect.Field
-                                aria-describedby={errors.size ? "size-error" : undefined}
+                                aria-describedby={errors.sizeRange ? "size-error" : undefined}
                                 id="size"
                                 placeholder="Select institution size"
-                                {...register("size", { required: "Institution size is required" })}
+                                {...register("sizeRange", { required: "Institution size is required" })}
                             >
                                 <For each={SIZE_OPTIONS}>
                                     {(option) => (
@@ -244,7 +259,7 @@ export default function FormThree() {
                             </NativeSelect.Field>
                             <NativeSelect.Indicator />
                         </NativeSelect.Root>
-                        <Field.ErrorText id="size-error">{errors.size?.message?.toString()}</Field.ErrorText>
+                        <Field.ErrorText id="size-error">{errors.sizeRange?.message?.toString()}</Field.ErrorText>
                     </Field.Root>
 
                     <Field.Root invalid={!!errors.licenseNumber} required>

@@ -1,20 +1,70 @@
-import { useState } from "react";
-import { Box, Flex, Heading, Text, Button, Menu, Portal, Icon, IconButton } from "@chakra-ui/react";
+import { useState, useEffect } from "react";
+import { Box, Flex, Heading, Text, Button, Menu, Portal, Icon, IconButton, Skeleton } from "@chakra-ui/react";
 import { IoMdAdd } from "react-icons/io";
 import { NavLink } from "react-router";
 import { FiChevronDown, FiChevronUp, FiCamera, FiUploadCloud } from "react-icons/fi";
 import { GrScan } from "react-icons/gr";
 import { LuScanText } from "react-icons/lu";
+import { getByUser as getInstitutionsByUser } from "@/api/institution";
+import { useSelector } from 'react-redux';
+import { type RootState } from "@/store/store";
+
+interface Institution {
+    id: number;
+    institutionName: string;
+    // add others if you need
+}
 
 const InfoTile = () => {
     const [isOpen, setIsOpen] = useState(false);
+    const userId = useSelector((state: RootState) => state.auth.user?.id);
+
+    const [institutions, setInstitutions] = useState<Institution[]>([]);
+
+    useEffect(() => {
+        const fetchInstitutions = async () => {
+            if (userId) {
+                const localStorageKey = `institutions-${userId}`;
+                const storedInstitutions = localStorage.getItem(localStorageKey);
+
+                if (storedInstitutions) {
+                    try {
+                        const parsedInstitutions = JSON.parse(storedInstitutions) as Institution[];
+                        setInstitutions(parsedInstitutions);
+                        console.log("Institutions loaded from local storage");
+                    } catch (error) {
+                        console.error("Error parsing institutions from local storage:", error);
+                        // If parsing fails, fetch from API and overwrite local storage
+                        const data = await getInstitutionsByUser(userId);
+                        setInstitutions(data);
+                        localStorage.setItem(localStorageKey, JSON.stringify(data));
+                        console.log("Institutions fetched from API and saved to local storage");
+                    }
+                } else {
+                    const data = await getInstitutionsByUser(userId);
+                    setInstitutions(data);
+                    localStorage.setItem(localStorageKey, JSON.stringify(data));
+                    console.log("Institutions fetched from API and saved to local storage");
+                }
+            }
+        };
+
+        fetchInstitutions();
+    }, [userId]);
+
     return (
         <Flex w="full" justifyContent="space-between" direction={{ base: "row", lgDown: "column" }} gap="4">
             <Flex w="full">
                 <Flex gap="4" justifyContent="flex-start" alignItems="start">
                     <Flex direction="column" gap="1" pr={{ base: "12", smDown: "4" }}>
-                        <Heading size="3xl" textWrap="pretty">Me Cure Healthcare Limited, Lekki, Lagos</Heading>
-                        <Text color="outline">Hospital ID: 46575932</Text>
+                        <Skeleton loading={!institutions[0]?.institutionName}>
+                            <Heading size="3xl" textWrap="pretty">
+                                {institutions[0]?.institutionName}
+                            </Heading>
+                        </Skeleton>
+                        <Skeleton loading={!institutions[0]?.id}>
+                            <Text color="outline">Hospital ID: {institutions[0]?.id}</Text>
+                        </Skeleton>
                     </Flex>
                 </Flex>
                 <Menu.Root onOpenChange={(details: { open: boolean }) => setIsOpen(details.open)}>
