@@ -12,7 +12,6 @@ import { type RootState } from "@/store/store";
 interface Institution {
     id: number;
     institutionName: string;
-    // add others if you need
 }
 
 const InfoTile = () => {
