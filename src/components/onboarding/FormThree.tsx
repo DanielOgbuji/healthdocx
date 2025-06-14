@@ -119,9 +119,6 @@ export default function FormThree() {
                 description: "Account created successfully.",
                 type: "success",
             });
-            sessionStorage.setItem("institutionID", response.institution.id);
-            sessionStorage.setItem("institutionName", response.institution.institutionName);
-            sessionStorage.setItem("license", response.institution.licenseNumber);
             dispatch(completeStep(2)); // Mark the third step as completed
             reset();
             setLocationInput("");

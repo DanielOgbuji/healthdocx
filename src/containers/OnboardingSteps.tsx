@@ -6,11 +6,11 @@ import { StepsContent } from "@/components/onboarding/StepsContent";
 import { useSelector } from 'react-redux';
 import type { RootState } from '@/store/store';
 
-const FormOne = lazy(() => import("@/components/forms/FormOne.tsx"));
-const FormTwo = lazy(() => import("@/components/forms/FormTwo.tsx"));
-const FormThree = lazy(() => import("@/components/forms/FormThree.tsx"));
-const AccountVerification = lazy(() => import("@/components/forms/AccountVerification.tsx"));
-const FormFive = lazy(() => import("@/components/forms/Welcome"));
+const FormOne = lazy(() => import("@/components/onboarding/FormOne"));
+const FormTwo = lazy(() => import("@/components/onboarding/FormTwo"));
+const FormThree = lazy(() => import("@/components/onboarding/FormThree"));
+const AccountVerification = lazy(() => import("@/components/onboarding/AccountVerification"));
+const FormFive = lazy(() => import("@/components/onboarding/Welcome"));
 
 const LoadingFallback = () => (
     <Stack flexGrow="1" height="100%" alignItems="center" justifyContent="center">
