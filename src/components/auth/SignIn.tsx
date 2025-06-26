@@ -36,7 +36,7 @@ export default function SignIn() {
     const { colorMode } = useColorMode();
     const navigate = useNavigate();
 
-    const { register, handleSubmit, formState } = useForm<SignInValues>({
+    const { register, handleSubmit, formState, reset } = useForm<SignInValues>({
         mode: 'onChange',
         defaultValues: {
             email: '',
@@ -57,7 +57,7 @@ export default function SignIn() {
                 type: "success",
                 duration: 3000,
             });
-            navigate("/");
+            navigate("/home");
         } catch (err) {
             console.error('Form submission failed:', err);
             const apiError = err as ApiError;
@@ -67,6 +67,8 @@ export default function SignIn() {
                 type: "error",
                 duration: 5000,
             })
+        } finally {
+            reset()
         }
     });
 

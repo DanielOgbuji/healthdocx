@@ -19,7 +19,7 @@ const NavList = () => {
                     </List.Item>
                     <List.Item h="full">
                         <ChakraLink h="full" px="4" asChild textDecoration="none" focusRing="none" borderRadius="none" _hover={{ bg: "secondary/4" }}>
-                            <NavLink to="/records" end>
+<NavLink to="/records">
                                 Records
                             </NavLink>
                         </ChakraLink>
@@ -56,7 +56,7 @@ const NavList = () => {
                                     </NavLink>
                                 </Menu.Item>
                                 <Menu.Item value="new-file" asChild _hover={{ bg: "secondary/4"}}>
-                                    <NavLink to="/records" end>
+                                    <NavLink to="/records">
                                         Records
                                     </NavLink>
                                 </Menu.Item>

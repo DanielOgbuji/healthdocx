@@ -14,3 +14,15 @@ api.interceptors.request.use((config) => {
 	}
 	return config;
 });
+
+// Handle 401 errors
+api.interceptors.response.use(
+  (response) => response,
+  (error) => {
+    if (error.response && error.response.status === 401) {
+      localStorage.removeItem("token");
+      window.location.href = "/sign-in";
+    }
+    return Promise.reject(error);
+  }
+);
