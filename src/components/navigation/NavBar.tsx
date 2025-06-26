@@ -1,5 +1,5 @@
 import { memo } from "react";
-import { Button, Box, Flex, Image, Separator, Text, HStack, IconButton, Icon, Avatar } from "@chakra-ui/react";
+import { Button, Box, Flex, Image, Separator, Text, HStack, IconButton, Icon, Avatar, Menu, Portal } from "@chakra-ui/react";
 import { MdOutlineNotifications } from "react-icons/md";
 import { IoMdAdd } from "react-icons/io";
 import { RxLightningBolt } from "react-icons/rx";
@@ -17,7 +17,7 @@ const NavBar = () => {
             zIndex="docked"
             bgColor="currentBg"
             width="full"
-            px={{ xl: "6vw", lg: "6vw", md: "6vw", sm:"6vw", base: "4" }}
+            px={{ xl: "6vw", lg: "6vw", md: "6vw", sm: "6vw", base: "4" }}
             height="72px"
             borderBottom="1px solid"
             borderColor="outline/20"
@@ -61,10 +61,36 @@ const NavBar = () => {
                 <IconButton variant="ghost" size="sm" aria-label="Notifications" borderRadius="full">
                     <Icon size="lg"><MdOutlineNotifications /></Icon>
                 </IconButton>
-                <Avatar.Root size="sm">
-                    <Avatar.Fallback name="Peace Amarachi" />
-                    <Avatar.Image src="#" />
-                </Avatar.Root>
+                <Menu.Root positioning={{ placement: "bottom-end" }}>
+                    <Menu.Trigger rounded="full" focusRing="outside">
+                        <Avatar.Root size="sm">
+                            <Avatar.Fallback name="Peace Amarachi" />
+                            <Avatar.Image src={undefined} />
+                        </Avatar.Root>
+                    </Menu.Trigger>
+                    <Portal>
+                        <Menu.Positioner>
+                            <Menu.Content>
+                                <Flex p="2" direction="column">
+                                    <Flex gap="4">
+                                        <Avatar.Root size="md">
+                                            <Avatar.Fallback name="Peace Amarachi" />
+                                            <Avatar.Image src={undefined} />
+                                        </Avatar.Root>
+                                        <Flex direction="column">
+                                            <Text fontWeight="bold" fontSize="sm" lineHeight="short">Peace Amarachi</Text>
+                                            <Text color="outline" fontSize="sm" lineHeight="short">peaceamara@gmail.com</Text>
+                                        </Flex>
+                                    </Flex>
+                                </Flex>
+                                <Menu.Separator />
+                                <Menu.Item value="account">Account</Menu.Item>
+                                <Menu.Item value="settings">Settings</Menu.Item>
+                                <Menu.Item value="logout">Logout</Menu.Item>
+                            </Menu.Content>
+                        </Menu.Positioner>
+                    </Portal>
+                </Menu.Root>
             </Flex>
         </Flex>
     );

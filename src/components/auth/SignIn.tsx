@@ -45,7 +45,6 @@ export default function SignIn() {
     });
     const { errors, isValid, isSubmitting } = formState;
 
-    // Handle the submission for development
     const onSubmit = handleSubmit(async (data) => {
         try {
             const email = data.email;
@@ -64,7 +63,7 @@ export default function SignIn() {
             const apiError = err as ApiError;
             toaster.create({
                 title: "Sign In Failed",
-                description: apiError.response?.data?.message ?? "An error occurred while signing you in. Please try again.",
+                description: apiError.response?.data?.error ?? "An error occurred while signing you in. Please try again.",
                 type: "error",
                 duration: 5000,
             })

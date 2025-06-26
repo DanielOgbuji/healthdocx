@@ -1,5 +1,3 @@
-"use client"
-
 import React, { useEffect, useState } from "react"
 import { Button, Field, Fieldset, PinInput, Flex, Box, Link, IconButton } from "@chakra-ui/react"
 import { MdOutlineUndo } from "react-icons/md";

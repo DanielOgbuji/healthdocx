@@ -1,5 +1,3 @@
-"use client"
-
 import React from "react"
 import { useNavigate } from "react-router"
 import { Box, Button, Fieldset, Flex, Stack, Field, PinInput, Link } from "@chakra-ui/react"

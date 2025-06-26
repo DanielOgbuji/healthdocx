@@ -1,13 +1,14 @@
 import { useState, useEffect } from "react";
-import { Box, Flex, Heading, Text, Button, Menu, Portal, Icon, IconButton, Skeleton } from "@chakra-ui/react";
+import { Box, Flex, Button } from "@chakra-ui/react";
 import { IoMdAdd } from "react-icons/io";
-import { NavLink } from "react-router";
-import { FiChevronDown, FiChevronUp, FiCamera, FiUploadCloud } from "react-icons/fi";
-import { GrScan } from "react-icons/gr";
-import { LuScanText } from "react-icons/lu";
 import { getByUser as getInstitutionsByUser } from "@/api/institution";
 import { useSelector } from 'react-redux';
 import { type RootState } from "@/store/store";
+import InstitutionInfo from "./InstitutionInfo";
+import OptionsMenu from "./OptionsMenu";
+import UploadButton from "./UploadButton";
+import UploadDialog from "./UploadDialog";
+import useFileUpload from "@/hooks/useFileUpload";
 
 interface Institution {
     id: number;
@@ -17,8 +18,21 @@ interface Institution {
 const InfoTile = () => {
     const [isOpen, setIsOpen] = useState(false);
     const userId = useSelector((state: RootState) => state.auth.user?.id);
-
     const [institutions, setInstitutions] = useState<Institution[]>([]);
+    const {
+        open,
+        setOpen,
+        uploadProgress,
+        uploadStatus,
+        errorMessage,
+        fileSize,
+        fileName,
+        fileType,
+        filePreview,
+        handleFileChange,
+        handleCloseDialog,
+        handleRetry,
+    } = useFileUpload();
 
     useEffect(() => {
         const fetchInstitutions = async () => {
@@ -35,12 +49,14 @@ const InfoTile = () => {
                         console.error("Error parsing institutions from local storage:", error);
                         // If parsing fails, fetch from API and overwrite local storage
                         const data = await getInstitutionsByUser(userId);
+                        console.log("Fetching institutions from API due to local storage error", data);
                         setInstitutions(data);
                         localStorage.setItem(localStorageKey, JSON.stringify(data));
                         console.log("Institutions fetched from API and saved to local storage");
                     }
                 } else {
                     const data = await getInstitutionsByUser(userId);
+                    console.log("Fetching institutions from API as local storage is empty", data);
                     setInstitutions(data);
                     localStorage.setItem(localStorageKey, JSON.stringify(data));
                     console.log("Institutions fetched from API and saved to local storage");
@@ -52,56 +68,35 @@ const InfoTile = () => {
     }, [userId]);
 
     return (
-        <Flex w="full" justifyContent="space-between" direction={{ base: "row", lgDown: "column" }} gap="4">
-            <Flex w="full">
-                <Flex gap="4" justifyContent="flex-start" alignItems="start">
-                    <Flex direction="column" gap="1" pr={{ base: "12", smDown: "4" }}>
-                        <Skeleton loading={!institutions[0]?.institutionName}>
-                            <Heading size="3xl" textWrap="pretty">
-                                {institutions[0]?.institutionName}
-                            </Heading>
-                        </Skeleton>
-                        <Skeleton loading={!institutions[0]?.id}>
-                            <Text color="outline">Hospital ID: {institutions[0]?.id}</Text>
-                        </Skeleton>
+        <>
+            <Flex w="full" justifyContent="space-between" direction={{ base: "row", lgDown: "column" }} gap="4">
+                <Flex w="full">
+                    <Flex gap="4" justifyContent="flex-start" alignItems="start">
+                        <InstitutionInfo institution={institutions[0]} loading={institutions.length === 0} />
                     </Flex>
+                    <OptionsMenu isOpen={isOpen} setIsOpen={setIsOpen} />
                 </Flex>
-                <Menu.Root onOpenChange={(details: { open: boolean }) => setIsOpen(details.open)}>
-                    <Menu.Trigger asChild colorPalette="brand">
-                        <IconButton variant="ghost" size="sm" px="2" ml="auto" focusRing="none">
-                            <Icon size="md"><LuScanText /></Icon>
-                            <Icon as={isOpen ? FiChevronUp : FiChevronDown} size="md" />
-                        </IconButton>
-                    </Menu.Trigger>
-                    <Portal>
-                        <Menu.Positioner>
-                            <Menu.Content borderWidth="1px" borderColor="primary/20">
-                                <Menu.Item value="new-txt" asChild _hover={{ bgColor: "brand.subtle" }} color="brand.fg">
-                                    <NavLink to="/" end>
-                                        <FiCamera />
-                                        Camera
-                                    </NavLink>
-                                </Menu.Item>
-                                <Menu.Item value="new-file" asChild _hover={{ bgColor: "brand.subtle" }} color="brand.fg">
-                                    <NavLink to="/" end>
-                                        <GrScan />
-                                        Scanner
-                                    </NavLink>
-                                </Menu.Item>
-                            </Menu.Content>
-                        </Menu.Positioner>
-                    </Portal>
-                </Menu.Root>
+                <Flex gap="4" alignSelf="flex-start" width={{ base: "fit-content", lgDown: "full" }} colorPalette="brand">
+                    <Button variant="outline" size="sm" flex={{ base: "none", lgDown: "1" }} disabled>
+                        <IoMdAdd /> <Box as="span" fontSize="sm">Create record</Box>
+                    </Button>
+                    <UploadButton handleFileChange={handleFileChange} />
+                </Flex>
             </Flex>
-            <Flex gap="4" alignSelf="flex-start" width={{ base: "fit-content", lgDown: "full" }} colorPalette="brand">
-                <Button variant="outline" size="sm" flex={{ base: "none", lgDown: "1" }} disabled >
-                    <IoMdAdd /> <Box as="span" fontSize="sm">Create record</Box>
-                </Button>
-                <Button variant="solid" size="sm" flex={{ base: "none", lgDown: "1" }}>
-                    <Icon as={FiUploadCloud} size="md" /> <Box as="span" fontSize="sm">Upload record </Box>
-                </Button>
-            </Flex>
-        </Flex>
+            <UploadDialog
+                open={open}
+                setOpen={setOpen}
+                uploadStatus={uploadStatus}
+                errorMessage={errorMessage}
+                fileSize={fileSize}
+                fileName={fileName}
+                fileType={fileType}
+                filePreview={filePreview}
+                uploadProgress={uploadProgress}
+                onClose={handleCloseDialog}
+                onRetry={handleRetry}
+            />
+        </>
     );
 }
 

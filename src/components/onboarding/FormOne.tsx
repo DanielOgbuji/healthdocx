@@ -54,7 +54,7 @@ export default function FormOne() {
                 type: "success",
             });
             sessionStorage.setItem("onboardingEmail", data.email);
-            sessionStorage.setItem("userID", response.user.id);
+            sessionStorage.setItem("userID", response.userId);
             // Mark the first step as completed
             dispatch(completeStep(0));
             reset();
@@ -63,7 +63,7 @@ export default function FormOne() {
             const apiError = err as ApiError;
             toaster.create({
                 title: "Registration Failed",
-                description: apiError.response?.data?.message ?? "An error occurred during registration. Please try again.",
+                description: apiError.response?.data?.error ?? "An error occurred during registration. Please try again.",
                 type: "error",
                 duration: 5000,
             })

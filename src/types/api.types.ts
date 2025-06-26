@@ -22,6 +22,7 @@ export interface Institution {
 export interface ApiErrorResponse {
 	data?: {
 		message?: string;
+		error?: string;
 	};
 	status?: number;
 }

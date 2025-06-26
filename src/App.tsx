@@ -15,6 +15,7 @@ import ForgotPasswordPage from '@/pages/forgot-password';
 import VerifyEmailPage from '@/pages/verify-email';
 import PasswordResetPage from '@/pages/password-reset';
 import ResetSuccessfulPage from '@/pages/reset-successful';
+import RecordsDetails from '@/pages/record-details';
 import { BrowserRouter, Routes, Route } from 'react-router';
 
 function App() {
@@ -34,6 +35,7 @@ function App() {
                         <Route element={<WorkSpace />}>
                             <Route path="home" element={<ProtectedRoute><Home /></ProtectedRoute>} />
                             <Route path="records" element={<ProtectedRoute><Records /></ProtectedRoute>} />
+                            <Route path="records/details/:id" element={<ProtectedRoute><RecordsDetails /></ProtectedRoute>} />
                             <Route path="analytics" element={<ProtectedRoute><Analytics /></ProtectedRoute>} />
                             <Route path="settings" element={<ProtectedRoute><Settings /></ProtectedRoute>} />
                         </Route>
