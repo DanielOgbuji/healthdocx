@@ -123,7 +123,9 @@ const UploadDialog = ({ open, setOpen, uploadStatus, fileSize, fileName, fileTyp
                                         <Button variant="solid" size="sm" onClick={async () => {
                                             try {
                                                 const records = await getPatientRecords();
+                                                console.log("Fetched records:", records);
                                                 const lastRecord = records[records.length - 1];
+                                                console.log("Fetched last record:", lastRecord);
                                                 const structuredData = lastRecord.data.structuredData;
                                                 const id = lastRecord.id;
                                                 localStorage.setItem("structuredData", structuredData);

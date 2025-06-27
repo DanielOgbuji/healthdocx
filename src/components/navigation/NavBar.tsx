@@ -1,6 +1,6 @@
 import { memo } from "react";
-import { Button, Box, Flex, Image, Separator, Text, HStack, IconButton, Icon, Avatar, Menu, Portal } from "@chakra-ui/react";
-import { MdOutlineNotifications } from "react-icons/md";
+import { Button, Box, Flex, Image, Separator, Text, HStack, IconButton, Icon, Avatar, Menu, Portal, Circle, Float } from "@chakra-ui/react";
+import { MdOutlineNotifications, MdPersonOutline, MdOutlineSupport, MdOutlineLogout } from "react-icons/md";
 import { IoMdAdd } from "react-icons/io";
 import { RxLightningBolt } from "react-icons/rx";
 import NavList from "@/components/navigation/NavList";
@@ -73,10 +73,15 @@ const NavBar = () => {
                             <Menu.Content>
                                 <Flex p="2" direction="column">
                                     <Flex gap="4">
-                                        <Avatar.Root size="md">
-                                            <Avatar.Fallback name="Peace Amarachi" />
-                                            <Avatar.Image src={undefined} />
-                                        </Avatar.Root>
+                                        <Box display="inline-block" pos="relative">
+                                            <Avatar.Root size="md" position="relative">
+                                                <Avatar.Fallback name="Peace Amarachi" />
+                                                <Avatar.Image src={undefined} />
+                                            </Avatar.Root>
+                                            <Float placement="bottom-end" offset="1">
+                                                <Circle size="3" bg="primary" borderWidth="2px" borderColor="surface" />
+                                            </Float>
+                                        </Box>
                                         <Flex direction="column">
                                             <Text fontWeight="bold" fontSize="sm" lineHeight="short">Peace Amarachi</Text>
                                             <Text color="outline" fontSize="sm" lineHeight="short">peaceamara@gmail.com</Text>
@@ -84,9 +89,11 @@ const NavBar = () => {
                                     </Flex>
                                 </Flex>
                                 <Menu.Separator />
-                                <Menu.Item value="account">Account</Menu.Item>
-                                <Menu.Item value="settings">Settings</Menu.Item>
-                                <Menu.Item value="logout">Logout</Menu.Item>
+                                <Menu.Item value="account"><Icon size="md" color="outline"><MdPersonOutline /></Icon> View profile</Menu.Item>
+                                <Menu.Item value="settings"><Icon size="md" color="outline"><MdOutlineSupport /></Icon> Support</Menu.Item>
+                                <Menu.Separator />
+                                <Menu.Item value="logout" color="error"
+                                    _hover={{ bg: "bg.error", color: "error" }}><Icon size="md" color="error"><MdOutlineLogout /></Icon> Sign out</Menu.Item>
                             </Menu.Content>
                         </Menu.Positioner>
                     </Portal>

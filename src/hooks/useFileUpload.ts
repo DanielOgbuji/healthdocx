@@ -80,7 +80,7 @@ const useFileUpload = () => {
 		if (details?.rejectedFiles[0]?.errors && details?.rejectedFiles[0]?.errors[0] === "FILE_TOO_LARGE") {
 			// 10 MB limit
 			toaster.create({
-				title: "Registration Failed",
+				title: "Upload Failed",
 				description: "Your file is too large. Please upload a smaller file.",
 				type: "error",
 				duration: 5000,
@@ -89,7 +89,7 @@ const useFileUpload = () => {
 		} else if (details?.rejectedFiles[0]?.errors && details?.rejectedFiles[0].errors[0] === "FILE_INVALID_TYPE") {
 			// PNG, JPG, PDF only
 			toaster.create({
-				title: "Registration Failed",
+				title: "Upload Failed",
 				description:
 					"Your file type is invalid. Please upload a PNG, JPG, or PDF.",
 				type: "error",

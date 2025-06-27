@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, memo } from "react";
 import { Box, Flex, Button } from "@chakra-ui/react";
 import { IoMdAdd } from "react-icons/io";
 import { getByUser as getInstitutionsByUser } from "@/api/institution";
@@ -19,6 +19,7 @@ const InfoTile = () => {
     const [isOpen, setIsOpen] = useState(false);
     const userId = useSelector((state: RootState) => state.auth.user?.id);
     const [institutions, setInstitutions] = useState<Institution[]>([]);
+    const [isLoading, setIsLoading] = useState(true); // New state for loading
     const {
         open,
         setOpen,
@@ -36,31 +37,41 @@ const InfoTile = () => {
 
     useEffect(() => {
         const fetchInstitutions = async () => {
-            if (userId) {
-                const localStorageKey = `institutions-${userId}`;
-                const storedInstitutions = localStorage.getItem(localStorageKey);
+            if (!userId) {
+                setInstitutions([]);
+                setIsLoading(false);
+                return;
+            }
 
-                if (storedInstitutions) {
-                    try {
-                        const parsedInstitutions = JSON.parse(storedInstitutions) as Institution[];
-                        setInstitutions(parsedInstitutions);
-                        console.log("Institutions loaded from local storage");
-                    } catch (error) {
-                        console.error("Error parsing institutions from local storage:", error);
-                        // If parsing fails, fetch from API and overwrite local storage
-                        const data = await getInstitutionsByUser(userId);
-                        console.log("Fetching institutions from API due to local storage error", data);
-                        setInstitutions(data);
-                        localStorage.setItem(localStorageKey, JSON.stringify(data));
-                        console.log("Institutions fetched from API and saved to local storage");
-                    }
-                } else {
-                    const data = await getInstitutionsByUser(userId);
-                    console.log("Fetching institutions from API as local storage is empty", data);
-                    setInstitutions(data);
-                    localStorage.setItem(localStorageKey, JSON.stringify(data));
-                    console.log("Institutions fetched from API and saved to local storage");
+            const localStorageKey = `institutions-${userId}`;
+            const storedInstitutions = localStorage.getItem(localStorageKey);
+
+            if (storedInstitutions) {
+                try {
+                    const parsedInstitutions = JSON.parse(storedInstitutions) as Institution[];
+                    setInstitutions(parsedInstitutions);
+                    setIsLoading(false); // Data loaded from local storage, no need for skeleton
+                    console.log("Institutions loaded from local storage");
+                    return; // Exit early if local storage data is valid
+                } catch (error) {
+                    console.error("Error parsing institutions from local storage:", error);
+                    // Fall through to API fetch if local storage parsing fails
                 }
+            }
+
+            // If local storage was empty or parsing failed, proceed with API fetch
+            setIsLoading(true); // Set loading to true only if API call is needed
+            try {
+                const data = await getInstitutionsByUser(userId);
+                console.log("Fetching institutions from API", data);
+                setInstitutions(data);
+                localStorage.setItem(localStorageKey, JSON.stringify(data));
+                console.log("Institutions fetched from API and saved to local storage");
+            } catch (error) {
+                console.error("Error fetching institutions from API:", error);
+                setInstitutions([]); // Clear institutions on error
+            } finally {
+                setIsLoading(false); // Always set loading to false after API attempt
             }
         };
 
@@ -72,7 +83,7 @@ const InfoTile = () => {
             <Flex w="full" justifyContent="space-between" direction={{ base: "row", lgDown: "column" }} gap="4">
                 <Flex w="full">
                     <Flex gap="4" justifyContent="flex-start" alignItems="start">
-                        <InstitutionInfo institution={institutions[0]} loading={institutions.length === 0} />
+                        <InstitutionInfo institution={institutions[0]} loading={isLoading} /> {/* Use new isLoading state */}
                     </Flex>
                     <OptionsMenu isOpen={isOpen} setIsOpen={setIsOpen} />
                 </Flex>
@@ -100,4 +111,4 @@ const InfoTile = () => {
     );
 }
 
-export default InfoTile;
+export default memo(InfoTile);

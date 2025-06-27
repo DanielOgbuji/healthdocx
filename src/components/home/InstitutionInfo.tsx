@@ -1,3 +1,4 @@
+import { memo } from "react";
 import { Flex, Heading, Text, Skeleton } from "@chakra-ui/react";
 
 interface InstitutionInfoProps {
@@ -23,4 +24,4 @@ const InstitutionInfo = ({ institution, loading }: InstitutionInfoProps) => {
     );
 };
 
-export default InstitutionInfo;
+export default memo(InstitutionInfo);
