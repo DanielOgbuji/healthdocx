@@ -20,9 +20,12 @@ const Home = () => {
         fileName,
         fileType,
         filePreview,
+        croppedImage,
         handleFileChange,
         handleCloseDialog,
-		handleRetry,
+        handleRetry,
+        handleConfirmCrop,
+        handleCancelCrop,
     } = useFileUpload();
 
     return (
@@ -102,9 +105,12 @@ const Home = () => {
                     fileName={fileName}
                     fileType={fileType}
                     filePreview={filePreview}
+                    croppedImage={croppedImage}
                     uploadProgress={uploadProgress}
                     onClose={handleCloseDialog}
-					onRetry={handleRetry}
+                    onRetry={handleRetry}
+                    handleConfirmCrop={handleConfirmCrop}
+                    handleCancelCrop={handleCancelCrop}
                 />
             </Flex>
         </>

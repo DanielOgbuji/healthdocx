@@ -1,26 +1,32 @@
-import { Suspense } from "react";
-import { Flex, Text, Icon, Image, Box, Card, HStack, Progress, Button, Dialog, Portal, CloseButton, Stack, VStack, Spinner } from "@chakra-ui/react";
+import { Suspense, useState, useCallback } from "react";
+import { Flex, Text, Icon, Image, Box, Card, HStack, Progress, Button, Dialog, Portal, CloseButton, Stack, VStack, Spinner, Slider } from "@chakra-ui/react";
 import { GrDocumentPdf, GrDocumentImage } from "react-icons/gr";
 import { FiAlertTriangle } from "react-icons/fi";
 import { RxReload } from "react-icons/rx";
-import { PiSparkle } from "react-icons/pi";
+import { PiSparkle, PiCheck } from "react-icons/pi";
 import uploadInProgress from "@/assets/images/Illustration.svg";
 import { FormatByte } from "@chakra-ui/react";
 import { getPatientRecords } from "@/api/patient-records";
 import { useNavigate } from "react-router";
+// Note: You'll need to install this package: npm install react-easy-crop
+import Cropper from 'react-easy-crop';
+import { type Area } from 'react-easy-crop';
 
 interface UploadDialogProps {
     open: boolean;
     setOpen: (open: boolean) => void;
-    uploadStatus: "idle" | "uploading" | "success" | "error";
+    uploadStatus: "idle" | "cropping" | "uploading" | "success" | "error";
     errorMessage: string;
     fileSize: number;
     fileName: string;
     fileType: string;
     filePreview: string;
+    croppedImage?: string | null;
     uploadProgress: number;
     onClose: () => void;
     onRetry: () => Promise<void>;
+    handleConfirmCrop?: (croppedImageData: string) => Promise<void>;
+    handleCancelCrop?: () => void;
 }
 
 const LoadingFallback = () => (
@@ -32,8 +38,119 @@ const LoadingFallback = () => (
 );
 
 
-const UploadDialog = ({ open, setOpen, uploadStatus, fileSize, fileName, fileType, filePreview, uploadProgress, onClose, onRetry }: UploadDialogProps) => {
+// Helper function to create a cropped image
+const createCroppedImage = async (
+    imageSrc: string,
+    pixelCrop: Area,
+    rotation = 0
+): Promise<string> => {
+    const image = new window.Image();
+    image.src = imageSrc;
+
+    return new Promise((resolve) => {
+        image.onload = () => {
+            const canvas = document.createElement('canvas');
+            const ctx = canvas.getContext('2d');
+
+            if (!ctx) {
+                resolve('');
+                return;
+            }
+
+            // Calculate bounding box of the rotated image
+            const maxSize = Math.max(image.width, image.height);
+            const safeArea = 2 * ((maxSize / 2) * Math.sqrt(2));
+
+            // Set canvas size to match the bounding box
+            canvas.width = safeArea;
+            canvas.height = safeArea;
+
+            // Draw rotated image
+            ctx.translate(safeArea / 2, safeArea / 2);
+            ctx.rotate((rotation * Math.PI) / 180);
+            ctx.translate(-safeArea / 2, -safeArea / 2);
+
+            // Draw the image at the center of the canvas
+            ctx.drawImage(
+                image,
+                safeArea / 2 - image.width / 2,
+                safeArea / 2 - image.height / 2
+            );
+
+            // Create a new canvas for the cropped image
+            const cropCanvas = document.createElement('canvas');
+            const cropCtx = cropCanvas.getContext('2d');
+
+            if (!cropCtx) {
+                resolve('');
+                return;
+            }
+
+            // Set the size of the crop canvas
+            cropCanvas.width = pixelCrop.width;
+            cropCanvas.height = pixelCrop.height;
+
+            // Draw the cropped image
+            cropCtx.drawImage(
+                canvas,
+                pixelCrop.x,
+                pixelCrop.y,
+                pixelCrop.width,
+                pixelCrop.height,
+                0,
+                0,
+                pixelCrop.width,
+                pixelCrop.height
+            );
+
+            // Get the data URL of the cropped image
+            resolve(cropCanvas.toDataURL('image/jpeg'));
+        };
+    });
+};
+
+const UploadDialog = ({
+    open,
+    setOpen,
+    uploadStatus,
+    fileSize,
+    fileName,
+    fileType,
+    filePreview,
+    uploadProgress,
+    onClose,
+    onRetry,
+    handleConfirmCrop,
+    handleCancelCrop
+}: UploadDialogProps) => {
     const navigate = useNavigate();
+
+    // State for cropping
+    const [crop, setCrop] = useState({ x: 0, y: 0 });
+    const [zoom, setZoom] = useState(1);
+    const [rotation, setRotation] = useState(0);
+    const [aspectRatio, setAspectRatio] = useState(16 / 9); // Default aspect ratio
+    const [croppedAreaPixels, setCroppedAreaPixels] = useState<Area | null>(null);
+
+    const onCropComplete = useCallback((croppedArea: Area, croppedAreaPixels: Area) => {
+        setCroppedAreaPixels(croppedAreaPixels);
+    }, []);
+
+    const handleCropConfirm = async () => {
+        if (!croppedAreaPixels || !handleConfirmCrop) return;
+
+        try {
+            const croppedImage = await createCroppedImage(
+                filePreview,
+                croppedAreaPixels,
+                rotation
+            );
+
+            await handleConfirmCrop(croppedImage);
+        } catch (e) {
+            console.error('Error creating cropped image:', e);
+        }
+    };
     return (
         <Dialog.Root open={open} onOpenChange={(e) => setOpen(e.open)} size="cover" placement="center" motionPreset="slide-in-bottom" closeOnInteractOutside={false} closeOnEscape={false} scrollBehavior="outside" unmountOnExit>
             <Dialog.Trigger />
@@ -42,6 +159,107 @@ const UploadDialog = ({ open, setOpen, uploadStatus, fileSize, fileName, fileTyp
                 <Dialog.Positioner>
                     <Dialog.Content>
                         <Dialog.Body display="flex" justifyContent="center" alignItems="center" borderWidth="1px" borderColor="outlineVariant" rounded="md" h="full" p="0">
+                            {uploadStatus === "cropping" && (
+                                <Flex justifyContent="center" alignItems="center" direction="column" gap="6" w="full" h="full">
+                                    <Flex direction="column" justifyContent="center" alignItems="center" gap="3" px={{ mdDown: "8" }}>
+                                        <Text fontWeight="bold" fontSize="xl" color="primary" textAlign="center" lineHeight="moderate">Crop and Rotate Your Image</Text>
+                                        <Text color="outline" textAlign="center">Adjust your image before uploading to get the best results.</Text>
+                                    </Flex>
+                                    <Flex w="full" p="12" gap="12">
+                                        <Flex position="relative" width={{ base: "80%", mdDown: "90%" }} height="400px">
+                                            <Cropper
+                                                image={filePreview}
+                                                crop={crop}
+                                                objectFit="contain"
+                                                zoom={zoom}
+                                                rotation={rotation}
+                                                aspect={aspectRatio}
+                                                onCropChange={setCrop}
+                                                onCropComplete={onCropComplete}
+                                                onZoomChange={setZoom}
+                                            />
+                                        </Flex>
+
+                                        <Flex width={{ base: "80%", mdDown: "90%" }} direction="column" gap="4">
+                                            <Flex direction="column" gap="2">
+                                                <Flex justifyContent="space-between">
+                                                    <Text fontSize="sm">Zoom</Text>
+                                                    <Text fontSize="sm">{zoom.toFixed(1)}x</Text>
+                                                </Flex>
+                                                <Slider.Root
+                                                    min={1}
+                                                    max={3}
+                                                    step={0.1}
+                                                    value={[zoom]}
+                                                    onValueChange={(e) => setZoom(e.value[0])}
+                                                    colorPalette="brand"
+                                                >
+                                                    <Slider.Control>
+                                                        <Slider.Track>
+                                                            <Slider.Range />
+                                                        </Slider.Track>
+                                                        <Slider.Thumbs />
+                                                    </Slider.Control>
+                                                </Slider.Root>
+                                            </Flex>
+
+                                            <Flex direction="column" gap="2">
+                                                <Flex justifyContent="space-between">
+                                                    <Text fontSize="sm">Rotation</Text>
+                                                    <Text fontSize="sm">{rotation}°</Text>
+                                                </Flex>
+                                                <Slider.Root
+                                                    min={0}
+                                                    max={360}
+                                                    step={1}
+                                                    value={[rotation]}
+                                                    onValueChange={(e) => setRotation(e.value[0])}
+                                                    colorPalette="brand"
+                                                >
+                                                    <Slider.Control>
+                                                        <Slider.Track>
+                                                            <Slider.Range />
+                                                        </Slider.Track>
+                                                        <Slider.Thumbs />
+                                                    </Slider.Control>
+                                                </Slider.Root>
+                                            </Flex>
+
+                                            <Flex direction="column" gap="2">
+                                                <Flex justifyContent="space-between">
+                                                    <Text fontSize="sm">Aspect Ratio</Text>
+                                                    <Text fontSize="sm">{aspectRatio.toFixed(2)}</Text>
+                                                </Flex>
+                                                <Slider.Root
+                                                    min={0.25} // 1/4
+                                                    max={4}    // 4/1
+                                                    step={0.01}
+                                                    value={[aspectRatio]}
+                                                    onValueChange={(e) => setAspectRatio(e.value[0])}
+                                                    colorPalette="brand"
+                                                >
+                                                    <Slider.Control>
+                                                        <Slider.Track>
+                                                            <Slider.Range />
+                                                        </Slider.Track>
+                                                        <Slider.Thumbs />
+                                                    </Slider.Control>
+                                                </Slider.Root>
+                                            </Flex>
+
+                                            <Flex gap="4" justifyContent="center" width="full" mt="4">
+                                                <Button variant="outline" size="sm" onClick={handleCancelCrop}>
+                                                    Cancel
+                                                </Button>
+                                                <Button variant="solid" size="sm" onClick={handleCropConfirm} colorPalette="brand">
+                                                    <PiCheck /> <Box as="span" fontSize="sm">Confirm</Box>
+                                                </Button>
+                                            </Flex>
+                                        </Flex>
+                                    </Flex>
+                                </Flex>
+                            )}
+
                             {uploadStatus === "uploading" && (
                                 <Flex justifyContent="center" alignItems="center" direction="column" gap="6" w="full" h="full">
                                     <Image src={uploadInProgress} />

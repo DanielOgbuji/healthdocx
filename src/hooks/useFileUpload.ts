@@ -1,6 +1,6 @@
 import { useState } from "react";
 
-type UploadStatus = "idle" | "uploading" | "success" | "error";
+type UploadStatus = "idle" | "cropping" | "uploading" | "success" | "error";
 import { type FileChangeDetails } from "@zag-js/file-upload";
 import axios, { type CancelTokenSource } from "axios";
 import { toaster } from "@/components/ui/toaster";
@@ -22,6 +22,7 @@ const useFileUpload = () => {
 		useState<CancelTokenSource | null>(null);
 	const [uploadKey, setUploadKey] = useState(0);
 	const [selectedFile, setSelectedFile] = useState<File | null>(null);
+	const [croppedImage, setCroppedImage] = useState<string | null>(null);
 
 	const uploadFile = async (file: File) => {
 		setFileName(file.name);
@@ -102,13 +103,62 @@ const useFileUpload = () => {
 		if (!files || files.length === 0) return;
 		const file = files[0];
 		setSelectedFile(file);
-		await uploadFile(file);
+
+		// Set file info
+		setFileName(file.name);
+		setFileSize(Math.round(file.size));
+		setFileType(file.type);
+
+		// For PDF files, skip cropping and go straight to upload
+		if (file.type === "application/pdf") {
+			await uploadFile(file);
+			return;
+		}
+
+		// For image files, show cropping UI
+		const reader = new FileReader();
+		reader.onloadend = () => {
+			setFilePreview(reader.result as string);
+			setUploadStatus("cropping");
+			setOpen(true);
+		};
+		reader.readAsDataURL(file);
 	};
 
 	const handleRetry = async () => {
 		if (selectedFile) {
 			await uploadFile(selectedFile);
 		}
+	};
+
+	const handleConfirmCrop = async (croppedImageData: string) => {
+		setCroppedImage(croppedImageData);
+
+		// Convert base64 string to a File object
+		if (selectedFile) {
+			const byteString = atob(croppedImageData.split(',')[1]);
+			const mimeString = croppedImageData.split(',')[0].split(':')[1].split(';')[0];
+			const ab = new ArrayBuffer(byteString.length);
+			const ia = new Uint8Array(ab);
+
+			for (let i = 0; i < byteString.length; i++) {
+				ia[i] = byteString.charCodeAt(i);
+			}
+
+			const blob = new Blob([ab], { type: mimeString });
+			const croppedFile = new File([blob], selectedFile.name, { type: mimeString });
+
+			// Upload the cropped file
+			await uploadFile(croppedFile);
+		}
+	};
+
+	const handleCancelCrop = () => {
+		setOpen(false);
+		setUploadStatus("idle");
+		setCroppedImage(null);
+		setFilePreview("");
+		setUploadKey((prevKey) => prevKey + 1);
 	};
 
 	const handleCloseDialog = () => {
@@ -123,6 +173,7 @@ const useFileUpload = () => {
 		setFileName("");
 		setFileType("");
 		setFilePreview("");
+		setCroppedImage(null);
 		setUploadKey((prevKey) => prevKey + 1);
 	};
 
@@ -136,11 +187,14 @@ const useFileUpload = () => {
 		fileName,
 		fileType,
 		filePreview,
+		croppedImage,
 		uploadCancelToken,
 		uploadKey,
 		handleFileChange,
 		handleCloseDialog,
 		handleRetry,
+		handleConfirmCrop,
+		handleCancelCrop,
 		setUploadKey,
 	};
 };
