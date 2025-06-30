@@ -49,6 +49,7 @@ const createCroppedImage = async (
 
     return new Promise((resolve) => {
         image.onload = () => {
+            // Create a canvas large enough for the rotated image
             const canvas = document.createElement('canvas');
             const ctx = canvas.getContext('2d');
 
@@ -57,25 +58,20 @@ const createCroppedImage = async (
                 return;
             }
 
-            // Calculate bounding box of the rotated image
-            const maxSize = Math.max(image.width, image.height);
-            const safeArea = 2 * ((maxSize / 2) * Math.sqrt(2));
+            // Calculate bounding box for rotated image
+            const radians = (rotation * Math.PI) / 180;
+            const sin = Math.abs(Math.sin(radians));
+            const cos = Math.abs(Math.cos(radians));
+            const rotatedWidth = image.width * cos + image.height * sin;
+            const rotatedHeight = image.width * sin + image.height * cos;
 
-            // Set canvas size to match the bounding box
-            canvas.width = safeArea;
-            canvas.height = safeArea;
+            canvas.width = rotatedWidth;
+            canvas.height = rotatedHeight;
 
-            // Draw rotated image
-            ctx.translate(safeArea / 2, safeArea / 2);
-            ctx.rotate((rotation * Math.PI) / 180);
-            ctx.translate(-safeArea / 2, -safeArea / 2);
-
-            // Draw the image at the center of the canvas
-            ctx.drawImage(
-                image,
-                safeArea / 2 - image.width / 2,
-                safeArea / 2 - image.height / 2
-            );
+            // Move to center, rotate, then draw image centered
+            ctx.translate(rotatedWidth / 2, rotatedHeight / 2);
+            ctx.rotate(radians);
+            ctx.drawImage(image, -image.width / 2, -image.height / 2);
 
             // Create a new canvas for the cropped image
             const cropCanvas = document.createElement('canvas');
@@ -86,11 +82,10 @@ const createCroppedImage = async (
                 return;
             }
 
-            // Set the size of the crop canvas
             cropCanvas.width = pixelCrop.width;
             cropCanvas.height = pixelCrop.height;
 
-            // Draw the cropped image
+            // Draw the cropped area from the rotated image
             cropCtx.drawImage(
                 canvas,
                 pixelCrop.x,
@@ -102,8 +97,7 @@ const createCroppedImage = async (
                 pixelCrop.width,
                 pixelCrop.height
             );
-
-            // Get the data URL of the cropped image
+            console.log("Cropped image data:", cropCanvas.toDataURL('image/jpeg'));
             resolve(cropCanvas.toDataURL('image/jpeg'));
         };
     });
@@ -165,8 +159,8 @@ const UploadDialog = ({
                                         <Text fontWeight="bold" fontSize="xl" color="primary" textAlign="center" lineHeight="moderate">Crop and Rotate Your Image</Text>
                                         <Text color="outline" textAlign="center">Adjust your image before uploading to get the best results.</Text>
                                     </Flex>
-                                    <Flex w="full" p="12" gap="12">
-                                        <Flex position="relative" width={{ base: "80%", mdDown: "90%" }} height="400px">
+                                    <Flex w="full" p="12" pt="0" gap="12" direction={{ base: "column", mdDown: "column", lg: "row" }} justifyContent="center" alignItems="center">
+                                        <Flex position="relative" width="full" height={{ base: "400px", mdDown: "200px" }} rounded="md" overflow="hidden" borderWidth="1px" borderColor="outlineVariant">
                                             <Cropper
                                                 image={filePreview}
                                                 crop={crop}

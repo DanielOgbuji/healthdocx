@@ -33,6 +33,8 @@ const InfoTile = () => {
         handleFileChange,
         handleCloseDialog,
         handleRetry,
+        handleConfirmCrop,
+        handleCancelCrop,
     } = useFileUpload();
 
     useEffect(() => {
@@ -106,6 +108,8 @@ const InfoTile = () => {
                 uploadProgress={uploadProgress}
                 onClose={handleCloseDialog}
                 onRetry={handleRetry}
+                handleConfirmCrop={handleConfirmCrop}
+                handleCancelCrop={handleCancelCrop}
             />
         </>
     );

@@ -17,7 +17,7 @@ export const extract = async (
 	formData.append("recordType", data.recordType);
 	formData.append("recordTypeGroup", data.recordTypeGroup);
 
-	const response = await api.post("/patient-records/extract", formData, {
+	const response = await api.post("/patient-records/extraction", formData, {
 		headers: {
 			"Content-Type": "multipart/form-data",
 		},
