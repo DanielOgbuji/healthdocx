@@ -123,7 +123,9 @@ const UploadDialog = ({
     const [crop, setCrop] = useState({ x: 0, y: 0 });
     const [zoom, setZoom] = useState(1);
     const [rotation, setRotation] = useState(0);
-    const [aspectRatio, setAspectRatio] = useState(16 / 9); // Default aspect ratio
+    //const [aspectRatio, setAspectRatio] = useState(16 / 9); // Default aspect ratio
+    const [cropWidth, setCropWidth] = useState(200); // Default crop width
+    const [cropHeight, setCropHeight] = useState(200); // Default crop height
     const [croppedAreaPixels, setCroppedAreaPixels] = useState<Area | null>(null);
 
     const onCropComplete = useCallback((croppedArea: Area, croppedAreaPixels: Area) => {
@@ -152,14 +154,14 @@ const UploadDialog = ({
                 <Dialog.Backdrop />
                 <Dialog.Positioner>
                     <Dialog.Content>
-                        <Dialog.Body display="flex" justifyContent="center" alignItems="center" borderWidth="1px" borderColor="outlineVariant" rounded="md" h="full" p="0">
+                        <Dialog.Body display="flex" justifyContent="center" alignItems="center" borderWidth="1px" borderColor="outlineVariant" rounded="md" bgColor="bg.panel" p="0">
                             {uploadStatus === "cropping" && (
-                                <Flex justifyContent="center" alignItems="center" direction="column" gap="6" w="full" h="full">
-                                    <Flex direction="column" justifyContent="center" alignItems="center" gap="3" px={{ mdDown: "8" }}>
+                                <Flex justifyContent="center" alignItems="center" direction="column" p="12" gap="12" w="full" h="full">
+                                    <Flex direction="column" justifyContent="center" alignItems="center" gap="3">
                                         <Text fontWeight="bold" fontSize="xl" color="primary" textAlign="center" lineHeight="moderate">Crop and Rotate Your Image</Text>
                                         <Text color="outline" textAlign="center">Adjust your image before uploading to get the best results.</Text>
                                     </Flex>
-                                    <Flex w="full" p="12" pt="0" gap="12" direction={{ base: "column", mdDown: "column", lg: "row" }} justifyContent="center" alignItems="center">
+                                    <Flex w="full" pt="0" gap="12" direction={{ base: "column", mdDown: "column", lg: "row" }} justifyContent="center" alignItems="center">
                                         <Flex position="relative" width="full" height={{ base: "400px", mdDown: "200px" }} rounded="md" overflow="hidden" borderWidth="1px" borderColor="outlineVariant">
                                             <Cropper
                                                 image={filePreview}
@@ -167,8 +169,10 @@ const UploadDialog = ({
                                                 objectFit="contain"
                                                 zoom={zoom}
                                                 rotation={rotation}
-                                                aspect={aspectRatio}
+                                                cropSize={{ width: cropWidth, height: cropHeight }}
+                                                //aspect={aspectRatio}
                                                 onCropChange={setCrop}
+                                                zoomWithScroll={false}
                                                 onCropComplete={onCropComplete}
                                                 onZoomChange={setZoom}
                                             />
@@ -181,7 +185,7 @@ const UploadDialog = ({
                                                     <Text fontSize="sm">{zoom.toFixed(1)}x</Text>
                                                 </Flex>
                                                 <Slider.Root
-                                                    min={1}
+                                                    min={-1}
                                                     max={3}
                                                     step={0.1}
                                                     value={[zoom]}
@@ -219,7 +223,7 @@ const UploadDialog = ({
                                                 </Slider.Root>
                                             </Flex>
 
-                                            <Flex direction="column" gap="2">
+                                            {/*<Flex direction="column" gap="2">
                                                 <Flex justifyContent="space-between">
                                                     <Text fontSize="sm">Aspect Ratio</Text>
                                                     <Text fontSize="sm">{aspectRatio.toFixed(2)}</Text>
@@ -230,6 +234,50 @@ const UploadDialog = ({
                                                     step={0.01}
                                                     value={[aspectRatio]}
                                                     onValueChange={(e) => setAspectRatio(e.value[0])}
+                                                    colorPalette="brand"
+                                                >
+                                                    <Slider.Control>
+                                                        <Slider.Track>
+                                                            <Slider.Range />
+                                                        </Slider.Track>
+                                                        <Slider.Thumbs />
+                                                    </Slider.Control>
+                                                </Slider.Root>
+                                            </Flex>*/}
+
+                                            <Flex direction="column" gap="2">
+                                                <Flex justifyContent="space-between">
+                                                    <Text fontSize="sm">Crop Width</Text>
+                                                    <Text fontSize="sm">{cropWidth}px</Text>
+                                                </Flex>
+                                                <Slider.Root
+                                                    min={50}
+                                                    max={800}
+                                                    step={2}
+                                                    value={[cropWidth]}
+                                                    onValueChange={(e) => setCropWidth(e.value[0])}
+                                                    colorPalette="brand"
+                                                >
+                                                    <Slider.Control>
+                                                        <Slider.Track>
+                                                            <Slider.Range />
+                                                        </Slider.Track>
+                                                        <Slider.Thumbs />
+                                                    </Slider.Control>
+                                                </Slider.Root>
+                                            </Flex>
+
+                                            <Flex direction="column" gap="2">
+                                                <Flex justifyContent="space-between">
+                                                    <Text fontSize="sm">Crop Height</Text>
+                                                    <Text fontSize="sm">{cropHeight}px</Text>
+                                                </Flex>
+                                                <Slider.Root
+                                                    min={50}
+                                                    max={800}
+                                                    step={2}
+                                                    value={[cropHeight]}
+                                                    onValueChange={(e) => setCropHeight(e.value[0])}
                                                     colorPalette="brand"
                                                 >
                                                     <Slider.Control>
@@ -255,13 +303,13 @@ const UploadDialog = ({
                             )}
 
                             {uploadStatus === "uploading" && (
-                                <Flex justifyContent="center" alignItems="center" direction="column" gap="6" w="full" h="full">
+                                <Flex justifyContent="center" alignItems="center" direction="column" p="12" gap="6" w="full" h="full">
                                     <Image src={uploadInProgress} />
-                                    <Flex direction="column" justifyContent="center" alignItems="center" gap="3" px={{ mdDown: "8" }}>
+                                    <Flex direction="column" justifyContent="center" alignItems="center" gap="3">
                                         <Text fontWeight="bold" fontSize="xl" color="primary" textAlign="center" lineHeight="moderate">Hang tight! Your upload is <Box as="span" fontStyle="italic">in progress</Box></Text>
                                         <Text color="outline" textAlign="center">We're processing your file right now. Sit back, relax, and let the magic happen!</Text>
                                     </Flex>
-                                    <Flex width={{ base: "50%", mdDown: "full" }} px={{ mdDown: "8" }} direction="column">
+                                    <Flex width={{ base: "60%", mdDown: "full" }} direction="column">
                                         <Card.Root flex={1}>
                                             <Card.Body gap="4" flexDirection="column" p="4">
                                                 <Flex gap="4">
