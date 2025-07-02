@@ -1,6 +1,6 @@
-import { Flex, Text, Separator, Card, Box, Icon, FileUpload } from "@chakra-ui/react";
+import { Flex, Text, Separator, Card, Icon } from "@chakra-ui/react";
 import InfoTile from "@/components/home/InfoTile";
-import { FiUploadCloud, FiEdit3 } from "react-icons/fi";
+import { FiEdit3 } from "react-icons/fi";
 import { Banner } from "@/components/home/Banner";
 import SecondaryNavBar from "@/components/navigation/SecondaryNavBar";
 import CostSegment from "@/components/home/CostSegment";
@@ -8,6 +8,7 @@ import RecentRecordsPane from "@/components/home/RecentRecordsPane";
 import RecentActivityPane from "@/components/home/RecentActivityPane";
 import useFileUpload from "@/hooks/useFileUpload";
 import UploadDialog from "@/components/home/UploadDialog";
+import FileDropZone from "@/components/home/FileDropZone";
 
 const Home = () => {
     const {
@@ -42,26 +43,7 @@ const Home = () => {
                         <Flex direction={{ base: "column", xl: "row" }} gap="4" my="4">
                             <Flex h="fit-content" direction="column">
                                 <Flex w={{ base: "full", xl: "65vw" }} gap="4" direction={{ base: "row", mdDown: "column" }} >
-                                    <FileUpload.Root unstyled flex={1} key={Math.random()} accept={["image/png", "image/jpeg", "application/pdf"]} onFileChange={handleFileChange} maxFileSize={10 * 1024 * 1024}>
-                                        <FileUpload.HiddenInput />
-                                        <FileUpload.Dropzone>
-                                            <FileUpload.DropzoneContent>
-                                                <Card.Root cursor="pointer">
-                                                    <Card.Body gap="3" flexDirection="row" p="3" alignItems="center">
-                                                        <Flex h="44px" w="44px" bgColor="primary" justifyContent="center" alignItems="center" rounded="sm">
-                                                            <Icon size="md" color="onPrimary"><FiUploadCloud /></Icon>
-                                                        </Flex>
-                                                        <Flex direction="column" gap="1">
-                                                            <Card.Title fontSize="sm" lineHeight="short">Click to upload <Box as="span" fontWeight="normal">or drag and drop</Box></Card.Title>
-                                                            <Card.Description fontSize="xs">
-                                                                PNG, JPG or PDF
-                                                            </Card.Description>
-                                                        </Flex>
-                                                    </Card.Body>
-                                                </Card.Root>
-                                            </FileUpload.DropzoneContent>
-                                        </FileUpload.Dropzone>
-                                    </FileUpload.Root>
+                                    <FileDropZone handleFileChange={handleFileChange} />
                                     <Card.Root flex={1} opacity={0.4} cursor="not-allowed" title="Coming soon!">
                                         <Card.Body gap="3" flexDirection="row" p="3" alignItems="center">
                                             <Flex h="44px" w="44px" bgColor="primary" justifyContent="center" alignItems="center" rounded="sm">

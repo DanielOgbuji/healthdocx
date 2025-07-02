@@ -7,9 +7,13 @@ import NavList from "@/components/navigation/NavList";
 import Logo from "@/assets/images/Off-Jeay.svg";
 import LogoDark from "@/assets/images/Off-Jeay-Dark.svg";
 import { useColorMode } from "@/components/ui/color-mode";
+import { useSelector } from 'react-redux';
+import type { RootState } from '@/store/store';
 
 const NavBar = () => {
     const { colorMode } = useColorMode();
+    const userName = useSelector((state: RootState) => state.auth.user?.fullName || "User");
+    const userEmail = useSelector((state: RootState) => state.auth.user?.email || "user@example.com");
 
     return (
         <Flex
@@ -64,7 +68,7 @@ const NavBar = () => {
                 <Menu.Root positioning={{ placement: "bottom-end" }}>
                     <Menu.Trigger rounded="full" focusRing="outside">
                         <Avatar.Root size="sm">
-                            <Avatar.Fallback name="Peace Amarachi" />
+                            <Avatar.Fallback name={userName} />
                             <Avatar.Image src={undefined} />
                         </Avatar.Root>
                     </Menu.Trigger>
@@ -75,7 +79,7 @@ const NavBar = () => {
                                     <Flex gap="4">
                                         <Box display="inline-block" pos="relative">
                                             <Avatar.Root size="md" position="relative">
-                                                <Avatar.Fallback name="Peace Amarachi" />
+                                                <Avatar.Fallback name={userName} />
                                                 <Avatar.Image src={undefined} />
                                             </Avatar.Root>
                                             <Float placement="bottom-end" offset="1">
@@ -83,8 +87,8 @@ const NavBar = () => {
                                             </Float>
                                         </Box>
                                         <Flex direction="column">
-                                            <Text fontWeight="bold" fontSize="sm" lineHeight="short">Peace Amarachi</Text>
-                                            <Text color="outline" fontSize="sm" lineHeight="short">peaceamara@gmail.com</Text>
+                                            <Text fontWeight="bold" fontSize="sm" lineHeight="short">{userName}</Text>
+                                            <Text color="outline" fontSize="sm" lineHeight="short">{userEmail}</Text>
                                         </Flex>
                                     </Flex>
                                 </Flex>

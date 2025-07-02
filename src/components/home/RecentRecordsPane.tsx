@@ -1,12 +1,31 @@
-import { Button, ButtonGroup, EmptyState, VStack, Box, Icon, Image } from "@chakra-ui/react"
+import { Button, ButtonGroup, EmptyState, VStack, Box, Image } from "@chakra-ui/react"
 import noRecord from "@/assets/images/norecord.svg";
 import noRecordDark from "@/assets/images/norecord-dark.svg";
 import { useColorMode } from "@/components/ui/color-mode";
 import { IoMdAdd } from "react-icons/io";
-import { FiUploadCloud } from "react-icons/fi";
+import UploadButton from "@/components/home/UploadButton";
+import useFileUpload from "@/hooks/useFileUpload";
+import UploadDialog from "@/components/home/UploadDialog";
 
 const RecentRecordsPane = () => {
     const { colorMode } = useColorMode();
+    const {
+        open,
+        setOpen,
+        uploadProgress,
+        uploadStatus,
+        errorMessage,
+        fileSize,
+        fileName,
+        fileType,
+        filePreview,
+        croppedImage,
+        handleFileChange,
+        handleCloseDialog,
+        handleRetry,
+        handleConfirmCrop,
+        handleCancelCrop,
+    } = useFileUpload();
     return (
         <EmptyState.Root>
             <EmptyState.Content>
@@ -23,11 +42,25 @@ const RecentRecordsPane = () => {
                     <Button variant="outline" size="sm" disabled >
                         <IoMdAdd /> <Box as="span" fontSize="sm">Create record</Box>
                     </Button>
-                    <Button variant="solid" size="sm">
-                        <Icon as={FiUploadCloud} size="md" /> <Box as="span" fontSize="sm">Upload record </Box>
-                    </Button>
+                    <UploadButton handleFileChange={handleFileChange} />
                 </ButtonGroup>
             </EmptyState.Content>
+            <UploadDialog
+                open={open}
+                setOpen={setOpen}
+                uploadStatus={uploadStatus}
+                errorMessage={errorMessage}
+                fileSize={fileSize}
+                fileName={fileName}
+                fileType={fileType}
+                filePreview={filePreview}
+                croppedImage={croppedImage}
+                uploadProgress={uploadProgress}
+                onClose={handleCloseDialog}
+                onRetry={handleRetry}
+                handleConfirmCrop={handleConfirmCrop}
+                handleCancelCrop={handleCancelCrop}
+            />
         </EmptyState.Root>
     )
 }

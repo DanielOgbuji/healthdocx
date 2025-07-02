@@ -1,6 +1,5 @@
-import { Icon, Button, Box } from "@chakra-ui/react";
+import { Icon, Button, Box, FileUpload } from "@chakra-ui/react";
 import { FiUploadCloud } from "react-icons/fi";
-import { FileUpload } from "@chakra-ui/react";
 import { type FileChangeDetails } from "@zag-js/file-upload";
 
 interface UploadButtonProps {
