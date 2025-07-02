@@ -44,9 +44,10 @@ const EditableLabel: React.FC<EditableLabelProps> = ({
                 <Input
                     value={value}
                     onChange={(e) => setValue(e.target.value)}
-                    size="2xs"
+                    size="sm"
                     variant="flushed"
                     autoFocus
+                    h="fit-content"
                 />
                 <IconButton
                     aria-label="Save"
@@ -71,7 +72,7 @@ const EditableLabel: React.FC<EditableLabelProps> = ({
     }
 
     return (
-        <Flex alignItems="end" gap={2}>
+        <Flex alignItems="center" gap={2}>
             <Box>{value}</Box>
             <IconButton
                 aria-label="Edit"
