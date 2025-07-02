@@ -1,4 +1,4 @@
-import DynamicForm from "@/components/home/DynamicForm";
+import DynamicForm from "@/components/records/DynamicForm";
 import { Flex } from "@chakra-ui/react";
 
 const RecordDetails = () => {

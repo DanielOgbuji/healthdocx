@@ -20,7 +20,7 @@ import { toaster } from "@/components/ui/toaster";
 import { useDispatch } from "react-redux";
 import * as motion from "motion/react-client";
 import { completeStep } from "@/features/OnboardingSlice";
-import { PASSWORD_MIN_LENGTH, calculatePasswordStrength, validatePassword } from "@/utils/password-utils";
+import { PASSWORD_MIN_LENGTH, calculatePasswordStrength, validatePassword } from "@/utils/passwordUtils";
 import { type ApiError } from '@/types/api.types';
 import { ROLE_OPTIONS } from "@/constants/formConstants";
 import { register as registerUser } from "@/api/auth";

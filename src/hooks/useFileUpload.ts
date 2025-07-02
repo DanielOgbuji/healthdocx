@@ -53,9 +53,7 @@ const useFileUpload = () => {
 				},
 				(progressEvent) => {
 					const total = progressEvent.total ? progressEvent.total : 1;
-					const progress = Math.round(
-						(progressEvent.loaded * 100) / total
-					);
+					const progress = Math.round((progressEvent.loaded * 100) / total);
 					setUploadProgress(progress);
 				}
 			);
@@ -76,9 +74,11 @@ const useFileUpload = () => {
 		}
 	};
 
-
 	const handleFileChange = async (details: FileChangeDetails) => {
-		if (details?.rejectedFiles[0]?.errors && details?.rejectedFiles[0]?.errors[0] === "FILE_TOO_LARGE") {
+		if (
+			details?.rejectedFiles[0]?.errors &&
+			details?.rejectedFiles[0]?.errors[0] === "FILE_TOO_LARGE"
+		) {
 			// 10 MB limit
 			toaster.create({
 				title: "Upload Failed",
@@ -87,12 +87,24 @@ const useFileUpload = () => {
 				duration: 5000,
 			});
 			return;
-		} else if (details?.rejectedFiles[0]?.errors && details?.rejectedFiles[0].errors[0] === "FILE_INVALID_TYPE") {
+		} else if (
+			details?.rejectedFiles[0]?.errors &&
+			details?.rejectedFiles[0].errors[0] === "FILE_INVALID_TYPE"
+		) {
 			// PNG, JPG, PDF only
 			toaster.create({
 				title: "Upload Failed",
 				description:
 					"Your file type is invalid. Please upload a PNG, JPG, or PDF.",
+				type: "error",
+				duration: 5000,
+			});
+			return;
+		} else if (details?.acceptedFiles.length > 1) {
+			// Only one file can be uploaded at a time
+			toaster.create({
+				title: "Upload Failed",
+				description: "You can only upload one file at a time.",
 				type: "error",
 				duration: 5000,
 			});
@@ -136,8 +148,11 @@ const useFileUpload = () => {
 
 		// Convert base64 string to a File object
 		if (selectedFile) {
-			const byteString = atob(croppedImageData.split(',')[1]);
-			const mimeString = croppedImageData.split(',')[0].split(':')[1].split(';')[0];
+			const byteString = atob(croppedImageData.split(",")[1]);
+			const mimeString = croppedImageData
+				.split(",")[0]
+				.split(":")[1]
+				.split(";")[0];
 			const ab = new ArrayBuffer(byteString.length);
 			const ia = new Uint8Array(ab);
 
@@ -146,7 +161,9 @@ const useFileUpload = () => {
 			}
 
 			const blob = new Blob([ab], { type: mimeString });
-			const croppedFile = new File([blob], selectedFile.name, { type: mimeString });
+			const croppedFile = new File([blob], selectedFile.name, {
+				type: mimeString,
+			});
 
 			// Upload the cropped file
 			await uploadFile(croppedFile);

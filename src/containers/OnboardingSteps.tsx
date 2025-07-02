@@ -21,7 +21,7 @@ const LoadingFallback = () => (
     </Stack>
 );
 
-export const OnboardingSteps = () => {
+const OnboardingSteps = () => {
     const [step, setStep] = useState(0);
     const completedSteps = useSelector((state: RootState) => state.onboarding.completedSteps);
     const userEmail = sessionStorage.getItem("onboardingEmail");
@@ -120,3 +120,5 @@ export const OnboardingSteps = () => {
         </Steps.Root>
     );
 };
+
+export default OnboardingSteps;

@@ -8,7 +8,7 @@ import {
 } from "@/components/ui/password-input";
 import * as motion from "motion/react-client";
 import { toaster } from "@/components/ui/toaster";
-import { PASSWORD_MIN_LENGTH, calculatePasswordStrength, validatePassword } from "@/utils/password-utils";
+import { PASSWORD_MIN_LENGTH, calculatePasswordStrength, validatePassword } from "@/utils/passwordUtils";
 
 interface FormValues {
     password: string;
