@@ -35,3 +35,13 @@ export const getPatientRecords = async () => {
 		throw error;
 	}
 };
+
+export const getPatientRecordByID = async (id: string | null) => {
+	try {
+		const response = await api.get(`/patient-records/${id}`);
+		return response.data;
+	} catch (error) {
+		console.error("Error fetching patient record:", error);
+		throw error;
+	}
+};

@@ -14,13 +14,13 @@ const CostSegmentControl: React.FC<CostSegmentControlProps> = ({ onPeriodChange 
     return (
         <Flex w="full">
             <SegmentGroup.Root 
-                defaultValue="Monthly" 
+                defaultValue="30 days" 
                 bgColor="backface" 
                 w="full"
                 onValueChange={handleValueChange}
             >
                 <SegmentGroup.Indicator bgColor="surface" />
-                <SegmentGroup.Items items={["Yearly", "Monthly", "Weekly", "Daily"]} w="full" color="primary" />
+                <SegmentGroup.Items fontSize="xs" lineHeight="shorter" items={["12 months", "30 days", "7 days", "24 hours"]} w="full" color="primary" />
             </SegmentGroup.Root>
         </Flex>
     )

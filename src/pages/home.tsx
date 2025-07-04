@@ -7,7 +7,9 @@ import CostSegment from "@/components/home/CostSegment";
 import RecentRecordsPane from "@/components/home/RecentRecordsPane";
 import RecentActivityPane from "@/components/home/RecentActivityPane";
 import useFileUpload from "@/hooks/useFileUpload";
+import { useCamera } from "@/hooks/useCamera";
 import UploadDialog from "@/components/home/UploadDialog";
+import { CameraDialog } from "@/components/home/CameraDialog";
 import FileDropZone from "@/components/home/FileDropZone";
 import { useState } from "react";
 import { type FileChangeDetails } from "@zag-js/file-upload";
@@ -31,7 +33,19 @@ const Home = () => {
         handleConfirmCrop,
         handleCancelCrop,
     } = useFileUpload();
-
+    const {
+    	isCameraOpen,
+    	openCamera,
+    	closeCamera,
+    	devices,
+    	isSearching: isCameraSearching,
+    	stream,
+    	selectedDevice,
+    	selectDevice,
+    	captureImage,
+    	error: cameraError,
+    } = useCamera(handleFileChange);
+   
     const handleDrop = (e: React.DragEvent<HTMLDivElement>) => {
         e.preventDefault();
         setIsDragging(false);
@@ -92,9 +106,9 @@ const Home = () => {
             )}
             <SecondaryNavBar />
             <Flex mt="120px" direction="column" gap="4" w="full">
-                <Banner />
+            	<Banner />
                 <Flex w="full" direction="column" pt="8" px={{ xl: "6vw", lg: "6vw", md: "6vw", sm: "6vw", base: "4" }} gap="4" >
-                    <InfoTile />
+                    <InfoTile openCamera={openCamera} />
                     <CostSegment />
                     <Flex direction="column">
                         <Text fontWeight="semibold">Digitize your records</Text>
@@ -152,10 +166,21 @@ const Home = () => {
                     onRetry={handleRetry}
                     handleConfirmCrop={handleConfirmCrop}
                     handleCancelCrop={handleCancelCrop}
-                />
-            </Flex>
-        </Flex>
-    );
-}
+                   />
+                   <CameraDialog
+                    isCameraOpen={isCameraOpen}
+                    closeCamera={closeCamera}
+                    devices={devices}
+                    isSearching={isCameraSearching}
+                    stream={stream}
+                    selectedDevice={selectedDevice}
+                    selectDevice={selectDevice}
+                    captureImage={captureImage}
+                    error={cameraError}
+                   />
+                  </Flex>
+                 </Flex>
+                );
+               }
 
 export default Home;

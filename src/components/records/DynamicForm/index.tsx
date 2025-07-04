@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import {
   Flex,
   Text,
@@ -6,16 +6,20 @@ import {
   Button,
   VStack,
   SegmentGroup,
-  NativeSelect
+  NativeSelect,
+  Icon,
 } from "@chakra-ui/react";
 import { useDynamicForm } from "@/hooks/useDynamicForm";
 import FormField from "./FormField";
+import { recordGroups, recordTypes } from "@/constants/recordOptions";
+import { MdOutlineCloudDone } from "react-icons/md";
 
 interface DynamicFormProps {
   structuredData: string;
+  recordId: string | undefined;
 }
 
-const DynamicForm: React.FC<DynamicFormProps> = ({ structuredData }) => {
+const DynamicForm: React.FC<DynamicFormProps> = ({ structuredData, recordId }) => {
   const {
     formData,
     labels,
@@ -27,6 +31,18 @@ const DynamicForm: React.FC<DynamicFormProps> = ({ structuredData }) => {
     handleSubmit,
   } = useDynamicForm(structuredData);
 
+  const [selectedGroup, setSelectedGroup] = useState("");
+  const [availableTypes, setAvailableTypes] = useState<
+    { value: string; label: string }[]
+  >([]);
+
+  const handleGroupChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
+    const group = event.target.value;
+    setSelectedGroup(group);
+    setAvailableTypes(recordTypes[group as keyof typeof recordTypes] || []);
+  };
+
+
   return (
     <Flex
       w="full"
@@ -37,15 +53,24 @@ const DynamicForm: React.FC<DynamicFormProps> = ({ structuredData }) => {
       borderRadius="md"
       boxShadow="sm"
     >
-      <Flex>
-        <Button
-          onClick={handleSubmit}
-          colorScheme="blue"
-          loading={loading}
-          loadingText="Updating..."
-        >
-          Update Record
-        </Button>
+      <Flex alignItems="center" justifyContent="space-between">
+        <Flex>
+          <Text fontSize="lg">{recordId}</Text>
+        </Flex>
+        <Flex gap="4">
+          <Flex alignItems="center" gap="2">
+            <Text fontSize="sm">Autosave On</Text>
+            <Icon size="sm"><MdOutlineCloudDone /></Icon>
+          </Flex>
+          <Button
+            onClick={handleSubmit}
+            colorPalette="brand"
+            loading={loading}
+            loadingText="Updating..."
+          >
+            Transmit to Records
+          </Button>
+        </Flex>
       </Flex>
       <Flex w="full" justifyContent="space-between" gap="4" pb="4" alignItems="end" direction={{ lgDown: "column" }}>
         <SegmentGroup.Root defaultValue="Plain" w="full">
@@ -59,27 +84,43 @@ const DynamicForm: React.FC<DynamicFormProps> = ({ structuredData }) => {
             ]}
           />
         </SegmentGroup.Root>
-        <Flex w="full" gap="4" direction={{ mdDown: "column" }}>
+        <Flex w="full" gap="4" direction={{ mdDown: "column" }} colorPalette="brand">
           <Field.Root>
-            <Field.Label>Record Group</Field.Label>
-            <NativeSelect.Root size="md" width="full" variant="subtle">
-              <NativeSelect.Field placeholder="Choose record group">
-                <option value="react">React</option>
-                <option value="vue">Vue</option>
-                <option value="angular">Angular</option>
-                <option value="svelte">Svelte</option>
+            <NativeSelect.Root
+              size="md"
+              width="full"
+              variant="subtle"
+            >
+              <NativeSelect.Field
+                placeholder="Choose record group"
+                value={selectedGroup}
+                onChange={handleGroupChange}
+              >
+                {recordGroups.map((group) => (
+                  <option key={group.value} value={group.value}>
+                    {group.label}
+                  </option>
+                ))}
               </NativeSelect.Field>
               <NativeSelect.Indicator />
             </NativeSelect.Root>
           </Field.Root>
           <Field.Root>
-            <Field.Label>Record Type</Field.Label>
-            <NativeSelect.Root size="md" width="full" variant="subtle">
-              <NativeSelect.Field placeholder="Choose record type">
-                <option value="react">React</option>
-                <option value="vue">Vue</option>
-                <option value="angular">Angular</option>
-                <option value="svelte">Svelte</option>
+            <NativeSelect.Root
+              size="md"
+              width="full"
+              variant="subtle"
+              disabled={!selectedGroup}
+            >
+              <NativeSelect.Field
+                placeholder="Choose record type"
+
+              >
+                {availableTypes.map((type) => (
+                  <option key={type.value} value={type.value}>
+                    {type.label}
+                  </option>
+                ))}
               </NativeSelect.Field>
               <NativeSelect.Indicator />
             </NativeSelect.Root>

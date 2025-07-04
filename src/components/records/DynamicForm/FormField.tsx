@@ -37,7 +37,7 @@ const FormField: React.FC<FormFieldProps> = ({
               colSpan={{ base: 1, md: 2 }}
               colorPalette="brand"
             >
-              <Box borderColor="gray.200" borderRadius="md" pb={8}>
+              <Box borderColor="gray.200" borderRadius="md" pb={0}>
                 <Flex
                   bg="outlineVariant/20"
                   alignItems="center"

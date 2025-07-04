@@ -57,7 +57,8 @@ const useFileUpload = () => {
 					setUploadProgress(progress);
 				}
 			);
-			console.log("Upload success:", response.data);
+			console.log("Upload success:", response);
+			localStorage.setItem("recordId", response.record.id)
 			setUploadStatus("success");
 		} catch (err) {
 			if (axios.isCancel(err)) {
@@ -138,7 +139,25 @@ const useFileUpload = () => {
 	};
 
 	const handleRetry = async () => {
-		if (selectedFile) {
+		if (croppedImage && selectedFile) {
+			const byteString = atob(croppedImage.split(",")[1]);
+			const mimeString = croppedImage
+				.split(",")[0]
+				.split(":")[1]
+				.split(";")[0];
+			const ab = new ArrayBuffer(byteString.length);
+			const ia = new Uint8Array(ab);
+
+			for (let i = 0; i < byteString.length; i++) {
+				ia[i] = byteString.charCodeAt(i);
+			}
+
+			const blob = new Blob([ab], { type: mimeString });
+			const croppedFile = new File([blob], selectedFile.name, {
+				type: mimeString,
+			});
+			await uploadFile(croppedFile);
+		} else if (selectedFile) {
 			await uploadFile(selectedFile);
 		}
 	};

@@ -5,11 +5,12 @@ import { GrScan } from "react-icons/gr";
 import { LuScanText } from "react-icons/lu";
 
 interface OptionsMenuProps {
-    isOpen: boolean;
-    setIsOpen: (open: boolean) => void;
+	isOpen: boolean;
+	setIsOpen: (open: boolean) => void;
+	openCamera: () => void;
 }
 
-const OptionsMenu = ({ isOpen, setIsOpen }: OptionsMenuProps) => {
+const OptionsMenu = ({ isOpen, setIsOpen, openCamera }: OptionsMenuProps) => {
     return (
         <Menu.Root onOpenChange={(details: { open: boolean }) => setIsOpen(details.open)}>
             <Menu.Trigger asChild colorPalette="brand">
@@ -21,11 +22,9 @@ const OptionsMenu = ({ isOpen, setIsOpen }: OptionsMenuProps) => {
             <Portal>
                 <Menu.Positioner>
                     <Menu.Content borderWidth="1px" borderColor="primary/20">
-                        <Menu.Item value="new-txt" asChild _hover={{ bgColor: "brand.subtle" }} color="brand.fg">
-                            <NavLink to="/" end>
-                                <FiCamera />
-                                Camera
-                            </NavLink>
+                        <Menu.Item value="new-txt" _hover={{ bgColor: "brand.subtle" }} color="brand.fg" onClick={openCamera}>
+                        	<FiCamera />
+                        	Camera
                         </Menu.Item>
                         <Menu.Item value="new-file" asChild _hover={{ bgColor: "brand.subtle" }} color="brand.fg">
                             <NavLink to="/" end>

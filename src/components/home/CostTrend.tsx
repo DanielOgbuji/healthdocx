@@ -3,13 +3,13 @@ import { Badge, FormatNumber, Flex, HStack, Stat, Box } from "@chakra-ui/react"
 const CostTrend = ({ period = "Monthly" }) => {
     const getHelpText = () => {
         switch (period) {
-            case "Yearly":
+            case "12 months":
                 return "since last year";
-            case "Monthly":
+            case "30 days":
                 return "since last month";
-            case "Weekly":
+            case "7 days":
                 return "since last week";
-            case "Daily":
+            case "24 hours":
                 return "since yesterday";
             default:
                 return "since last month";

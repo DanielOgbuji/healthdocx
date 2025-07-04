@@ -6,11 +6,11 @@ import { RxReload } from "react-icons/rx";
 import { PiSparkle, PiCheck } from "react-icons/pi";
 import uploadInProgress from "@/assets/images/Illustration.svg";
 import { FormatByte } from "@chakra-ui/react";
-import { getPatientRecords } from "@/api/patient-records";
 import { useNavigate } from "react-router";
 // Note: You'll need to install this package: npm install react-easy-crop
 import Cropper from 'react-easy-crop';
 import { type Area } from 'react-easy-crop';
+import { toaster } from "@/components/ui/toaster";
 
 interface UploadDialogProps {
     open: boolean;
@@ -117,7 +117,38 @@ const UploadDialog = ({
     handleConfirmCrop,
     handleCancelCrop
 }: UploadDialogProps) => {
+
     const navigate = useNavigate();
+    const [isExtracting, setIsExtracting] = useState(false)
+    const handleSubmit = async () => {
+        try {
+            setIsExtracting(true);
+            const id = localStorage.getItem("recordId");
+
+            // Navigate to the details page with the record ID
+            navigate(`/records/details/${id}`);
+
+            // Show success message
+            toaster.create({
+                title: "Extraction Initiated",
+                description: "Your file is being processed. You will be redirected shortly.",
+                type: "success",
+                duration: 5000,
+            });
+
+        } catch (error) {
+            console.error("Error during navigation:", error);
+            setIsExtracting(false);
+            toaster.create({
+                title: "Navigation Failed",
+                description: "Could not navigate to the details page. Please try again.",
+                type: "error",
+                duration: 5000,
+            });
+        } finally {
+            setIsExtracting(false);
+        }
+    };
 
     // State for cropping
     const [crop, setCrop] = useState({ x: 0, y: 0 });
@@ -152,11 +183,11 @@ const UploadDialog = ({
             <Dialog.Trigger />
             <Portal>
                 <Dialog.Backdrop />
-                <Dialog.Positioner>
+                <Dialog.Positioner p={{ mdDown: "4" }}>
                     <Dialog.Content>
                         <Dialog.Body display="flex" justifyContent="center" alignItems="center" borderWidth="1px" borderColor="outlineVariant" rounded="md" bgColor="bg.panel" p="0">
                             {uploadStatus === "cropping" && (
-                                <Flex justifyContent="center" alignItems="center" direction="column" p="12" gap="12" w="full" h="full">
+                                <Flex justifyContent="center" alignItems="center" direction="column" p="12" px={{ mdDown: "6" }} gap="12" w="full" h="full">
                                     <Flex direction="column" justifyContent="center" alignItems="center" gap="3">
                                         <Text fontWeight="bold" fontSize="xl" color="primary" textAlign="center" lineHeight="moderate">Crop and Rotate Your Image</Text>
                                         <Text color="outline" textAlign="center">Adjust your image before uploading to get the best results.</Text>
@@ -181,7 +212,7 @@ const UploadDialog = ({
                                         <Flex width={{ base: "80%", mdDown: "90%" }} direction="column" gap="8">
                                             <Flex direction="column" gap="2">
                                                 <Slider.Root
-                                                    min={-1}
+                                                    min={0.1}
                                                     max={3}
                                                     step={0.1}
                                                     value={[zoom]}
@@ -303,7 +334,7 @@ const UploadDialog = ({
                             )}
 
                             {uploadStatus === "uploading" && (
-                                <Flex justifyContent="center" alignItems="center" direction="column" p="12" gap="6" w="full" h="full">
+                                <Flex justifyContent="center" alignItems="center" direction="column" p="12" px={{ mdDown: "6" }} gap="6" w="full" h="full">
                                     <Image src={uploadInProgress} />
                                     <Flex direction="column" justifyContent="center" alignItems="center" gap="3">
                                         <Text fontWeight="bold" fontSize="xl" color="primary" textAlign="center" lineHeight="moderate">Hang tight! Your upload is <Box as="span" fontStyle="italic">in progress</Box></Text>
@@ -380,24 +411,7 @@ const UploadDialog = ({
                                         </Card.Root>
                                     </Flex>
                                     <Flex gap="4" justifyContent="center" width="full" colorPalette="brand" direction={{ base: "row", mdDown: "column" }} px={{ mdDown: "8" }}>
-                                        <Button variant="solid" size="sm" onClick={async () => {
-                                            try {
-                                                const records = await getPatientRecords();
-                                                console.log("Fetched records:", records);
-                                                const lastRecord = records[records.length - 1];
-                                                console.log("Fetched last record:", lastRecord);
-                                                const structuredData = lastRecord.data.structuredData;
-                                                const id = lastRecord.id;
-                                                localStorage.setItem("structuredData", structuredData);
-                                                localStorage.setItem("id", id);
-                                                console.log("Data saved to local storage:", { structuredData, id });
-                                                navigate(`/records/details/${id}`, {
-                                                    state: { structuredData, id }
-                                                });
-                                            } catch (error) {
-                                                console.error("Error saving data to local storage:", error);
-                                            }
-                                        }}>
+                                        <Button variant="solid" size="sm" onClick={handleSubmit} loading={isExtracting} loadingText="Extracting">
                                             <PiSparkle /> <Box as="span" fontSize="sm">Extract record</Box>
                                         </Button>
                                     </Flex>

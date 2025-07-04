@@ -15,7 +15,7 @@ interface Institution {
     institutionName: string;
 }
 
-const InfoTile = () => {
+const InfoTile = ({ openCamera }: { openCamera: () => void }) => {
     const [isOpen, setIsOpen] = useState(false);
     const userId = useSelector((state: RootState) => state.auth.user?.id);
     const [institutions, setInstitutions] = useState<Institution[]>([]);
@@ -87,7 +87,7 @@ const InfoTile = () => {
                     <Flex gap="4" justifyContent="flex-start" alignItems="start">
                         <InstitutionInfo institution={institutions[0]} loading={isLoading} /> {/* Use new isLoading state */}
                     </Flex>
-                    <OptionsMenu isOpen={isOpen} setIsOpen={setIsOpen} />
+                    <OptionsMenu isOpen={isOpen} setIsOpen={setIsOpen} openCamera={openCamera} />
                 </Flex>
                 <Flex gap="4" alignSelf="flex-start" width={{ base: "fit-content", lgDown: "full" }} colorPalette="brand">
                     <Button variant="outline" size="sm" flex={{ base: "none", lgDown: "1" }} disabled>
