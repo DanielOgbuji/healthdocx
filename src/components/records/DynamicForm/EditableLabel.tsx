@@ -78,6 +78,7 @@ const EditableLabel: React.FC<EditableLabelProps> = ({
                 aria-label="Edit"
                 onClick={() => setIsEditing(true)}
                 size="2xs"
+                rounded="full"
                 variant="ghost"
             >
                 <MdOutlineEdit />

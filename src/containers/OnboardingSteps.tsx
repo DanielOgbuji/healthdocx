@@ -15,7 +15,7 @@ const FormFive = lazy(() => import("@/components/onboarding/Welcome"));
 const LoadingFallback = () => (
     <Stack flexGrow="1" height="100%" alignItems="center" justifyContent="center">
         <VStack>
-            <Spinner borderWidth="4px" color="primary" />
+            <Spinner size="xl" borderWidth="4px" color="primary" />
             <Text color="primary">Loading...</Text>
         </VStack>
     </Stack>

@@ -50,7 +50,7 @@ export default function SignIn() {
             const email = data.email;
             const password = data.password;
             const response = await login(email, password);
-            console.log("Form submitted successfully:", response);
+            //console.log("Form submitted successfully:", response);
             dispatch(loginSuccess(response));
             toaster.create({
                 title: "Login successful",

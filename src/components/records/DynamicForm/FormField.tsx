@@ -20,7 +20,7 @@ const FormField: React.FC<FormFieldProps> = ({
   onLabelChange,
 }) => {
   return (
-    <Grid templateColumns={{ base: "1fr", md: "repeat(2, 1fr)" }} gap={6}>
+    <Grid templateColumns={{ base: "1fr", md: "repeat(2, 1fr)" }} gap={4}>
       {Object.entries(data).map(([key, value]) => {
         const currentPath = [...path, key];
         const pathString = currentPath.join(".");
@@ -41,7 +41,8 @@ const FormField: React.FC<FormFieldProps> = ({
                 <Flex
                   bg="outlineVariant/20"
                   alignItems="center"
-                  mb="8"
+                  mt="2"
+                  mb="4"
                   p="2"
                   pl="4"
                 >

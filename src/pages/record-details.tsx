@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { useParams } from "react-router";
 import { Flex, Spinner, Text, Stack, VStack, Box, Icon, Button } from "@chakra-ui/react";
 import { FiAlertTriangle } from "react-icons/fi"
@@ -12,44 +12,62 @@ const RecordDetails = () => {
     const { id } = useParams<{ id: string }>();
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
+    const [structuredData, setStructuredData] = useState<string | null>(null);
+
+    const fetchRecord = useCallback(async (force = false) => {
+        setLoading(true);
+        if (!id) {
+            setError("No record ID provided.");
+            setLoading(false);
+            return;
+        }
+
+        const autoSavedData = localStorage.getItem(`autosave_form_${id}`);
+        if (autoSavedData && !force) {
+            setStructuredData(autoSavedData);
+            setLoading(false);
+            return;
+        }
+
+        try {
+            const response = await getPatientRecordByID(id);
+            const data = response.data.structuredData;
+            setStructuredData(data);
+            localStorage.setItem(`original_record_${id}`, data);
+            setError(null);
+            toaster.create({
+                title: "Record extracted successfully",
+                description: "You can now edit your record.",
+                type: "success",
+                duration: 3000,
+            });
+        } catch (err) {
+            const error = err as ApiError;
+            const errorMessage = error.response?.data?.error || "An unexpected error occurred.";
+            setError("Failed to fetch record details. Please try again later.");
+            toaster.create({
+                title: "Failed to load record",
+                description: errorMessage,
+                type: "error",
+                duration: 3000,
+            });
+            console.error(err);
+        } finally {
+            setLoading(false);
+        }
+    }, [id]);
 
     useEffect(() => {
-        const fetchRecord = async () => {
-            setLoading(true);
-            if (!id) {
-                setError("No record ID provided.");
-                setLoading(false);
-                return;
-            }
-            try {
-                const response = await getPatientRecordByID(id);
-                // Store the fetched data in localStorage
-                localStorage.setItem("currentRecord", response.data.structuredData);
-                setError(null);
-                toaster.create({
-                    title: "Record extracted successfully",
-                    description: "You can now edit your record.",
-                    type: "success",
-                    duration: 5000,
-                });
-            } catch (err) {
-                const error = err as ApiError;
-                const errorMessage = error.response?.data?.error || "An unexpected error occurred.";
-                setError("Failed to fetch record details. Please try again later.");
-                toaster.create({
-                    title: "Failed to load record",
-                    description: errorMessage,
-                    type: "error",
-                    duration: 5000,
-                });
-                console.error(err);
-            } finally {
-                setLoading(false);
-            }
-        };
-
         fetchRecord();
-    }, [id]);
+    }, [fetchRecord]);
+
+    const handleRevert = () => {
+        if (id) {
+            localStorage.removeItem(`autosave_form_${id}`);
+            localStorage.removeItem(`autosave_labels_${id}`);
+            fetchRecord(true);
+        }
+    };
 
     if (loading) {
         return (
@@ -77,7 +95,7 @@ const RecordDetails = () => {
                         <Button variant="outline" size="sm">
                             <Box as="span" fontSize="sm">Contact Support</Box>
                         </Button>
-                        <Button variant="solid" size="sm">
+                        <Button variant="solid" size="sm" onClick={() => fetchRecord()}>
                             <RxReload /> <Box as="span" fontSize="sm">Retry</Box>
                         </Button>
                     </Flex>
@@ -86,12 +104,9 @@ const RecordDetails = () => {
         );
     }
 
-    // Read the data from localStorage to render the form
-    const structuredData = localStorage.getItem("currentRecord");
-
     return (
         <Flex w="full" mt="72px" direction="column" p={{ xl: "6vw", lg: "6vw", md: "6vw", sm: "6vw", base: "4" }} pb={{ xl: "6vw", lg: "6vw", md: "6vw", sm: "6vw", base: "4" }}>
-            {structuredData && <DynamicForm structuredData={structuredData} recordId={id} />}
+            {structuredData && <DynamicForm structuredData={structuredData} recordId={id} onRevert={handleRevert} />}
         </Flex>
     );
 };
