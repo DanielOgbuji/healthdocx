@@ -19,6 +19,25 @@ export interface Institution {
 	updatedAt: string;
 }
 
+export interface PatientRecord {
+	id: string;
+	institutionId: number;
+	recordType: string;
+	recordTypeGroup:
+		| "clinical"
+		| "diagnostic"
+		| "prescription"
+		| "treatment"
+		| "administrative";
+	patientName: string;
+	patientId: string;
+	rawFileUrl: string;
+	extractedData: Record<string, unknown>;
+	status: "pending" | "approved" | "rejected";
+	//createdAt: string;
+	uploadedAt: string;
+}
+
 export interface ApiErrorResponse {
 	data?: {
 		message?: string;

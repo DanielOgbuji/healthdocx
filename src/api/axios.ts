@@ -1,7 +1,7 @@
 import axios from "axios";
 import { toaster } from "@/components/ui/toaster";
 
-const API_BASE_URL = "https://healthdocx-node.onrender.com/api/v1";
+export const API_BASE_URL = "https://healthdocx-node.onrender.com/api/v1";
 
 export const api = axios.create({
 	baseURL: API_BASE_URL,
