@@ -79,7 +79,7 @@ const EditableLabel: React.FC<EditableLabelProps> = ({
                 onClick={() => setIsEditing(true)}
                 size="2xs"
                 rounded="full"
-                variant="ghost"
+                variant="outline"
             >
                 <MdOutlineEdit />
             </IconButton>

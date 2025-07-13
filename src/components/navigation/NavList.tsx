@@ -11,28 +11,28 @@ const NavList = () => {
             <Box as="nav" height="full" display={{ mdDown: "none" }}>
                 <List.Root listStyle="none" display="flex" flexDirection="row" h="full" fontSize="sm" fontWeight="medium" >
                     <List.Item h="full">
-                        <ChakraLink h="full" px="4" asChild textDecoration="none" focusRing="none" borderRadius="none" _hover={{ bg: "secondary/4" }}>
+                        <ChakraLink h="full" px="4" asChild textDecoration="none" focusRing="none" borderRadius="none" _hover={{ bg: "secondary/6" }}>
                             <NavLink to="/home" end>
                                 Home
                             </NavLink>
                         </ChakraLink>
                     </List.Item>
                     <List.Item h="full">
-                        <ChakraLink h="full" px="4" asChild textDecoration="none" focusRing="none" borderRadius="none" _hover={{ bg: "secondary/4" }}>
+                        <ChakraLink h="full" px="4" asChild textDecoration="none" focusRing="none" borderRadius="none" _hover={{ bg: "secondary/6" }}>
 <NavLink to="/records">
                                 Records
                             </NavLink>
                         </ChakraLink>
                     </List.Item>
                     <List.Item h="full">
-                        <ChakraLink h="full" px="4" asChild textDecoration="none" focusRing="none" borderRadius="none" _hover={{ bg: "secondary/4" }}>
+                        <ChakraLink h="full" px="4" asChild textDecoration="none" focusRing="none" borderRadius="none" _hover={{ bg: "secondary/6" }}>
                             <NavLink to="/analytics" end>
                                 Analytics
                             </NavLink>
                         </ChakraLink>
                     </List.Item>
                     <List.Item h="full">
-                        <ChakraLink h="full" px="4" asChild textDecoration="none" focusRing="none" borderRadius="none" _hover={{ bg: "secondary/4" }}>
+                        <ChakraLink h="full" px="4" asChild textDecoration="none" focusRing="none" borderRadius="none" _hover={{ bg: "secondary/6" }}>
                             <NavLink to="/settings" end>
                                 Settings
                             </NavLink>

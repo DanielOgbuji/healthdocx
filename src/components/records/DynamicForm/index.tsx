@@ -12,7 +12,7 @@ import {
 import { useDynamicForm } from "@/hooks/useDynamicForm";
 import FormField from "./FormField";
 import { recordGroups, recordTypes } from "@/constants/recordOptions";
-import { MdOutlineCloudDone, MdOutlineFileUpload, MdOutlineUndo } from "react-icons/md";
+import { MdOutlineCloudDone, MdOutlineFileUpload, MdOutlineUndo, MdAdd, MdTextFields } from "react-icons/md";
 
 interface DynamicFormProps {
   structuredData: string;
@@ -31,6 +31,9 @@ const DynamicForm: React.FC<DynamicFormProps> = ({ structuredData, recordId, onR
     handleFieldChange,
     handleLabelChange,
     handleSubmit,
+    handleAddSection,
+    handleAddField,
+    handleRemoveFieldOrSection,
   } = useDynamicForm(structuredData, recordId);
 
   const [selectedGroup, setSelectedGroup] = useState("");
@@ -146,12 +149,31 @@ const DynamicForm: React.FC<DynamicFormProps> = ({ structuredData, recordId, onR
             {successMessage}
           </Text>
         )}
+        <Flex gap={2} mb={4}>
+          <Button
+            onClick={() => handleAddSection([])}
+            size="sm"
+          >
+            <MdAdd />
+            Add Section
+          </Button>
+          <Button
+            onClick={() => handleAddField([])}
+            size="sm"
+          >
+            <MdTextFields />
+            Add Field
+          </Button>
+        </Flex>
         <FormField
           data={formData}
           path={[]}
           onFieldChange={handleFieldChange}
           labels={labels}
           onLabelChange={handleLabelChange}
+          onAddSection={handleAddSection}
+          onAddField={handleAddField}
+          onRemoveFieldOrSection={handleRemoveFieldOrSection}
         />
       </VStack>
     </Flex>

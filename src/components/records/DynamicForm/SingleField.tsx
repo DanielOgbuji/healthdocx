@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from "react";
 import { Input, GridItem, Field } from "@chakra-ui/react";
 import EditableLabel from "./EditableLabel";
-import { formatLabel } from "@/utils/dynamicFormUtils";
+import { IconButton } from "@chakra-ui/react";
+import { MdDeleteOutline } from "react-icons/md";
 
 interface SingleFieldProps {
   fieldKey: string;
@@ -11,6 +12,7 @@ interface SingleFieldProps {
   onFieldChange: (path: string[], value: string) => void;
   labels: Record<string, string>;
   onLabelChange: (path: string, label: string) => void;
+  onRemoveFieldOrSection: (path: string[]) => void;
 }
 
 const SingleField: React.FC<SingleFieldProps> = ({
@@ -21,6 +23,7 @@ const SingleField: React.FC<SingleFieldProps> = ({
   onFieldChange,
   labels,
   onLabelChange,
+  onRemoveFieldOrSection,
 }) => {
   const [inputValue, setInputValue] = useState(
     typeof value === "string" || typeof value === "number" ? value : ""
@@ -35,11 +38,21 @@ const SingleField: React.FC<SingleFieldProps> = ({
   return (
     <GridItem colSpan={1} colorPalette="brand">
       <Field.Root>
-        <Field.Label htmlFor={pathString}>
+        <Field.Label htmlFor={pathString} gap="2">
           <EditableLabel
-            initialValue={labels[pathString] || formatLabel(fieldKey)}
+            initialValue={labels[pathString] || fieldKey}
             onSave={(newLabel) => onLabelChange(pathString, newLabel)}
           />
+          <IconButton
+            aria-label="Delete Field"
+            size="2xs"
+            onClick={() => onRemoveFieldOrSection(currentPath)}
+            colorPalette="red"
+            rounded="full"
+            variant="outline"
+          >
+            <MdDeleteOutline />
+          </IconButton>
         </Field.Label>
         <Input
           id={pathString}
