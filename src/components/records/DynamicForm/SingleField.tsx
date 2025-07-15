@@ -38,7 +38,7 @@ const SingleField: React.FC<SingleFieldProps> = ({
 
   const [{ isDragging }, drag] = useDrag(() => ({
     type: 'field',
-    item: { id: pathString, path: currentPath, type: 'field' },
+item: { id: pathString.replace(/\./g, '_'), path: currentPath, type: 'field' },
     collect: (monitor) => ({
       isDragging: monitor.isDragging(),
     }),

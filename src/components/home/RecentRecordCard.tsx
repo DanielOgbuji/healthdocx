@@ -1,6 +1,9 @@
+import { useState } from "react";
 import { Card, Text, Badge, VStack, Box, Button } from "@chakra-ui/react";
 import { MdOutlineArrowOutward } from "react-icons/md";
 import { formatDate } from "@/utils/date";
+import { useNavigate } from "react-router";
+import { toaster } from "@/components/ui/toaster";
 
 interface RecentRecordCardProps {
     imageUrl: string;
@@ -17,6 +20,38 @@ const RecentRecordCard = ({
     recordGroup,
     createdAt,
 }: RecentRecordCardProps) => {
+    const navigate = useNavigate();
+    const [isLoading, setIsLoading] = useState(false)
+    const handleSubmit = async () => {
+        try {
+            setIsLoading(true);
+            const id = recordID;
+            console.log("the record id", id)
+
+            // Navigate to the details page with the record ID
+            navigate(`/records/details/${id}`);
+
+            // Show success message
+            toaster.create({
+                title: "Loading Record",
+                description: "Your file is being processed and will load shortly.",
+                type: "success",
+                duration: 5000,
+            });
+
+        } catch (error) {
+            console.error("Error during loading:", error);
+            setIsLoading(false);
+            toaster.create({
+                title: "Loading Failed",
+                description: "Could not load the record. Please try again.",
+                type: "error",
+                duration: 5000,
+            });
+        } finally {
+            setIsLoading(false);
+        }
+    };
     return (
         <Card.Root
             overflow="hidden"
@@ -46,7 +81,7 @@ const RecentRecordCard = ({
                         Created: <Box as="span" fontStyle="italic" fontWeight="medium" textShadow="lg">{formatDate(createdAt)}</Box>
                     </Text>
                 </Box>
-                <Button variant="solid" shadow="lg" size="sm" colorPalette="brand" w="fit-content">
+                <Button variant="solid" shadow="lg" size="sm" colorPalette="brand" w="fit-content" onClick={handleSubmit} loading={isLoading} loadingText="Loading...">
                     <Box as="span" fontSize="sm">View full record</Box> <MdOutlineArrowOutward />
                 </Button>
             </Card.Body >

@@ -411,7 +411,7 @@ const UploadDialog = ({
                                         </Card.Root>
                                     </Flex>
                                     <Flex gap="4" justifyContent="center" width="full" colorPalette="brand" direction={{ base: "row", mdDown: "column" }} px={{ mdDown: "8" }}>
-                                        <Button variant="solid" size="sm" onClick={handleSubmit} loading={isExtracting} loadingText="Extracting">
+                                        <Button variant="solid" size="sm" onClick={handleSubmit} loading={isExtracting} loadingText="Extracting...">
                                             <PiSparkle /> <Box as="span" fontSize="sm">Extract record</Box>
                                         </Button>
                                     </Flex>

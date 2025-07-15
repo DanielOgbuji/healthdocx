@@ -40,15 +40,14 @@ export const removeNested = (
 	obj: Record<string, unknown>,
 	path: string[]
 ): Record<string, unknown> => {
-	if (path.length === 0) return { ...obj };
+	if (path.length === 0) return obj;
 
 	const newObj = { ...obj };
-	let current = newObj;
+	let current: Record<string, unknown> = newObj;
 
 	for (let i = 0; i < path.length - 1; i++) {
 		const key = path[i];
 		if (typeof current[key] === "object" && current[key] !== null) {
-			current[key] = { ...(current[key] as Record<string, unknown>) };
 			current = current[key] as Record<string, unknown>;
 		} else {
 			return newObj;

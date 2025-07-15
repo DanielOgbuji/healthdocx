@@ -1,4 +1,4 @@
-import React, { useState, useRef } from "react";
+import React, { useState } from "react";
 import {
   Flex,
   Text,
@@ -12,14 +12,13 @@ import {
   Menu,
   Portal,
 } from "@chakra-ui/react";
-import { useMergeRefs } from "@chakra-ui/hooks";
 import { useDynamicForm } from "@/hooks/useDynamicForm";
 import FormField from "./FormField";
 import SingleField from "./SingleField";
 import MoveMenuItems from "./MoveMenuItems";
 import { recordGroups, recordTypes } from "@/constants/recordOptions";
 import { MdOutlineCloudDone, MdOutlineFileUpload, MdOutlineUndo, MdAdd, MdTextFields, MdDeleteOutline, MdOutlineMoveUp } from "react-icons/md";
-import { DndProvider, useDrop } from 'react-dnd';
+import { DndProvider } from 'react-dnd';
 import { HTML5Backend } from 'react-dnd-html5-backend';
 import { SelectionProvider } from '@/contexts/SelectionProvider';
 import { useSelection } from '@/hooks/useSelection';
@@ -49,20 +48,6 @@ const DynamicFormContent: React.FC<DynamicFormProps> = ({ structuredData, record
     handleBulkMove,
   } = useDynamicForm(structuredData, recordId);
   const { selectedItems, clearSelection } = useSelection();
-  const gridRef = useRef<HTMLDivElement>(null);
-
-  const [{ isOver }, drop] = useDrop(() => ({
-    accept: ["field", "section"],
-    drop: (item: { path: string[] }) => {
-      handleMoveItem(item.path, []);
-    },
-    collect: (monitor) => ({
-      isOver: monitor.isOver(),
-    }),
-  }));
-
-  const mergedDropRef = useMergeRefs(gridRef, drop as unknown as React.RefCallback<Element>);
-
 
   const [selectedGroup, setSelectedGroup] = useState("");
   const [availableTypes, setAvailableTypes] = useState<
@@ -206,7 +191,7 @@ const DynamicFormContent: React.FC<DynamicFormProps> = ({ structuredData, record
             flex={{ base: "none", md: "1" }}
           >
             <MdDeleteOutline />
-            Delete Selected
+            Delete
           </Button>
           <Menu.Root>
             <Menu.Trigger asChild>
@@ -217,7 +202,7 @@ const DynamicFormContent: React.FC<DynamicFormProps> = ({ structuredData, record
                 flex={{ base: "none", md: "1" }}
               >
                 <MdOutlineMoveUp />
-                Move Selected
+                Move
               </Button>
             </Menu.Trigger>
             <Portal>
@@ -240,20 +225,9 @@ const DynamicFormContent: React.FC<DynamicFormProps> = ({ structuredData, record
             </Portal>
           </Menu.Root>
         </Flex>
-        <Grid
-          ref={mergedDropRef}
-          templateColumns={{ base: "1fr", lg: "repeat(2, 1fr)" }}
-          gap={4}
-          w="full"
-          p={isOver ? 4 : 0}
-          border={isOver ? "2px dashed" : "none"}
-          borderColor={isOver ? "primary" : "none"}
-        >
+        <Grid templateColumns={{ base: "1fr", lg: "repeat(2, 1fr)" }} gap={4} w="full">
           {Object.entries(formData)
-            .filter(
-              ([, value]) =>
-                typeof value !== "object" || value === null || Array.isArray(value)
-            )
+            .filter(([, value]) => typeof value !== "object" || value === null || Array.isArray(value))
             .map(([key, value]) => {
               const currentPath = [key];
               const pathString = currentPath.join(".");
@@ -272,17 +246,13 @@ const DynamicFormContent: React.FC<DynamicFormProps> = ({ structuredData, record
               );
             })}
           {Object.entries(formData)
-            .filter(
-              ([, value]) =>
-                typeof value === "object" && value !== null && !Array.isArray(value)
-            )
+            .filter(([, value]) => typeof value === "object" && value !== null && !Array.isArray(value))
             .map(([key, value]) => {
-              const currentPath = [key];
               return (
                 <FormField
                   key={key}
                   data={value as Record<string, unknown>}
-                  path={currentPath}
+                  path={[key]}
                   onFieldChange={handleFieldChange}
                   labels={labels}
                   onLabelChange={handleLabelChange}

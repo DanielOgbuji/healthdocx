@@ -34,7 +34,7 @@ const FormField: React.FC<FormFieldProps> = ({
   onRemoveFieldOrSection,
   onMoveItem,
 }) => {
-  const pathString = path.join('.');
+const pathString = path.join('_');
   const { selectedItems, toggleSelection } = useSelection();
   const boxRef = useRef<HTMLDivElement>(null);
   const gridItemRef = useRef<HTMLDivElement>(null);
@@ -65,7 +65,7 @@ const FormField: React.FC<FormFieldProps> = ({
   return (
     <GridItem
       key={pathString}
-      colSpan={{ base: 1, md: 2 }}
+      colSpan={{ base: 1, lg: 2 }}
       ref={mergedDropRefs}
       border={isOver ? "2px dashed" : "none"}
       borderColor={isOver ? "primary" : "none"}

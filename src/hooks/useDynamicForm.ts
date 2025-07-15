@@ -23,7 +23,7 @@ export const useDynamicForm = (
 
 	// Load initial data
 	useEffect(() => {
-		if (!recordId) return;
+		if (!recordId)return;
 
 		const autoSavedFormData = localStorage.getItem(`autosave_form_${recordId}`);
 		const autoSavedLabels = localStorage.getItem(`autosave_labels_${recordId}`);
@@ -115,7 +115,7 @@ export const useDynamicForm = (
 
 		const newLabels = {
 			...labels,
-			[[...parentPath, newKey].join(".")]: `New Section ${newKey.split("_")[1]}`,
+			[[...parentPath, newKey].join("_")]: `New Section ${newKey.split("_")[1]}`,
 		};
 		setLabels(newLabels);
 	};
@@ -129,7 +129,7 @@ export const useDynamicForm = (
 
 		const newLabels = {
 			...labels,
-			[[...parentPath, newKey].join(".")]: `New Field ${newKey.split("_")[1]}`,
+			[[...parentPath, newKey].join("_")]: `New Field ${newKey.split("_")[1]}`,
 		};
 		setLabels(newLabels);
 	};
@@ -138,10 +138,7 @@ export const useDynamicForm = (
 		const itemKey = fromPath[fromPath.length - 1];
 		const sourcePath = fromPath.slice(0, -1);
 
-		if (
-			sourcePath.join(".") === toPath.join(".") ||
-			toPath.join(".").startsWith(fromPath.join("."))
-		) {
+		if (sourcePath.join('_') === toPath.join('_') || toPath.join('_').startsWith(fromPath.join('_'))) {
 			return;
 		}
 
@@ -155,24 +152,15 @@ export const useDynamicForm = (
 				string,
 				unknown
 			>;
-			let insertIndex = toParent ? Object.keys(toParent).length : 0;
-
-			if (toPath.length === 0) {
-				const firstSectionIndex = Object.values(newData).findIndex(
-					(v) => typeof v === "object" && v !== null && !Array.isArray(v)
-				);
-				if (firstSectionIndex !== -1) {
-					insertIndex = firstSectionIndex;
-				}
-			}
+			const insertIndex = toParent ? Object.keys(toParent).length : 0;
 
 			return insertNested(newData, toPath, itemKey, itemValue, insertIndex);
 		});
 
 		setLabels((prevLabels) => {
 			const newLabels = { ...prevLabels };
-			const oldPath = fromPath.join(".");
-			const newPath = [...toPath, itemKey].join(".");
+			const oldPath = fromPath.join("_");
+			const newPath = [...toPath, itemKey].join("_");
 
 			if (newLabels[oldPath]) {
 				newLabels[newPath] = newLabels[oldPath];
@@ -180,8 +168,8 @@ export const useDynamicForm = (
 			}
 
 			Object.keys(newLabels).forEach((key) => {
-				if (key.startsWith(`${oldPath}.`)) {
-					const newKey = key.replace(`${oldPath}.`, `${newPath}.`);
+				if (key.startsWith(`${oldPath}_`)) {
+					const newKey = key.replace(`${oldPath}_`, `${newPath}_`);
 					newLabels[newKey] = newLabels[key];
 					delete newLabels[key];
 				}
@@ -197,10 +185,10 @@ export const useDynamicForm = (
 
 		setLabels((prevLabels) => {
 			const newLabels = { ...prevLabels };
-			const pathString = path.join(".");
+			const pathString = path.join("_");
 			delete newLabels[pathString];
 
-			const prefix = `${pathString}.`;
+			const prefix = `${pathString}_`;
 			Object.keys(newLabels).forEach((key) => {
 				if (key.startsWith(prefix)) {
 					delete newLabels[key];
@@ -215,11 +203,11 @@ export const useDynamicForm = (
 		const newLabels = { ...labels };
 
 		paths.forEach(pathString => {
-			const path = pathString.split('.');
+			const path = pathString.split('_');
 			newFormData = removeNested(newFormData, path);
 			
 			delete newLabels[pathString];
-			const prefix = `${pathString}.`;
+			const prefix = `${pathString}_`;
 			Object.keys(newLabels).forEach((key) => {
 				if (key.startsWith(prefix)) {
 					delete newLabels[key];
@@ -238,8 +226,8 @@ export const useDynamicForm = (
 		const sortedPaths = Array.from(paths).sort((a, b) => a.length - b.length);
 
 		for (const pathString of sortedPaths) {
-			const fromPath = pathString.split(".");
-			const parentPath = fromPath.slice(0, -1).join(".");
+			const fromPath = pathString.split('_');
+			const parentPath = fromPath.slice(0, -1).join('_');
 
 			if (paths.has(parentPath)) {
 				continue;
@@ -251,37 +239,18 @@ export const useDynamicForm = (
 			if (itemValue === undefined) continue;
 
 			const sourcePath = fromPath.slice(0, -1);
-			if (sourcePath.join(".") === destinationPath.join(".")) {
+			if (sourcePath.join('_') === destinationPath.join('_')) {
 				continue;
 			}
 
 			newFormData = removeNested(newFormData, fromPath);
 
-			const toParent = getNestedValue(newFormData, destinationPath) as Record<
-				string,
-				unknown
-			>;
-			let insertIndex = toParent ? Object.keys(toParent).length : 0;
+			const toParent = getNestedValue(newFormData, destinationPath) as Record<string, unknown>;
+			const insertIndex = toParent ? Object.keys(toParent).length : 0;
+			newFormData = insertNested(newFormData, destinationPath, itemKey, itemValue, insertIndex);
 
-			if (destinationPath.length === 0) {
-				const firstSectionIndex = Object.values(newFormData).findIndex(
-					(v) => typeof v === "object" && v !== null && !Array.isArray(v)
-				);
-				if (firstSectionIndex !== -1) {
-					insertIndex = firstSectionIndex;
-				}
-			}
-
-			newFormData = insertNested(
-				newFormData,
-				destinationPath,
-				itemKey,
-				itemValue,
-				insertIndex
-			);
-
-			const oldPath = fromPath.join(".");
-			const newPath = [...destinationPath, itemKey].join(".");
+			const oldPath = fromPath.join("_");
+			const newPath = [...destinationPath, itemKey].join("_");
 
 			if (newLabels[oldPath]) {
 				newLabels[newPath] = newLabels[oldPath];
@@ -289,8 +258,8 @@ export const useDynamicForm = (
 			}
 
 			Object.keys(newLabels).forEach((key) => {
-				if (key.startsWith(`${oldPath}.`)) {
-					const newKey = key.replace(`${oldPath}.`, `${newPath}.`);
+				if (key.startsWith(`${oldPath}_`)) {
+					const newKey = key.replace(`${oldPath}_`, `${newPath}_`);
 					newLabels[newKey] = newLabels[key];
 					delete newLabels[key];
 				}
