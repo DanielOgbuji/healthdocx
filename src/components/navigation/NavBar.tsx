@@ -7,13 +7,24 @@ import NavList from "@/components/navigation/NavList";
 import Logo from "@/assets/images/Off-Jeay.svg";
 import LogoDark from "@/assets/images/Off-Jeay-Dark.svg";
 import { useColorMode } from "@/components/ui/color-mode";
-import { useSelector } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
+import { useNavigate } from "react-router";
+import { logout } from "@/features/authSlice";
 import type { RootState } from '@/store/store';
 
 const NavBar = () => {
     const { colorMode } = useColorMode();
     const userName = useSelector((state: RootState) => state.auth.user?.fullName || "User");
     const userEmail = useSelector((state: RootState) => state.auth.user?.email || "user@example.com");
+    const dispatch = useDispatch();
+    const navigate = useNavigate();
+
+    const handleMenuItemSelect = ({ value }: { value: string }) => {
+        if (value === "logout") {
+            dispatch(logout());
+            navigate("/sign-in");
+        }
+    };
 
     return (
         <Flex
@@ -65,7 +76,7 @@ const NavBar = () => {
                 <IconButton variant="ghost" size="sm" aria-label="Notifications" borderRadius="full">
                     <Icon size="lg"><MdOutlineNotifications /></Icon>
                 </IconButton>
-                <Menu.Root positioning={{ placement: "bottom-end" }}>
+                <Menu.Root positioning={{ placement: "bottom-end" }} onSelect={handleMenuItemSelect}>
                     <Menu.Trigger rounded="full" focusRing="outside">
                         <Avatar.Root size="sm">
                             <Avatar.Fallback name={userName} />
