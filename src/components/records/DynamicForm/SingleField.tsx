@@ -1,8 +1,13 @@
-import React, { useState, useEffect } from "react";
-import { Input, GridItem, Field } from "@chakra-ui/react";
+import React, { useState, useEffect, useRef } from "react";
+import { Input, GridItem, Field, Flex } from "@chakra-ui/react";
+//import { useMergeRefs } from "@chakra-ui/hooks";
 import EditableLabel from "./EditableLabel";
 import { IconButton } from "@chakra-ui/react";
 import { MdDeleteOutline } from "react-icons/md";
+import { DragHandle } from "./DragHandle";
+import { useDrag } from "react-dnd";
+import { useSelection } from "@/hooks/useSelection";
+import { Checkbox } from "@chakra-ui/react";
 
 interface SingleFieldProps {
   fieldKey: string;
@@ -28,6 +33,21 @@ const SingleField: React.FC<SingleFieldProps> = ({
   const [inputValue, setInputValue] = useState(
     typeof value === "string" || typeof value === "number" ? value : ""
   );
+  const { selectedItems, toggleSelection } = useSelection();
+  const gridItemRef = useRef<HTMLDivElement>(null);
+
+  const [{ isDragging }, drag] = useDrag(() => ({
+    type: 'field',
+    item: { id: pathString, path: currentPath, type: 'field' },
+    collect: (monitor) => ({
+      isDragging: monitor.isDragging(),
+    }),
+  }));
+
+  const mergedRefs = (node: HTMLDivElement | null) => {
+    gridItemRef.current = node;
+    drag(node);
+  };
 
   useEffect(() => {
     setInputValue(
@@ -36,23 +56,41 @@ const SingleField: React.FC<SingleFieldProps> = ({
   }, [value]);
 
   return (
-    <GridItem colSpan={1} colorPalette="brand">
+    <GridItem
+      colSpan={1}
+      ref={mergedRefs}
+      opacity={isDragging ? 0.5 : 1}
+      border={selectedItems.has(pathString) ? "2px dotted" : "none"}
+      borderColor={selectedItems.has(pathString) ? "secondary" : "none"}
+      p="1"
+    >
       <Field.Root>
-        <Field.Label htmlFor={pathString} gap="2">
-          <EditableLabel
-            initialValue={labels[pathString] || fieldKey}
-            onSave={(newLabel) => onLabelChange(pathString, newLabel)}
-          />
-          <IconButton
-            aria-label="Delete Field"
-            size="2xs"
-            onClick={() => onRemoveFieldOrSection(currentPath)}
-            colorPalette="red"
-            rounded="full"
-            variant="outline"
+        <Field.Label htmlFor={pathString} gap="2" alignItems="center">
+          <Checkbox.Root
+            checked={selectedItems.has(pathString)}
+            onCheckedChange={() => toggleSelection(pathString)}
           >
-            <MdDeleteOutline />
-          </IconButton>
+            <Checkbox.HiddenInput />
+            <Checkbox.Control />
+          </Checkbox.Root>
+          <DragHandle />
+          <Flex gap="2" alignItems="center">
+            <EditableLabel
+              initialValue={labels[pathString] || fieldKey}
+              onSave={(newLabel) => onLabelChange(pathString, newLabel)}
+            />
+            <IconButton
+              aria-label="Delete Field"
+              size="2xs"
+              onClick={() => onRemoveFieldOrSection(currentPath)}
+              colorPalette="red"
+              rounded="full"
+              variant="outline"
+              ml="auto"
+            >
+              <MdDeleteOutline />
+            </IconButton>
+          </Flex>
         </Field.Label>
         <Input
           id={pathString}

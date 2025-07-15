@@ -23,7 +23,7 @@ export const updateNested = (
 export const getNestedValue = (
   obj: Record<string, unknown>,
   path: string[]
-): Record<string, unknown> | undefined => {
+): unknown => {
   let current: unknown = obj;
   
   for (const key of path) {
@@ -33,33 +33,32 @@ export const getNestedValue = (
     current = (current as Record<string, unknown>)[key];
   }
   
-  return typeof current === 'object' && current !== null && !Array.isArray(current)
-    ? current as Record<string, unknown>
-    : undefined;
+  return current;
 };
 
 export const removeNested = (
 	obj: Record<string, unknown>,
 	path: string[]
 ): Record<string, unknown> => {
-	if (path.length === 0) return obj;
-	const [head, ...rest] = path;
-	if (rest.length === 0) {
-		const newObj = Object.keys(obj).reduce((acc, key) => {
-			if (key !== head) {
-				acc[key] = obj[key];
-			}
-			return acc;
-		}, {} as Record<string, unknown>);
-		return newObj;
+	if (path.length === 0) return { ...obj };
+
+	const newObj = { ...obj };
+	let current = newObj;
+
+	for (let i = 0; i < path.length - 1; i++) {
+		const key = path[i];
+		if (typeof current[key] === "object" && current[key] !== null) {
+			current[key] = { ...(current[key] as Record<string, unknown>) };
+			current = current[key] as Record<string, unknown>;
+		} else {
+			return newObj;
+		}
 	}
-	if (obj[head] && typeof obj[head] === "object") {
-		return {
-			...obj,
-			[head]: removeNested(obj[head] as Record<string, unknown>, rest),
-		};
-	}
-	return obj;
+
+	const finalKey = path[path.length - 1];
+	delete current[finalKey];
+
+	return newObj;
 };
 
 export const insertNested = (

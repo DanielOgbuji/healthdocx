@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useRef } from "react";
 import {
   Flex,
   Text,
@@ -8,11 +8,21 @@ import {
   NativeSelect,
   Icon,
   Spinner,
+  Grid,
+  Menu,
+  Portal,
 } from "@chakra-ui/react";
+import { useMergeRefs } from "@chakra-ui/hooks";
 import { useDynamicForm } from "@/hooks/useDynamicForm";
 import FormField from "./FormField";
+import SingleField from "./SingleField";
+import MoveMenuItems from "./MoveMenuItems";
 import { recordGroups, recordTypes } from "@/constants/recordOptions";
-import { MdOutlineCloudDone, MdOutlineFileUpload, MdOutlineUndo, MdAdd, MdTextFields } from "react-icons/md";
+import { MdOutlineCloudDone, MdOutlineFileUpload, MdOutlineUndo, MdAdd, MdTextFields, MdDeleteOutline, MdOutlineMoveUp } from "react-icons/md";
+import { DndProvider, useDrop } from 'react-dnd';
+import { HTML5Backend } from 'react-dnd-html5-backend';
+import { SelectionProvider } from '@/contexts/SelectionProvider';
+import { useSelection } from '@/hooks/useSelection';
 
 interface DynamicFormProps {
   structuredData: string;
@@ -20,7 +30,7 @@ interface DynamicFormProps {
   onRevert: () => void;
 }
 
-const DynamicForm: React.FC<DynamicFormProps> = ({ structuredData, recordId, onRevert }) => {
+const DynamicFormContent: React.FC<DynamicFormProps> = ({ structuredData, recordId, onRevert }) => {
   const {
     formData,
     labels,
@@ -34,7 +44,25 @@ const DynamicForm: React.FC<DynamicFormProps> = ({ structuredData, recordId, onR
     handleAddSection,
     handleAddField,
     handleRemoveFieldOrSection,
+    handleMoveItem,
+    handleBulkDelete,
+    handleBulkMove,
   } = useDynamicForm(structuredData, recordId);
+  const { selectedItems, clearSelection } = useSelection();
+  const gridRef = useRef<HTMLDivElement>(null);
+
+  const [{ isOver }, drop] = useDrop(() => ({
+    accept: ["field", "section"],
+    drop: (item: { path: string[] }) => {
+      handleMoveItem(item.path, []);
+    },
+    collect: (monitor) => ({
+      isOver: monitor.isOver(),
+    }),
+  }));
+
+  const mergedDropRef = useMergeRefs(gridRef, drop as unknown as React.RefCallback<Element>);
+
 
   const [selectedGroup, setSelectedGroup] = useState("");
   const [availableTypes, setAvailableTypes] = useState<
@@ -47,21 +75,20 @@ const DynamicForm: React.FC<DynamicFormProps> = ({ structuredData, recordId, onR
     setAvailableTypes(recordTypes[group as keyof typeof recordTypes] || []);
   };
 
-
   return (
     <Flex
       w="full"
       direction="column"
       p={6}
-      gap="4"
+      gap="6"
       borderWidth="1px"
       borderRadius="md"
       boxShadow="sm"
     >
-      <Flex alignItems="center" justifyContent="space-between" pb="2" direction={{ lgDown: "column" }} gap="4">
+      <Flex alignItems="center" justifyContent="space-between" p="2" direction={{ lgDown: "column" }} gap="6">
         <Flex justifyContent="space-between" w="full">
-          <Flex>
-            <Text fontSize="lg">{recordId}</Text>
+          <Flex alignItems="start">
+            <Text fontSize="xl" fontWeight="bold">{recordId}</Text>
           </Flex>
           <Flex alignItems="center" gap="2">
             {autoSaveStatus === "Saving..." ? (
@@ -77,7 +104,7 @@ const DynamicForm: React.FC<DynamicFormProps> = ({ structuredData, recordId, onR
             )}
           </Flex>
         </Flex>
-        <Flex gap="4" direction={{ mdDown: "column" }} alignItems="center" w={{ lgDown: "full" }}>
+        <Flex gap="6" direction={{ mdDown: "column" }} alignItems="center" w={{ lgDown: "full" }}>
           <Button onClick={onRevert} variant="outline" colorPalette="brand" w={{ mdDown: "full" }} flex={{ lgDown: "1", mdDown: "none" }} >
             <MdOutlineUndo />
             Revert to Original
@@ -95,7 +122,7 @@ const DynamicForm: React.FC<DynamicFormProps> = ({ structuredData, recordId, onR
           </Button>
         </Flex>
       </Flex>
-      <Flex w="full" justifyContent="space-between" gap="4" alignItems="end" direction={{ mdDown: "column" }} colorPalette="brand">
+      <Flex w="full" justifyContent="space-between" gap="6" px="2" alignItems="end" direction={{ mdDown: "column" }} colorPalette="brand">
         <Field.Root>
           <NativeSelect.Root
             size="md"
@@ -136,7 +163,6 @@ const DynamicForm: React.FC<DynamicFormProps> = ({ structuredData, recordId, onR
             <NativeSelect.Indicator />
           </NativeSelect.Root>
         </Field.Root>
-
       </Flex>
       <VStack align="stretch" gap={6}>
         {error && (
@@ -149,10 +175,12 @@ const DynamicForm: React.FC<DynamicFormProps> = ({ structuredData, recordId, onR
             {successMessage}
           </Text>
         )}
-        <Flex gap={2} mb={4}>
+        <Flex gap={6} colorPalette="brand" px="2" direction={{ base: "column", md: "row" }}>
           <Button
             onClick={() => handleAddSection([])}
             size="sm"
+            variant="surface"
+            flex={{ base: "none", md: "1" }}
           >
             <MdAdd />
             Add Section
@@ -160,23 +188,124 @@ const DynamicForm: React.FC<DynamicFormProps> = ({ structuredData, recordId, onR
           <Button
             onClick={() => handleAddField([])}
             size="sm"
+            variant="surface"
+            flex={{ base: "none", md: "1" }}
           >
             <MdTextFields />
             Add Field
           </Button>
+          <Button
+            onClick={() => {
+              handleBulkDelete(selectedItems);
+              clearSelection();
+            }}
+            size="sm"
+            colorPalette="red"
+            disabled={selectedItems.size === 0}
+            variant="outline"
+            flex={{ base: "none", md: "1" }}
+          >
+            <MdDeleteOutline />
+            Delete Selected
+          </Button>
+          <Menu.Root>
+            <Menu.Trigger asChild>
+              <Button
+                size="sm"
+                disabled={selectedItems.size === 0}
+                variant="outline"
+                flex={{ base: "none", md: "1" }}
+              >
+                <MdOutlineMoveUp />
+                Move Selected
+              </Button>
+            </Menu.Trigger>
+            <Portal>
+              <Menu.Positioner>
+                <Menu.Content colorPalette="brand">
+                  <Menu.Item value="root" onClick={() => {
+                    handleBulkMove(selectedItems, []);
+                    clearSelection();
+                  }}>Root</Menu.Item>
+                  <MoveMenuItems
+                    data={formData}
+                    labels={labels}
+                    onSelectPath={(path) => {
+                      handleBulkMove(selectedItems, path);
+                      clearSelection();
+                    }}
+                  />
+                </Menu.Content>
+              </Menu.Positioner>
+            </Portal>
+          </Menu.Root>
         </Flex>
-        <FormField
-          data={formData}
-          path={[]}
-          onFieldChange={handleFieldChange}
-          labels={labels}
-          onLabelChange={handleLabelChange}
-          onAddSection={handleAddSection}
-          onAddField={handleAddField}
-          onRemoveFieldOrSection={handleRemoveFieldOrSection}
-        />
+        <Grid
+          ref={mergedDropRef}
+          templateColumns={{ base: "1fr", lg: "repeat(2, 1fr)" }}
+          gap={4}
+          w="full"
+          p={isOver ? 4 : 0}
+          border={isOver ? "2px dashed" : "none"}
+          borderColor={isOver ? "primary" : "none"}
+        >
+          {Object.entries(formData)
+            .filter(
+              ([, value]) =>
+                typeof value !== "object" || value === null || Array.isArray(value)
+            )
+            .map(([key, value]) => {
+              const currentPath = [key];
+              const pathString = currentPath.join(".");
+              return (
+                <SingleField
+                  key={pathString}
+                  fieldKey={key}
+                  value={value}
+                  currentPath={currentPath}
+                  pathString={pathString}
+                  onFieldChange={handleFieldChange}
+                  labels={labels}
+                  onLabelChange={handleLabelChange}
+                  onRemoveFieldOrSection={handleRemoveFieldOrSection}
+                />
+              );
+            })}
+          {Object.entries(formData)
+            .filter(
+              ([, value]) =>
+                typeof value === "object" && value !== null && !Array.isArray(value)
+            )
+            .map(([key, value]) => {
+              const currentPath = [key];
+              return (
+                <FormField
+                  key={key}
+                  data={value as Record<string, unknown>}
+                  path={currentPath}
+                  onFieldChange={handleFieldChange}
+                  labels={labels}
+                  onLabelChange={handleLabelChange}
+                  onAddSection={handleAddSection}
+                  onAddField={handleAddField}
+                  onRemoveFieldOrSection={handleRemoveFieldOrSection}
+                  onMoveItem={handleMoveItem}
+                />
+              );
+            })}
+        </Grid>
       </VStack>
     </Flex>
+  )
+}
+
+const DynamicForm: React.FC<DynamicFormProps> = (props) => {
+  return (
+    <DndProvider backend={HTML5Backend}>
+      <SelectionProvider>
+        <DynamicFormContent {...props} />
+      </SelectionProvider>
+    </DndProvider>
   );
 };
 

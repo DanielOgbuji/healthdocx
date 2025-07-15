@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { api } from "@/api/axios";
 import { toaster } from "@/components/ui/toaster";
 import {
@@ -6,7 +6,7 @@ import {
 	buildPayload,
 	removeNested,
 	insertNested,
-  getNestedValue,
+	getNestedValue,
 } from "@/utils/dynamicFormUtils";
 
 export const useDynamicForm = (
@@ -19,7 +19,9 @@ export const useDynamicForm = (
 	const [error, setError] = useState("");
 	const [successMessage, setSuccessMessage] = useState("");
 	const [autoSaveStatus, setAutoSaveStatus] = useState("Saved");
+	const initialDataLoaded = useRef(false);
 
+	// Load initial data
 	useEffect(() => {
 		if (!recordId) return;
 
@@ -42,32 +44,43 @@ export const useDynamicForm = (
 				setError("Error parsing data. Please check the format.");
 			}
 		}
+		initialDataLoaded.current = true;
 	}, [structuredData, recordId]);
 
-	const handleFieldChange = (path: string[], value: string) => {
+	// Debounced autosave
+	useEffect(() => {
+		if (!initialDataLoaded.current) {
+			return;
+		}
+
 		setAutoSaveStatus("Saving...");
+		const handler = setTimeout(() => {
+			if (recordId) {
+				localStorage.setItem(
+					`autosave_form_${recordId}`,
+					JSON.stringify(formData)
+				);
+				localStorage.setItem(
+					`autosave_labels_${recordId}`,
+					JSON.stringify(labels)
+				);
+				setAutoSaveStatus("Saved");
+			}
+		}, 1000);
+
+		return () => {
+			clearTimeout(handler);
+		};
+	}, [formData, labels, recordId]);
+
+	const handleFieldChange = (path: string[], value: string) => {
 		const newFormData = updateNested({ ...formData }, path, value);
 		setFormData(newFormData);
-		if (recordId) {
-			localStorage.setItem(
-				`autosave_form_${recordId}`,
-				JSON.stringify(newFormData)
-			);
-			setTimeout(() => setAutoSaveStatus("Saved"), 1000);
-		}
 	};
 
 	const handleLabelChange = (path: string, label: string) => {
-		setAutoSaveStatus("Saving...");
 		const newLabels = { ...labels, [path]: label };
 		setLabels(newLabels);
-		if (recordId) {
-			localStorage.setItem(
-				`autosave_labels_${recordId}`,
-				JSON.stringify(newLabels)
-			);
-			setTimeout(() => setAutoSaveStatus("Saved"), 1000);
-		}
 	};
 
 	const generateUniqueKey = (path: string[]) => {
@@ -75,149 +88,118 @@ export const useDynamicForm = (
 		return `${base}_${Date.now()}`;
 	};
 
-const handleAddSection = (parentPath: string[]) => {
-  setAutoSaveStatus("Saving...");
-  const newKey = generateUniqueKey(parentPath);
-  
-  // Safely get parent object
-  const parentObject = parentPath.length === 0 
-    ? formData 
-    : getNestedValue(formData, parentPath);
-  
-  // Calculate position
-  const insertPosition = parentPath.length === 0 
-    ? 0 
-    : parentObject 
-      ? Object.keys(parentObject).length 
-      : 0; // Fallback if parent doesn't exist
+	const handleAddSection = (parentPath: string[]) => {
+		const newKey = generateUniqueKey(parentPath);
 
-  const newFormData = insertNested(
-    { ...formData },
-    parentPath,
-    newKey,
-    {},
-    insertPosition
-  );
+		const parentObject =
+			parentPath.length === 0
+				? formData
+				: (getNestedValue(formData, parentPath) as Record<string, unknown>);
 
-  setFormData(newFormData);
-  
-  const newLabels = {
-    ...labels,
-    [[...parentPath, newKey].join(".")]: `New Section ${newKey.split("_")[1]}`,
-  };
-  setLabels(newLabels);
+		const insertPosition =
+			parentPath.length === 0
+				? 0
+				: parentObject
+				? Object.keys(parentObject).length
+				: 0;
 
-  if (recordId) {
-    localStorage.setItem(
-      `autosave_form_${recordId}`,
-      JSON.stringify(newFormData)
-    );
-    localStorage.setItem(
-      `autosave_labels_${recordId}`,
-      JSON.stringify(newLabels)
-    );
-    setTimeout(() => setAutoSaveStatus("Saved"), 1000);
-  }
-};
+		const newFormData = insertNested(
+			{ ...formData },
+			parentPath,
+			newKey,
+			{},
+			insertPosition
+		);
 
-const handleAddField = (parentPath: string[]) => {
-  setAutoSaveStatus("Saving...");
-  const newKey = generateUniqueKey(parentPath);
-  
-  // Fields always insert at top (position 0)
-  const newFormData = insertNested(
-    { ...formData },
-    parentPath,
-    newKey,
-    "",
-    0
-  );
+		setFormData(newFormData);
 
-  setFormData(newFormData);
-  
-  const newLabels = {
-    ...labels,
-    [[...parentPath, newKey].join(".")]: `New Field ${newKey.split("_")[1]}`,
-  };
-  setLabels(newLabels);
+		const newLabels = {
+			...labels,
+			[[...parentPath, newKey].join(".")]: `New Section ${newKey.split("_")[1]}`,
+		};
+		setLabels(newLabels);
+	};
 
-  if (recordId) {
-    localStorage.setItem(
-      `autosave_form_${recordId}`,
-      JSON.stringify(newFormData)
-    );
-    localStorage.setItem(
-      `autosave_labels_${recordId}`,
-      JSON.stringify(newLabels)
-    );
-    setTimeout(() => setAutoSaveStatus("Saved"), 1000);
-  }
-};
+	const handleAddField = (parentPath: string[]) => {
+		const newKey = generateUniqueKey(parentPath);
 
-	const handleMoveField = (
-		sourcePath: string[],
-		destinationPath: string[],
-		newIndex: number
-	) => {
-		setAutoSaveStatus("Saving...");
-		const sourceKey = sourcePath[sourcePath.length - 1];
+		const newFormData = insertNested({ ...formData }, parentPath, newKey, "", 0);
 
-		let valueToMove: unknown;
-		setFormData((prevFormData) => {
-			const tempFormData = JSON.parse(JSON.stringify(prevFormData));
-			valueToMove = removeNested(tempFormData, sourcePath);
-			return tempFormData;
-		});
+		setFormData(newFormData);
 
-		setFormData((prevFormData) => {
-			const tempFormData = JSON.parse(JSON.stringify(prevFormData));
-			insertNested(
-				tempFormData,
-				destinationPath,
-				sourceKey,
-				valueToMove,
-				newIndex
-			);
-			return tempFormData;
+		const newLabels = {
+			...labels,
+			[[...parentPath, newKey].join(".")]: `New Field ${newKey.split("_")[1]}`,
+		};
+		setLabels(newLabels);
+	};
+
+	const handleMoveItem = (fromPath: string[], toPath: string[]) => {
+		const itemKey = fromPath[fromPath.length - 1];
+		const sourcePath = fromPath.slice(0, -1);
+
+		if (
+			sourcePath.join(".") === toPath.join(".") ||
+			toPath.join(".").startsWith(fromPath.join("."))
+		) {
+			return;
+		}
+
+		setFormData((prevData) => {
+			const itemValue = getNestedValue(prevData, fromPath);
+			if (itemValue === undefined) return prevData;
+
+			const newData = removeNested(prevData, fromPath);
+
+			const toParent = getNestedValue(newData, toPath) as Record<
+				string,
+				unknown
+			>;
+			let insertIndex = toParent ? Object.keys(toParent).length : 0;
+
+			if (toPath.length === 0) {
+				const firstSectionIndex = Object.values(newData).findIndex(
+					(v) => typeof v === "object" && v !== null && !Array.isArray(v)
+				);
+				if (firstSectionIndex !== -1) {
+					insertIndex = firstSectionIndex;
+				}
+			}
+
+			return insertNested(newData, toPath, itemKey, itemValue, insertIndex);
 		});
 
 		setLabels((prevLabels) => {
 			const newLabels = { ...prevLabels };
-			const oldLabelKey = sourcePath.join(".");
-			const newLabelKey = [...destinationPath, sourceKey].join(".");
+			const oldPath = fromPath.join(".");
+			const newPath = [...toPath, itemKey].join(".");
 
-			if (newLabels[oldLabelKey]) {
-				newLabels[newLabelKey] = newLabels[oldLabelKey];
-				delete newLabels[oldLabelKey];
+			if (newLabels[oldPath]) {
+				newLabels[newPath] = newLabels[oldPath];
+				delete newLabels[oldPath];
 			}
+
+			Object.keys(newLabels).forEach((key) => {
+				if (key.startsWith(`${oldPath}.`)) {
+					const newKey = key.replace(`${oldPath}.`, `${newPath}.`);
+					newLabels[newKey] = newLabels[key];
+					delete newLabels[key];
+				}
+			});
+
 			return newLabels;
 		});
-
-		if (recordId) {
-			localStorage.setItem(
-				`autosave_form_${recordId}`,
-				JSON.stringify(formData)
-			);
-			localStorage.setItem(
-				`autosave_labels_${recordId}`,
-				JSON.stringify(labels)
-			);
-			setTimeout(() => setAutoSaveStatus("Saved"), 1000);
-		}
 	};
 
 	const handleRemoveFieldOrSection = (path: string[]) => {
-		setAutoSaveStatus("Saving...");
 		const newFormData = removeNested({ ...formData }, path);
 		setFormData(newFormData);
 
 		setLabels((prevLabels) => {
 			const newLabels = { ...prevLabels };
 			const pathString = path.join(".");
-			// Remove the label for the deleted item
 			delete newLabels[pathString];
 
-			// If a section is deleted, also remove labels of its children
 			const prefix = `${pathString}.`;
 			Object.keys(newLabels).forEach((key) => {
 				if (key.startsWith(prefix)) {
@@ -226,18 +208,97 @@ const handleAddField = (parentPath: string[]) => {
 			});
 			return newLabels;
 		});
+	};
 
-		if (recordId) {
-			localStorage.setItem(
-				`autosave_form_${recordId}`,
-				JSON.stringify(newFormData)
+	const handleBulkDelete = (paths: Set<string>) => {
+		let newFormData = { ...formData };
+		const newLabels = { ...labels };
+
+		paths.forEach(pathString => {
+			const path = pathString.split('.');
+			newFormData = removeNested(newFormData, path);
+			
+			delete newLabels[pathString];
+			const prefix = `${pathString}.`;
+			Object.keys(newLabels).forEach((key) => {
+				if (key.startsWith(prefix)) {
+					delete newLabels[key];
+				}
+			});
+		});
+
+		setFormData(newFormData);
+		setLabels(newLabels);
+	}
+
+	const handleBulkMove = (paths: Set<string>, destinationPath: string[]) => {
+		let newFormData = { ...formData };
+		const newLabels = { ...labels };
+
+		const sortedPaths = Array.from(paths).sort((a, b) => a.length - b.length);
+
+		for (const pathString of sortedPaths) {
+			const fromPath = pathString.split(".");
+			const parentPath = fromPath.slice(0, -1).join(".");
+
+			if (paths.has(parentPath)) {
+				continue;
+			}
+
+			const itemKey = fromPath[fromPath.length - 1];
+			const itemValue = getNestedValue(newFormData, fromPath);
+
+			if (itemValue === undefined) continue;
+
+			const sourcePath = fromPath.slice(0, -1);
+			if (sourcePath.join(".") === destinationPath.join(".")) {
+				continue;
+			}
+
+			newFormData = removeNested(newFormData, fromPath);
+
+			const toParent = getNestedValue(newFormData, destinationPath) as Record<
+				string,
+				unknown
+			>;
+			let insertIndex = toParent ? Object.keys(toParent).length : 0;
+
+			if (destinationPath.length === 0) {
+				const firstSectionIndex = Object.values(newFormData).findIndex(
+					(v) => typeof v === "object" && v !== null && !Array.isArray(v)
+				);
+				if (firstSectionIndex !== -1) {
+					insertIndex = firstSectionIndex;
+				}
+			}
+
+			newFormData = insertNested(
+				newFormData,
+				destinationPath,
+				itemKey,
+				itemValue,
+				insertIndex
 			);
-			localStorage.setItem(
-				`autosave_labels_${recordId}`,
-				JSON.stringify(labels)
-			);
-			setTimeout(() => setAutoSaveStatus("Saved"), 1000);
+
+			const oldPath = fromPath.join(".");
+			const newPath = [...destinationPath, itemKey].join(".");
+
+			if (newLabels[oldPath]) {
+				newLabels[newPath] = newLabels[oldPath];
+				delete newLabels[oldPath];
+			}
+
+			Object.keys(newLabels).forEach((key) => {
+				if (key.startsWith(`${oldPath}.`)) {
+					const newKey = key.replace(`${oldPath}.`, `${newPath}.`);
+					newLabels[newKey] = newLabels[key];
+					delete newLabels[key];
+				}
+			});
 		}
+
+		setFormData(newFormData);
+		setLabels(newLabels);
 	};
 
 	const handleSubmit = async () => {
@@ -290,7 +351,9 @@ const handleAddField = (parentPath: string[]) => {
 		handleSubmit,
 		handleAddSection,
 		handleAddField,
-		handleMoveField,
+		handleMoveItem,
 		handleRemoveFieldOrSection,
+		handleBulkDelete,
+		handleBulkMove,
 	};
 };

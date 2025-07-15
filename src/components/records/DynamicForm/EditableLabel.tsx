@@ -53,7 +53,7 @@ const EditableLabel: React.FC<EditableLabelProps> = ({
                     aria-label="Save"
                     onClick={handleSave}
                     size="2xs"
-                    colorPalette="brand"
+                    colorPalette="green"
                     variant="outline"
                 >
                     <MdCheck />
@@ -62,7 +62,7 @@ const EditableLabel: React.FC<EditableLabelProps> = ({
                     aria-label="Cancel"
                     onClick={handleCancel}
                     size="2xs"
-                    colorPalette="red"
+                    colorPalette="orange"
                     variant="outline"
                 >
                     <MdClose />
@@ -72,7 +72,7 @@ const EditableLabel: React.FC<EditableLabelProps> = ({
     }
 
     return (
-        <Flex alignItems="center" gap={2}>
+        <Flex alignItems="center" gap={3}>
             <Box>{value}</Box>
             <IconButton
                 aria-label="Edit"
@@ -80,6 +80,7 @@ const EditableLabel: React.FC<EditableLabelProps> = ({
                 size="2xs"
                 rounded="full"
                 variant="outline"
+                colorPalette="green"
             >
                 <MdOutlineEdit />
             </IconButton>
