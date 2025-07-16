@@ -43,10 +43,6 @@ const RecentRecordsPane = () => {
         handleRetry,
         handleConfirmCrop,
         handleCancelCrop,
-        handleContinueDetails,
-        fileDescription,
-        recordGroup,
-        recordType,
     } = useFileUpload();
 
     useEffect(() => {
@@ -123,10 +119,6 @@ const RecentRecordsPane = () => {
                     onRetry={handleRetry}
                     handleConfirmCrop={handleConfirmCrop}
                     handleCancelCrop={handleCancelCrop}
-                    handleContinueDetails={handleContinueDetails}
-                    fileDescription={fileDescription}
-                    recordGroup={recordGroup}
-                    recordType={recordType}
                 />
             </EmptyState.Root>
         );

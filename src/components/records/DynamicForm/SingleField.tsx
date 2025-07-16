@@ -64,6 +64,7 @@ const SingleField: React.FC<SingleFieldProps> = ({
       borderColor={selectedItems.has(pathString) ? "secondary" : "none"}
       p="1"
       title={pathString}
+      cursor={isDragging ? "grabbing" : "grab"}
     >
       <Field.Root>
         <Field.Label htmlFor={pathString} gap="2" alignItems="center">
