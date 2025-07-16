@@ -38,7 +38,7 @@ const SingleField: React.FC<SingleFieldProps> = ({
 
   const [{ isDragging }, drag] = useDrag(() => ({
     type: 'field',
-item: { id: pathString.replace(/\./g, '_'), path: currentPath, type: 'field' },
+    item: { id: pathString.replace(/\./g, '_'), path: currentPath, type: 'field' },
     collect: (monitor) => ({
       isDragging: monitor.isDragging(),
     }),
@@ -63,12 +63,14 @@ item: { id: pathString.replace(/\./g, '_'), path: currentPath, type: 'field' },
       border={selectedItems.has(pathString) ? "2px dotted" : "none"}
       borderColor={selectedItems.has(pathString) ? "secondary" : "none"}
       p="1"
+      title={pathString}
     >
       <Field.Root>
         <Field.Label htmlFor={pathString} gap="2" alignItems="center">
           <Checkbox.Root
             checked={selectedItems.has(pathString)}
             onCheckedChange={() => toggleSelection(pathString)}
+            title="Select this item."
           >
             <Checkbox.HiddenInput />
             <Checkbox.Control />
@@ -87,8 +89,9 @@ item: { id: pathString.replace(/\./g, '_'), path: currentPath, type: 'field' },
               rounded="full"
               variant="outline"
               ml="auto"
+              title="Delete this field. Warning!! Destructive action."
             >
-              <MdDeleteOutline />
+              <MdDeleteOutline title="Delete this field. Warning!! Destructive action." />
             </IconButton>
           </Flex>
         </Field.Label>
@@ -97,6 +100,7 @@ item: { id: pathString.replace(/\./g, '_'), path: currentPath, type: 'field' },
           value={inputValue}
           onChange={(e) => setInputValue(e.target.value)}
           onBlur={() => onFieldChange(currentPath, inputValue as string)}
+          title="Click to edit value."
         />
       </Field.Root>
     </GridItem>

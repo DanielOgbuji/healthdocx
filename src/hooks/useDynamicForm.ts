@@ -25,8 +25,8 @@ export const useDynamicForm = (
 	useEffect(() => {
 		if (!recordId)return;
 
-		const autoSavedFormData = localStorage.getItem(`autosave_form_${recordId}`);
-		const autoSavedLabels = localStorage.getItem(`autosave_labels_${recordId}`);
+		const autoSavedFormData = sessionStorage.getItem(`autosave_form_${recordId}`);
+		const autoSavedLabels = sessionStorage.getItem(`autosave_labels_${recordId}`);
 
 		if (autoSavedFormData && autoSavedLabels) {
 			setFormData(JSON.parse(autoSavedFormData));
@@ -56,11 +56,11 @@ export const useDynamicForm = (
 		setAutoSaveStatus("Saving...");
 		const handler = setTimeout(() => {
 			if (recordId) {
-				localStorage.setItem(
+				sessionStorage.setItem(
 					`autosave_form_${recordId}`,
 					JSON.stringify(formData)
 				);
-				localStorage.setItem(
+				sessionStorage.setItem(
 					`autosave_labels_${recordId}`,
 					JSON.stringify(labels)
 				);

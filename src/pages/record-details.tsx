@@ -22,7 +22,7 @@ const RecordDetails = () => {
             return;
         }
 
-        const autoSavedData = localStorage.getItem(`autosave_form_${id}`);
+        const autoSavedData = sessionStorage.getItem(`autosave_form_${id}`);
         if (autoSavedData && !force) {
             setStructuredData(autoSavedData);
             setLoading(false);
@@ -33,7 +33,7 @@ const RecordDetails = () => {
             const response = await getPatientRecordByID(id);
             const data = response.data.structuredData;
             setStructuredData(data);
-            localStorage.setItem(`original_record_${id}`, data);
+            sessionStorage.setItem(`original_record_${id}`, data);
             setError(null);
             toaster.create({
                 title: "Record extracted successfully",
@@ -63,8 +63,8 @@ const RecordDetails = () => {
 
     const handleRevert = () => {
         if (id) {
-            localStorage.removeItem(`autosave_form_${id}`);
-            localStorage.removeItem(`autosave_labels_${id}`);
+            sessionStorage.removeItem(`autosave_form_${id}`);
+            sessionStorage.removeItem(`autosave_labels_${id}`);
             fetchRecord(true);
         }
     };

@@ -20,7 +20,7 @@ const MoveMenuItems: React.FC<MoveMenuItemsProps> = ({
       {Object.entries(data).map(([key, value]) => {
         if (typeof value === "object" && value !== null && !Array.isArray(value)) {
           const newPath = [...currentPath, key];
-          const pathString = newPath.join(".");
+          const pathString = newPath.join("_");
           const hasSubsections = Object.values(value).some(
             (v) => typeof v === "object" && v !== null && !Array.isArray(v)
           );

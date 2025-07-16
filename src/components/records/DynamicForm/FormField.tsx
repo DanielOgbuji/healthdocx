@@ -42,7 +42,7 @@ const pathString = path.join('_');
   const [{ isOver }, drop] = useDrop(() => ({
     accept: ['field', 'section'],
     drop: (item: { path: string[] }) => {
-      if (item.path.join('.') !== pathString) {
+      if (item.path.join('_') !== pathString) {
         onMoveItem(item.path, path);
       }
     },
@@ -79,6 +79,7 @@ const pathString = path.join('_');
         opacity={isDragging ? 0.5 : 1}
         border={selectedItems.has(pathString) ? "2px dotted" : "none"}
         borderColor={selectedItems.has(pathString) ? "primary" : "none"}
+        title={labels[pathString] || path[path.length - 1]}
       >
         <Flex
           bg={{
@@ -101,6 +102,7 @@ const pathString = path.join('_');
             <Checkbox.Root
               checked={selectedItems.has(pathString)}
               onCheckedChange={() => toggleSelection(pathString)}
+              title="Select this item."
             >
               <Checkbox.HiddenInput />
               <Checkbox.Control ml="2" />
@@ -120,8 +122,9 @@ const pathString = path.join('_');
               onClick={() => onAddSection(path)}
               variant="surface"
               colorPalette="green"
+              title="Add a subsection to this section."
             >
-              <MdAdd />
+              <MdAdd title="Add a subsection to this section." />
             </IconButton>
             <IconButton
               aria-label="Add Field"
@@ -129,8 +132,9 @@ const pathString = path.join('_');
               onClick={() => onAddField(path)}
               variant="surface"
               colorPalette="green"
+              title="Add a text field to this section."
             >
-              <MdTextFields />
+              <MdTextFields title="Add a text field to this section." />
             </IconButton>
             <IconButton
               aria-label="Delete Section"
@@ -138,8 +142,9 @@ const pathString = path.join('_');
               onClick={() => onRemoveFieldOrSection(path)}
               colorPalette="red"
               variant="surface"
+              title="Delete this section. Warning!! Destructive action."
             >
-              <MdDeleteOutline />
+              <MdDeleteOutline title="Delete this section. Warning!! Destructive action." />
             </IconButton>
           </Flex>
         </Flex>
@@ -148,7 +153,7 @@ const pathString = path.join('_');
             .filter(([, value]) => typeof value !== "object" || value === null || Array.isArray(value))
             .map(([key, value]) => {
               const currentPath = [...path, key];
-              const currentPathString = currentPath.join('.');
+              const currentPathString = currentPath.join('_');
               return (
                 <SingleField
                   key={currentPathString}
@@ -167,7 +172,7 @@ const pathString = path.join('_');
             .filter(([, value]) => typeof value === "object" && value !== null && !Array.isArray(value))
             .map(([key, value]) => {
               const currentPath = [...path, key];
-              const currentPathString = currentPath.join('.');
+              const currentPathString = currentPath.join('_');
               return (
                 <FormField
                   key={currentPathString}

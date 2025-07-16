@@ -139,7 +139,7 @@ export const buildPayload = (
 
 		return Object.keys(obj).reduce((acc, oldKey) => {
 			const currentPath = [...path, oldKey];
-			const pathString = currentPath.join(".");
+			const pathString = currentPath.join("_");
 
 			const stringToFormat = labels[pathString] || oldKey;
 			const newKey = stringToFormat;

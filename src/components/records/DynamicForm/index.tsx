@@ -166,8 +166,9 @@ const DynamicFormContent: React.FC<DynamicFormProps> = ({ structuredData, record
             size="sm"
             variant="surface"
             flex={{ base: "none", md: "1" }}
+            title="Add a section to the root."
           >
-            <MdAdd />
+            <MdAdd title="Add a section to the root." />
             Add Section
           </Button>
           <Button
@@ -175,8 +176,9 @@ const DynamicFormContent: React.FC<DynamicFormProps> = ({ structuredData, record
             size="sm"
             variant="surface"
             flex={{ base: "none", md: "1" }}
+            title="Add a text field to the root."
           >
-            <MdTextFields />
+            <MdTextFields title="Add a text field to the root." />
             Add Field
           </Button>
           <Button
@@ -189,8 +191,9 @@ const DynamicFormContent: React.FC<DynamicFormProps> = ({ structuredData, record
             disabled={selectedItems.size === 0}
             variant="outline"
             flex={{ base: "none", md: "1" }}
+            title="Delete selected item(s). Warning!! Destructive action."
           >
-            <MdDeleteOutline />
+            <MdDeleteOutline title="Delete selected item(s). Warning!! Destructive action." />
             Delete
           </Button>
           <Menu.Root>
@@ -200,8 +203,9 @@ const DynamicFormContent: React.FC<DynamicFormProps> = ({ structuredData, record
                 disabled={selectedItems.size === 0}
                 variant="outline"
                 flex={{ base: "none", md: "1" }}
+                title="Move selected item(s)."
               >
-                <MdOutlineMoveUp />
+                <MdOutlineMoveUp title="Move selected item(s)." />
                 Move
               </Button>
             </Menu.Trigger>
@@ -225,12 +229,12 @@ const DynamicFormContent: React.FC<DynamicFormProps> = ({ structuredData, record
             </Portal>
           </Menu.Root>
         </Flex>
-        <Grid templateColumns={{ base: "1fr", lg: "repeat(2, 1fr)" }} gap={4} w="full">
+        <Grid templateColumns={{ base: "1fr", lg: "repeat(2, 1fr)" }} gap={4} w="full" title="Root">
           {Object.entries(formData)
             .filter(([, value]) => typeof value !== "object" || value === null || Array.isArray(value))
             .map(([key, value]) => {
               const currentPath = [key];
-              const pathString = currentPath.join(".");
+              const pathString = currentPath.join("_");
               return (
                 <SingleField
                   key={pathString}
