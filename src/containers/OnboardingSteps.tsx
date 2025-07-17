@@ -5,6 +5,7 @@ import { StepsList } from "@/components/onboarding/StepsList";
 import { StepsContent } from "@/components/onboarding/StepsContent";
 import { useSelector } from 'react-redux';
 import type { RootState } from '@/store/store';
+import { useSearchParams } from "react-router";
 
 const FormOne = lazy(() => import("@/components/onboarding/FormOne"));
 const FormTwo = lazy(() => import("@/components/onboarding/FormTwo"));
@@ -23,6 +24,13 @@ const LoadingFallback = () => (
 
 const OnboardingSteps = () => {
     const [step, setStep] = useState(0);
+    const [searchParams] = useSearchParams();
+    useEffect(() => {
+        const startStep = searchParams.get("startStep");
+        if (startStep === "1") {
+            setStep(1);
+        }
+    }, [searchParams]);
     const completedSteps = useSelector((state: RootState) => state.onboarding.completedSteps);
     const userEmail = sessionStorage.getItem("onboardingEmail");
     const stepsData = [

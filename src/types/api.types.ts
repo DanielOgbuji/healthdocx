@@ -38,6 +38,15 @@ export interface PatientRecord {
 	uploadedAt: string;
 }
 
+export interface ApiErrorConfig {
+	data?:
+		| string
+		| {
+				email?: string;
+				password?: string;
+		  };
+}
+
 export interface ApiErrorResponse {
 	data?: {
 		message?: string;
@@ -48,4 +57,5 @@ export interface ApiErrorResponse {
 
 export interface ApiError extends Error {
 	response?: ApiErrorResponse;
+	config?: ApiErrorConfig;
 }

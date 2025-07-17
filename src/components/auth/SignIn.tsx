@@ -61,12 +61,23 @@ export default function SignIn() {
         } catch (err) {
             console.error('Form submission failed:', err);
             const apiError = err as ApiError;
-            toaster.create({
-                title: "Sign In Failed",
-                description: apiError.response?.data?.error ?? "An error occurred while signing you in. Please try again.",
-                type: "error",
-                duration: 5000,
-            })
+            if (apiError.response?.data?.error === "Account not verified. Please verify your email.") {
+                const data = typeof apiError.config?.data === "string"
+                    ? JSON.parse(apiError.config.data)
+                    : apiError.config?.data;
+
+                const email = data?.email ?? "";
+                sessionStorage.setItem("onboardingEmail", email);
+
+                navigate("/sign-up?startStep=1");
+            } else {
+                toaster.create({
+                    title: "Sign In Failed",
+                    description: apiError.response?.data?.error ?? "An error occurred while signing you in. Please try again.",
+                    type: "error",
+                    duration: 5000,
+                });
+            }
         } finally {
             reset()
         }

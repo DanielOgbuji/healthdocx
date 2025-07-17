@@ -9,6 +9,7 @@ import { completeStep } from "@/features/OnboardingSlice";
 import { INITIAL_RESEND_TIMER, MAX_RESEND_ATTEMPTS, RESEND_TIMER_INCREMENT } from '@/constants/formConstants';
 import { verifyEmail as verifyUserEmail, resendVerification as resendVerification } from "@/api/auth";
 import { type ApiError } from '@/types/api.types';
+import { useSearchParams } from "react-router";
 
 interface FormValues {
     pin: string[]
@@ -16,6 +17,7 @@ interface FormValues {
 
 export default function FormTwo() {
     const dispatch = useDispatch();
+    const [searchParams] = useSearchParams();
     const [resendTimer, setResendTimer] = useState(0);
     const [resendAttempts, setResendAttempts] = useState(0);
     const [otpError, setOtpError] = useState<string | null>(null);
@@ -28,7 +30,7 @@ export default function FormTwo() {
         reset,
         formState: { errors, isSubmitting }
     } = useForm<FormValues>({
-        defaultValues: { pin: ['', '', '', ''] }
+        defaultValues: { pin: ['', '', '', '', '', ''] }
     })
 
     const pin = watch('pin')
@@ -69,7 +71,7 @@ export default function FormTwo() {
                 type: "success",
             });
             dispatch(completeStep(1)); // Mark the second step as completed
-            reset({ pin: ['', '', '', ''] }) // Reset the form to default pin
+            reset({ pin: ['', '', '', '', '', ''] }) // Reset the form to default pin
         } catch (err) {
             console.error('Form submission failed:', err);
             const apiError = err as ApiError;
@@ -120,8 +122,37 @@ export default function FormTwo() {
         }
     }
 
+    useEffect(() => {
+        const startStep = searchParams.get("startStep");
+        if (startStep === "1") {
+            const resendCode = async () => {
+                try {
+                    // Call the resend verification API
+                    await resendVerification(email);
+                    console.log('Resending code...')
+                    toaster.create({
+                        duration: 3000,
+                        title: "Code has been resent",
+                        description: "Check your inbox or spam for code",
+                        type: "success",
+                    });
+                } catch (err) {
+                    console.error('Resend verification failed:', err);
+                    const apiError = err as ApiError;
+                    toaster.create({
+                        duration: 5000,
+                        title: "Failed to resend code",
+                        description: apiError.response?.data?.message || "An error occurred. Please try again.",
+                        type: "error",
+                    });
+                }
+            };
+            resendCode();
+        }
+    }, [searchParams, email]);
+
     return (
-        <form onSubmit={onSubmit} onReset={() => reset({ pin: ['', '', '', ''] })}>
+        <form onSubmit={onSubmit} onReset={() => reset({ pin: ['', '', '', '', '', ''] })}>
             <Fieldset.Root size="lg" width={{ base: "full", md: "lg" }} alignItems="center">
                 <Fieldset.Content>
                     <Field.Root invalid={!!errors.pin} alignItems="center">
@@ -140,7 +171,7 @@ export default function FormTwo() {
                                     >
                                         <PinInput.HiddenInput />
                                         <PinInput.Control>
-                                            {[0, 1, 2, 3].map(idx => (
+                                            {[0, 1, 2, 3, 4, 5].map(idx => (
                                                 <PinInput.Input key={idx} index={idx} />
                                             ))}
                                         </PinInput.Control>
