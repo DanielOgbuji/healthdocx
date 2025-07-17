@@ -9,6 +9,8 @@ import { completeStep } from "@/features/OnboardingSlice";
 import { INITIAL_RESEND_TIMER, MAX_RESEND_ATTEMPTS, RESEND_TIMER_INCREMENT } from '@/constants/formConstants';
 import { verifyEmail as verifyUserEmail, resendVerification as resendVerification } from "@/api/auth";
 import { type ApiError } from '@/types/api.types';
+//import { type AppDispatch } from "@/store/store";
+import { loginSuccess } from "@/features/authSlice";
 import { useSearchParams } from "react-router";
 
 interface FormValues {
@@ -70,6 +72,8 @@ export default function FormTwo() {
                 description: "Email verified successfully.",
                 type: "success",
             });
+            console.log('OTP verified successfully:', response);
+            dispatch(loginSuccess(response));
             dispatch(completeStep(1)); // Mark the second step as completed
             reset({ pin: ['', '', '', '', '', ''] }) // Reset the form to default pin
         } catch (err) {

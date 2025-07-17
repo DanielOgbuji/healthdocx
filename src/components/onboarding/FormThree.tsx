@@ -106,10 +106,8 @@ export default function FormThree() {
     const onSubmit = handleSubmit(async (data) => {
         try {
             // You may need to get userId from your auth context or redux store
-            const userId = Number(sessionStorage.getItem("userID"));
             const payload = {
                 ...data, // or map to correct value if needed
-                userId,
             };
             const response = await createInstitution(payload);
             console.log('Form submitted successfully:', response);

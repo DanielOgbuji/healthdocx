@@ -66,7 +66,8 @@ export default function FormOne() {
                 description: apiError.response?.data?.error ?? "An error occurred during registration. Please try again.",
                 type: "error",
                 duration: 5000,
-            })
+            });
+            console.error('Error details:', apiError.response?.data);
         }
     });
 

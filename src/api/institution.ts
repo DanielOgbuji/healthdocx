@@ -7,7 +7,6 @@ export interface CreateInstitutionPayload {
 	sizeRange: string;
 	location: string;
 	licenseNumber: string;
-	userId: number | undefined;
 }
 
 export const create = async (data: CreateInstitutionPayload) => {
