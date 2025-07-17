@@ -281,7 +281,7 @@ export const useDynamicForm = (
 
 		const payload = buildPayload(formData, labels);
 		try {
-			const response = await api.put(`/patient-records/${recordId}`, payload);
+			const response = await api.patch(`/patient-records/${recordId}`, payload);
 
 			if (response.status === 200) {
 				setSuccessMessage("Form submitted successfully!");
