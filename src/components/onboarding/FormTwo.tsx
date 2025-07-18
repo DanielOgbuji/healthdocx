@@ -126,9 +126,15 @@ export default function FormTwo() {
         }
     }
 
+    const [isMounted, setIsMounted] = useState(false);
+
     useEffect(() => {
-        const startStep = searchParams.get("startStep");
-        if (startStep === "1") {
+        setIsMounted(true);
+    }, []);
+
+    useEffect(() => {
+        const continueStep = searchParams.get("continueStep");
+        if (isMounted && continueStep === "1") {
             const resendCode = async () => {
                 try {
                     // Call the resend verification API
@@ -153,7 +159,7 @@ export default function FormTwo() {
             };
             resendCode();
         }
-    }, [searchParams, email]);
+    }, [searchParams, email, isMounted]);
 
     return (
         <form onSubmit={onSubmit} onReset={() => reset({ pin: ['', '', '', '', '', ''] })}>

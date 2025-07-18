@@ -26,8 +26,8 @@ const OnboardingSteps = () => {
     const [step, setStep] = useState(0);
     const [searchParams] = useSearchParams();
     useEffect(() => {
-        const startStep = searchParams.get("startStep");
-        if (startStep === "1") {
+        const continueStep = searchParams.get("continueStep");
+        if (continueStep === "1") {
             setStep(1);
         }
     }, [searchParams]);

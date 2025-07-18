@@ -69,7 +69,7 @@ export default function SignIn() {
                 const email = data?.email ?? "";
                 sessionStorage.setItem("onboardingEmail", email);
 
-                navigate("/sign-up?startStep=1");
+                navigate("/sign-up?continueStep=1");
             } else {
                 toaster.create({
                     title: "Sign In Failed",
