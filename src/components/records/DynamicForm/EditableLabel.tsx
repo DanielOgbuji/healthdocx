@@ -40,7 +40,7 @@ const EditableLabel: React.FC<EditableLabelProps> = ({
 
     if (isEditing) {
         return (
-            <Flex ref={ref} alignItems="end" gap={2}>
+            <Flex ref={ref} alignItems="end" gap={2} my="-2px">
                 <Input
                     value={value}
                     onChange={(e) => setValue(e.target.value)}
@@ -85,6 +85,7 @@ const EditableLabel: React.FC<EditableLabelProps> = ({
                 colorPalette="green"
                 title="Edit this label."
                 display="none"
+                my="-2px"
                 _groupHover={{ display: "flex" }}
             >
                 <MdOutlineEdit title="Edit this label." />

@@ -68,7 +68,7 @@ const SingleField: React.FC<SingleFieldProps> = ({
       className="group"
     >
       <Field.Root>
-        <Field.Label htmlFor={pathString} gap="2" alignItems="center" my="2px" _groupHover={{ my: "0" }}>
+        <Field.Label htmlFor={pathString} gap="2" alignItems="center">
           <Checkbox.Root
             checked={selectedItems.has(pathString)}
             onCheckedChange={() => toggleSelection(pathString)}
@@ -93,6 +93,7 @@ const SingleField: React.FC<SingleFieldProps> = ({
               rounded="full"
               variant="outline"
               ml="auto"
+              my="-2px"
               title="Delete this field. Warning!! Destructive action."
             >
               <MdDeleteOutline title="Delete this field. Warning!! Destructive action." />
