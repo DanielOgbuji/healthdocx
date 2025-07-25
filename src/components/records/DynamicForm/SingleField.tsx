@@ -106,6 +106,7 @@ const SingleField: React.FC<SingleFieldProps> = ({
           onChange={(e) => setInputValue(e.target.value)}
           onBlur={() => onFieldChange(currentPath, inputValue as string)}
           title="Click to edit value."
+          mt="2px"
         />
       </Field.Root>
     </GridItem>
