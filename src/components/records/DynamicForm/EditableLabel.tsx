@@ -4,9 +4,9 @@ import {
     Input,
     Flex,
     IconButton,
-  } from "@chakra-ui/react";
-  import { useOutsideClick } from "@/hooks/useOutsideClick";
-  import { MdOutlineEdit, MdCheck, MdClose } from "react-icons/md";
+} from "@chakra-ui/react";
+import { useOutsideClick } from "@/hooks/useOutsideClick";
+import { MdOutlineEdit, MdCheck, MdClose } from "react-icons/md";
 
 interface EditableLabelProps {
     initialValue: string;
@@ -22,10 +22,10 @@ const EditableLabel: React.FC<EditableLabelProps> = ({
     const ref = React.useRef<HTMLDivElement>(null);
 
     useOutsideClick(ref, () => {
-      if (isEditing) {
-        setValue(initialValue); // Reset on outside click
-        setIsEditing(false);
-      }
+        if (isEditing) {
+            setValue(initialValue); // Reset on outside click
+            setIsEditing(false);
+        }
     });
 
     const handleSave = () => {
@@ -84,6 +84,8 @@ const EditableLabel: React.FC<EditableLabelProps> = ({
                 variant="outline"
                 colorPalette="green"
                 title="Edit this label."
+                display="none"
+                _groupHover={{ display: "flex" }}
             >
                 <MdOutlineEdit title="Edit this label." />
             </IconButton>

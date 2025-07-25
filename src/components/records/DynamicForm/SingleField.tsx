@@ -65,9 +65,10 @@ const SingleField: React.FC<SingleFieldProps> = ({
       p="1"
       title={pathString}
       cursor={isDragging ? "grabbing" : "grab"}
+      className="group"
     >
       <Field.Root>
-        <Field.Label htmlFor={pathString} gap="2" alignItems="center">
+        <Field.Label htmlFor={pathString} gap="2" alignItems="center" my="2px" _groupHover={{ my: "0" }}>
           <Checkbox.Root
             checked={selectedItems.has(pathString)}
             onCheckedChange={() => toggleSelection(pathString)}
@@ -83,6 +84,8 @@ const SingleField: React.FC<SingleFieldProps> = ({
               onSave={(newLabel) => onLabelChange(pathString, newLabel)}
             />
             <IconButton
+              display="none"
+              _groupHover={{ display: "flex" }}
               aria-label="Delete Field"
               size="2xs"
               onClick={() => onRemoveFieldOrSection(currentPath)}
