@@ -19,6 +19,7 @@ export const useDynamicForm = (
 	const [error, setError] = useState("");
 	const [successMessage, setSuccessMessage] = useState("");
 	const [autoSaveStatus, setAutoSaveStatus] = useState("Saved");
+	const [newlyAddedPath, setNewlyAddedPath] = useState<string[] | null>(null);
 	const initialDataLoaded = useRef(false);
 
 	// Load initial data
@@ -118,6 +119,7 @@ export const useDynamicForm = (
 			[[...parentPath, newKey].join("_")]: `New Section ${newKey.split("_")[1]}`,
 		};
 		setLabels(newLabels);
+		setNewlyAddedPath([...parentPath, newKey]); // Set the path of the newly added section
 	};
 
 	const handleAddField = (parentPath: string[]) => {
@@ -324,5 +326,7 @@ export const useDynamicForm = (
 		handleRemoveFieldOrSection,
 		handleBulkDelete,
 		handleBulkMove,
+		newlyAddedPath,
+		setNewlyAddedPath,
 	};
 };

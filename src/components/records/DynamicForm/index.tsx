@@ -46,6 +46,8 @@ const DynamicFormContent: React.FC<DynamicFormProps> = ({ structuredData, record
     handleMoveItem,
     handleBulkDelete,
     handleBulkMove,
+    newlyAddedPath,
+    setNewlyAddedPath,
   } = useDynamicForm(structuredData, recordId);
   const { selectedItems, clearSelection } = useSelection();
 
@@ -264,6 +266,8 @@ const DynamicFormContent: React.FC<DynamicFormProps> = ({ structuredData, record
                   onAddField={handleAddField}
                   onRemoveFieldOrSection={handleRemoveFieldOrSection}
                   onMoveItem={handleMoveItem}
+                  newlyAddedPath={newlyAddedPath}
+                  setNewlyAddedPath={setNewlyAddedPath}
                 />
               );
             })}

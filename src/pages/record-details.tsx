@@ -105,7 +105,7 @@ const RecordDetails = () => {
     }
 
     return (
-        <Flex w="full" mt="72px" direction="column" p={{ xl: "6vw", lg: "6vw", md: "6vw", sm: "6vw", base: "4" }} pb={{ xl: "6vw", lg: "6vw", md: "6vw", sm: "6vw", base: "4" }}>
+        <Flex w="full" mt="72px" direction="column" p={{ xl: "6vw", lg: "6vw", md: "6vw", sm: "6vw", base: "4" }}>
             {structuredData && <DynamicForm structuredData={structuredData} recordId={id} onRevert={handleRevert} />}
         </Flex>
     );

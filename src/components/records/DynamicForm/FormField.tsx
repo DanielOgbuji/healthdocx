@@ -1,4 +1,4 @@
-import React, { useRef } from "react";
+import React, { useRef, useState } from "react";
 import { Box, Grid, GridItem, Flex, Heading, IconButton } from "@chakra-ui/react";
 import { useMergeRefs } from "@chakra-ui/hooks";
 import EditableLabel from "./EditableLabel";
@@ -20,6 +20,8 @@ interface FormFieldProps {
   onAddField: (path: string[]) => void;
   onRemoveFieldOrSection: (path: string[]) => void;
   onMoveItem: (fromPath: string[], toPath: string[]) => void;
+  newlyAddedPath: string[] | null;
+  setNewlyAddedPath: (path: string[] | null) => void;
 }
 
 const FormField: React.FC<FormFieldProps> = ({
@@ -33,11 +35,32 @@ const FormField: React.FC<FormFieldProps> = ({
   onAddField,
   onRemoveFieldOrSection,
   onMoveItem,
+  newlyAddedPath,
+  setNewlyAddedPath,
 }) => {
-const pathString = path.join('_');
+  const pathString = path.join('_');
   const { selectedItems, toggleSelection } = useSelection();
   const boxRef = useRef<HTMLDivElement>(null);
   const gridItemRef = useRef<HTMLDivElement>(null);
+  const [isHighlighted, setIsHighlighted] = useState(false);
+
+  React.useEffect(() => {
+    if (newlyAddedPath && newlyAddedPath.join('_') === pathString && boxRef.current) {
+      boxRef.current.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      setNewlyAddedPath(null); // Reset after scrolling
+      setIsHighlighted(true); // Trigger highlight after scroll
+    }
+  }, [newlyAddedPath, pathString, setNewlyAddedPath]);
+
+  React.useEffect(() => {
+    let timer: ReturnType<typeof setTimeout>;
+    if (isHighlighted) {
+      timer = setTimeout(() => {
+        setIsHighlighted(false);
+      }, 1000); // Highlight for 1 second
+    }
+    return () => clearTimeout(timer);
+  }, [isHighlighted]);
 
   const [{ isOver }, drop] = useDrop(() => ({
     accept: ['field', 'section'],
@@ -79,6 +102,7 @@ const pathString = path.join('_');
         opacity={isDragging ? 0.5 : 1}
         border={selectedItems.has(pathString) ? "2px dotted" : "none"}
         borderColor={selectedItems.has(pathString) ? "primary" : "none"}
+        transition="box-shadow 0.3s ease-in-out"
         title={labels[pathString] || path[path.length - 1]}
       >
         <Flex
@@ -95,8 +119,13 @@ const pathString = path.join('_');
           mb={depth === 0 ? 6 : 4}
           px="4"
           gap="4"
+          boxShadow={isHighlighted ? "0px 0px 30px var(--shadow-color)" : "none"}
+          scale={isHighlighted ? "1.01" : "1"}
+          transition="scale 0.25s ease-in-out"
+          shadowColor="onBackground/20"
           justifyContent="space-between"
           direction={{ base: "column", md: "row" }}
+          className="group"
         >
           <Flex gap="3" alignItems="center">
             <Checkbox.Root
@@ -186,6 +215,8 @@ const pathString = path.join('_');
                   onAddField={onAddField}
                   onRemoveFieldOrSection={onRemoveFieldOrSection}
                   onMoveItem={onMoveItem}
+                  newlyAddedPath={newlyAddedPath}
+                  setNewlyAddedPath={setNewlyAddedPath}
                 />
               );
             })}
