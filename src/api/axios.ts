@@ -22,7 +22,7 @@ api.interceptors.response.use(
 	(error) => {
 		if (error.response && error.response.status === 401) {
 			localStorage.removeItem("token");
-			//window.location.href = "/sign-in";
+			window.location.href = "/sign-in";
 			toaster.create({
 				title: "Your session timed out",
 				description: "Sign in to continue your session.",
