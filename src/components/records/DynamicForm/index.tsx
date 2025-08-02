@@ -26,10 +26,11 @@ import { useSelection } from '@/hooks/useSelection';
 interface DynamicFormProps {
   structuredData: string;
   recordId: string | undefined;
+  ocrText: string | null;
   onRevert: () => void;
 }
 
-const DynamicFormContent: React.FC<DynamicFormProps> = ({ structuredData, recordId, onRevert }) => {
+const DynamicFormContent: React.FC<DynamicFormProps> = ({ structuredData, recordId, ocrText, onRevert }) => {
   const {
     formData,
     labels,
@@ -48,7 +49,7 @@ const DynamicFormContent: React.FC<DynamicFormProps> = ({ structuredData, record
     handleBulkMove,
     newlyAddedPath,
     setNewlyAddedPath,
-  } = useDynamicForm(structuredData, recordId);
+  } = useDynamicForm(structuredData, recordId, ocrText);
   const { selectedItems, clearSelection } = useSelection();
 
   const [selectedGroup, setSelectedGroup] = useState("");

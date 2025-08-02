@@ -124,7 +124,8 @@ type JsonValue =
 
 export const buildPayload = (
 	data: Record<string, unknown>,
-	labels: Record<string, string>
+	labels: Record<string, string>,
+	ocrText: string | null
 ): Record<string, unknown> => {
 	const transform = (obj: JsonValue, path: string[] = []): JsonValue => {
 		if (typeof obj !== "object" || obj === null) {
@@ -154,5 +155,12 @@ export const buildPayload = (
 		}, {} as { [key: string]: JsonValue });
 	};
 
-	return transform(data as JsonValue) as Record<string, unknown>;
+	const structuredData = transform(data as JsonValue) as Record<string, unknown>;
+
+	return {
+		data: {
+			structuredData: structuredData,
+			ocrText: ocrText,
+		},
+	};
 };

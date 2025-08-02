@@ -2,8 +2,10 @@ import {
     Button,
     ButtonGroup,
     EmptyState,
+    Flex,
     VStack,
     Box,
+    Icon,
     Image,
     Spinner,
     Text,
@@ -20,6 +22,8 @@ import { useEffect, useState } from "react";
 import { getPatientRecords } from "@/api/patient-records";
 import type { PatientRecord } from "@/types/api.types";
 import RecentRecordCard from "./RecentRecordCard";
+import { FiAlertTriangle } from "react-icons/fi"
+import { RxReload } from "react-icons/rx"
 
 const RecentRecordsPane = () => {
     const { colorMode } = useColorMode();
@@ -45,18 +49,19 @@ const RecentRecordsPane = () => {
         handleCancelCrop,
     } = useFileUpload();
 
-    useEffect(() => {
-        const fetchRecords = async () => {
-            try {
-                const data = await getPatientRecords();
-                setRecords(data);
-            } catch {
-                setError("Failed to fetch patient records.");
-            } finally {
-                setLoading(false);
-            }
-        };
+    const fetchRecords = async () => {
+        try {
+            const data = await getPatientRecords();
+            setRecords(data);
+            setError(null); // Clear any previous errors on successful fetch
+        } catch {
+            setError("Failed to fetch patient records.");
+        } finally {
+            setLoading(false);
+        }
+    };
 
+    useEffect(() => {
         fetchRecords();
     }, []);
 
@@ -73,9 +78,25 @@ const RecentRecordsPane = () => {
 
     if (error) {
         return (
-            <VStack>
-                <Text color="red.500">{error}</Text>
-            </VStack>
+            <Stack flexGrow="1" height="100%" alignItems="center" justifyContent="center" mt="12">
+                <Flex justifyContent="center" alignItems="center" direction="column" gap="6" w="full">
+                    <Flex p="2" bgColor="bg.warning" rounded="md" borderColor="fg.warning" borderWidth="1px">
+                        <Icon as={FiAlertTriangle} size="2xl" color="fg.warning" m="2" />
+                    </Flex>
+                    <Flex direction="column" justifyContent="center" alignItems="center" gap="3" px={{ mdDown: "8" }}>
+                        <Text fontWeight="bold" fontSize="lg" textAlign="center" lineHeight="moderate">Something went wrong...</Text>
+                        <Text color="outline" textWrap="pretty" textAlign="center">{error}</Text>
+                    </Flex>
+                    <Flex gap="4" justifyContent="center" width="full" colorPalette="brand" direction={{ base: "row", mdDown: "column" }} px={{ mdDown: "8" }}>
+                        <Button variant="outline" size="sm">
+                            <Box as="span" fontSize="sm">Contact Support</Box>
+                        </Button>
+                        <Button variant="solid" size="sm" onClick={() => fetchRecords()}>
+                            <RxReload /> <Box as="span" fontSize="sm">Retry</Box>
+                        </Button>
+                    </Flex>
+                </Flex>
+            </Stack>
         );
     }
 
