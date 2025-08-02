@@ -1,5 +1,6 @@
 import { useState, useEffect, useRef } from "react";
 import { api } from "@/api/axios";
+import { type ApiError } from "@/types/api.types";
 import { toaster } from "@/components/ui/toaster";
 import {
 	updateNested,
@@ -10,8 +11,9 @@ import {
 } from "@/utils/dynamicFormUtils";
 
 export const useDynamicForm = (
-	structuredData: string,
-	recordId: string | undefined
+	structuredData: string | Record<string, unknown>,
+	recordId: string | undefined,
+	ocrText: string | null
 ) => {
 	const [formData, setFormData] = useState<Record<string, unknown>>({});
 	const [labels, setLabels] = useState<Record<string, string>>({});
@@ -34,11 +36,15 @@ export const useDynamicForm = (
 			setLabels(JSON.parse(autoSavedLabels));
 		} else {
 			try {
-				const cleanData = structuredData
-					.replace(/^```json\n/, "")
-					.replace(/\n```$/, "");
-				const parsed = JSON.parse(cleanData);
-				setFormData(parsed);
+				if (typeof structuredData === "string") {
+					const cleanData = structuredData
+						.replace(/^```json\n/, "")
+						.replace(/\n```$/, "");
+					const parsed = JSON.parse(cleanData);
+					setFormData(parsed);
+				} else {
+					setFormData(structuredData as Record<string, unknown>);
+				}
 				setLabels({}); // Reset labels when data changes
 			} catch (e) {
 				console.error("Error parsing structuredData:", e);
@@ -281,7 +287,7 @@ export const useDynamicForm = (
 		setError("");
 		setSuccessMessage("");
 
-		const payload = buildPayload(formData, labels);
+		const payload = buildPayload(formData, labels, ocrText);
 		try {
 			const response = await api.patch(`/patient-records/${recordId}`, payload);
 
@@ -295,11 +301,15 @@ export const useDynamicForm = (
 					duration: 3000,
 				});
 			} else {
-				setError(`Submission failed: ${response.statusText}`);
+				setError(`Submission failed: ${response.data.error}`);
 				console.error("Submission failed:", response, payload);
 			}
 		} catch (error: unknown) {
-			if (error instanceof Error) {
+			const apiError = error as ApiError;
+			if (apiError.response && apiError.response.data?.error) {
+				setError(`Submission failed: ${apiError.response.data.error}`);
+				console.error("Submission failed:", error, payload);
+			} else if (error instanceof Error) {
 				setError(`Submission failed: ${error.message}`);
 				console.error("Submission failed:", error, payload);
 			} else {

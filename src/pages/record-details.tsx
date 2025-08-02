@@ -13,6 +13,7 @@ const RecordDetails = () => {
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
     const [structuredData, setStructuredData] = useState<string | null>(null);
+    const [ocrText, setOcrText] = useState<string | null>(null);
 
     const fetchRecord = useCallback(async (force = false) => {
         setLoading(true);
@@ -23,8 +24,10 @@ const RecordDetails = () => {
         }
 
         const autoSavedData = sessionStorage.getItem(`autosave_form_${id}`);
-        if (autoSavedData && !force) {
+        const autoSavedOcrText = sessionStorage.getItem(`autosave_ocr_text_${id}`);
+        if (autoSavedData && autoSavedOcrText && !force) {
             setStructuredData(autoSavedData);
+            setOcrText(autoSavedOcrText);
             setLoading(false);
             return;
         }
@@ -32,8 +35,11 @@ const RecordDetails = () => {
         try {
             const response = await getPatientRecordByID(id);
             const data = response.data.structuredData;
+            const extractedOcrText = response.data.ocrText;
             setStructuredData(data);
+            setOcrText(extractedOcrText);
             sessionStorage.setItem(`original_record_${id}`, data);
+            sessionStorage.setItem(`original_ocr_text_${id}`, extractedOcrText);
             setError(null);
             toaster.create({
                 title: "Record extracted successfully",
@@ -65,6 +71,7 @@ const RecordDetails = () => {
         if (id) {
             sessionStorage.removeItem(`autosave_form_${id}`);
             sessionStorage.removeItem(`autosave_labels_${id}`);
+            sessionStorage.removeItem(`autosave_ocr_text_${id}`);
             fetchRecord(true);
         }
     };
@@ -106,7 +113,7 @@ const RecordDetails = () => {
 
     return (
         <Flex w="full" mt="72px" direction="column" p={{ xl: "6vw", lg: "6vw", md: "6vw", sm: "6vw", base: "4" }}>
-            {structuredData && <DynamicForm structuredData={structuredData} recordId={id} onRevert={handleRevert} />}
+            {structuredData && <DynamicForm structuredData={structuredData} recordId={id} ocrText={ocrText} onRevert={handleRevert} />}
         </Flex>
     );
 };
