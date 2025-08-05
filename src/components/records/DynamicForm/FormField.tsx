@@ -1,5 +1,5 @@
 import React, { useRef, useState } from "react";
-import { Box, Grid, GridItem, Flex, Heading, IconButton } from "@chakra-ui/react";
+import { Box, Grid, GridItem, Flex, Heading, IconButton, Checkbox } from "@chakra-ui/react";
 import { useMergeRefs } from "@chakra-ui/hooks";
 import EditableLabel from "./EditableLabel";
 import SingleField from "./SingleField";
@@ -7,7 +7,6 @@ import { MdAdd, MdTextFields, MdDeleteOutline } from "react-icons/md";
 import { DragHandle } from "./DragHandle";
 import { useDrag, useDrop } from "react-dnd";
 import { useSelection } from "@/hooks/useSelection";
-import { Checkbox } from "@chakra-ui/react";
 
 interface FormFieldProps {
   depth?: number;
