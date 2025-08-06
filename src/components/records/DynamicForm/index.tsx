@@ -11,14 +11,15 @@ import {
   Grid,
   Menu,
   Portal,
-  Kbd
+  Kbd,
+  Tag
 } from "@chakra-ui/react";
 import { useDynamicForm } from "@/hooks/useDynamicForm";
 import FormField from "./FormField";
 import SingleField from "./SingleField";
 import MoveMenuItems from "./MoveMenuItems";
 import { recordGroups, recordTypes } from "@/constants/recordOptions";
-import { MdOutlineCloudDone, MdOutlineFileUpload, MdOutlineUndo, MdAdd, MdTextFields, MdDeleteOutline, MdOutlineMoveUp, MdOutlineRestore } from "react-icons/md";
+import { MdOutlineCloudDone, MdOutlineFileUpload, MdOutlineUndo, MdAdd, MdTextFields, MdDeleteOutline, MdOutlineMoveUp, MdOutlineRestore, MdOutlineAccountTree } from "react-icons/md";
 import { DndProvider, useDrop } from 'react-dnd';
 import { HTML5Backend } from 'react-dnd-html5-backend';
 import { SelectionProvider } from '@/contexts/SelectionProvider';
@@ -298,50 +299,60 @@ const DynamicFormContent: React.FC<DynamicFormProps> = ({ structuredData, record
               </Portal>
             </Menu.Root>
           </Flex>
-          <Grid ref={mergedDropRefs} templateColumns={{ base: "1fr", lg: "repeat(2, 1fr)" }} gap={4} w="full" title="Root">
-            {Object.entries(formData)
-              .filter(([, value]) => typeof value !== "object" || value === null || Array.isArray(value))
-              .map(([key, value]) => {
-                const currentPath = [key];
-                const pathString = currentPath.join("_");
-                return (
-                  <SingleField
-                    key={pathString}
-                    fieldKey={key}
-                    value={value}
-                    currentPath={currentPath}
-                    pathString={pathString}
-                    onFieldChange={handleFieldChange}
-                    labels={labels}
-                    onLabelChange={handleLabelChange}
-                    onRemoveFieldOrSection={handleRemoveFieldOrSection}
-                  />
-                );
-              })}
-            {Object.entries(formData)
-              .filter(([, value]) => typeof value === "object" && value !== null && !Array.isArray(value))
-              .map(([key, value]) => {
-                return (
-                  <FormField
-                    key={key}
-                    data={value as Record<string, unknown>}
-                    path={[key]}
-                    onFieldChange={handleFieldChange}
-                    labels={labels}
-                    onLabelChange={handleLabelChange}
-                    onAddSection={handleAddSection}
-                    onAddField={handleAddField}
-                    onRemoveFieldOrSection={handleRemoveFieldOrSection}
-                    onMoveItem={handleMoveItem}
-                    newlyAddedPath={newlyAddedPath}
-                    setNewlyAddedPath={setNewlyAddedPath}
-                    isCollapsed={isCollapsed}
-                    toggleCollapse={toggleCollapse}
-                  />
+          <Flex direction="column">
+            <Flex w="full" justifyContent="center" mb="-5">
+              <Tag.Root colorPalette="green">
+                <Tag.StartElement>
+                  <MdOutlineAccountTree />
+                </Tag.StartElement>
+                <Tag.Label>Root</Tag.Label>
+              </Tag.Root>
+            </Flex>
+            <Grid ref={mergedDropRefs} templateColumns={{ base: "1fr", lg: "repeat(2, 1fr)" }} gap={4} w="full" title="Root" pt="9">
+              {Object.entries(formData)
+                .filter(([, value]) => typeof value !== "object" || value === null || Array.isArray(value))
+                .map(([key, value]) => {
+                  const currentPath = [key];
+                  const pathString = currentPath.join("_");
+                  return (
+                    <SingleField
+                      key={pathString}
+                      fieldKey={key}
+                      value={value}
+                      currentPath={currentPath}
+                      pathString={pathString}
+                      onFieldChange={handleFieldChange}
+                      labels={labels}
+                      onLabelChange={handleLabelChange}
+                      onRemoveFieldOrSection={handleRemoveFieldOrSection}
+                    />
+                  );
+                })}
+              {Object.entries(formData)
+                .filter(([, value]) => typeof value === "object" && value !== null && !Array.isArray(value))
+                .map(([key, value]) => {
+                  return (
+                    <FormField
+                      key={key}
+                      data={value as Record<string, unknown>}
+                      path={[key]}
+                      onFieldChange={handleFieldChange}
+                      labels={labels}
+                      onLabelChange={handleLabelChange}
+                      onAddSection={handleAddSection}
+                      onAddField={handleAddField}
+                      onRemoveFieldOrSection={handleRemoveFieldOrSection}
+                      onMoveItem={handleMoveItem}
+                      newlyAddedPath={newlyAddedPath}
+                      setNewlyAddedPath={setNewlyAddedPath}
+                      isCollapsed={isCollapsed}
+                      toggleCollapse={toggleCollapse}
+                    />
 
-                );
-              })}
-          </Grid>
+                  );
+                })}
+            </Grid>
+          </Flex>
         </VStack>
       </Flex>
     </>

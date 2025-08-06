@@ -117,7 +117,7 @@ export const useDynamicForm = (
 				);
 				setAutoSaveStatus("Saved");
 			}
-		}, 1000);
+		}, 500);
 		return () => clearTimeout(handler);
 	}, [formData, labels, recordId]);
 
@@ -127,14 +127,25 @@ export const useDynamicForm = (
 	};
 
 	const handleFieldChange = (path: string[], value: string) => {
-		pushToUndoStack();
-		const newFormData = updateNested({ ...formData }, path, value);
-		setFormData(newFormData);
+		const currentValue = getNestedValue(formData, path);
+
+		// Normalize null/undefined to empty string for comparison
+		const normalizedCurrentValue = currentValue === null || currentValue === undefined ? "" : String(currentValue);
+		const normalizedNewValue = value === null || value === undefined ? "" : String(value);
+
+		if (normalizedCurrentValue !== normalizedNewValue) {
+			pushToUndoStack();
+			const newFormData = updateNested({ ...formData }, path, value);
+			setFormData(newFormData);
+		}
 	};
 
 	const handleLabelChange = (path: string, label: string) => {
-		pushToUndoStack();
-		setLabels({ ...labels, [path]: label });
+		// Only push to undo stack if the label has actually changed
+		if (labels[path] !== label) {
+			pushToUndoStack();
+			setLabels({ ...labels, [path]: label });
+		}
 	};
 
 	const handleAddSection = (parentPath: string[]) => {
