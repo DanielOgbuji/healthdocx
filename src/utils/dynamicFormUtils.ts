@@ -1,3 +1,5 @@
+export const PATH_SEPARATOR = "::";
+
 // Helper function to update nested object
 export const updateNested = (
 	obj: Record<string, unknown>,
@@ -148,7 +150,7 @@ export const buildPayload = (
 
 		return Object.keys(obj).reduce((acc, oldKey) => {
 			const currentPath = [...path, oldKey];
-			const pathString = currentPath.join("_");
+			const pathString = currentPath.join(PATH_SEPARATOR);
 
 			const stringToFormat = labels[pathString] || oldKey;
 			const newKey = stringToFormat;

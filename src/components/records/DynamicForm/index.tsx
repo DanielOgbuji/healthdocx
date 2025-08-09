@@ -25,6 +25,7 @@ import { HTML5Backend } from 'react-dnd-html5-backend';
 import { SelectionProvider } from '@/contexts/SelectionProvider';
 import { useSelection } from '@/hooks/useSelection';
 import { useMergeRefs } from "@chakra-ui/hooks";
+import { PATH_SEPARATOR } from "@/utils/dynamicFormUtils";
 
 interface DynamicFormProps {
   structuredData: string;
@@ -100,11 +101,17 @@ const DynamicFormContent: React.FC<DynamicFormProps> = ({ structuredData, record
         e.preventDefault();
         redo();
       }
+
+      if (e.key === 'Delete' && selectedItems.size > 0) {
+        e.preventDefault();
+        handleBulkDelete(selectedItems);
+        clearSelection();
+      }
     };
 
     window.addEventListener("keydown", handleKeyDown);
     return () => window.removeEventListener("keydown", handleKeyDown);
-  }, [undo, redo]);
+  }, [undo, redo, handleBulkDelete, selectedItems, clearSelection]);
 
 
   return (
@@ -314,7 +321,7 @@ const DynamicFormContent: React.FC<DynamicFormProps> = ({ structuredData, record
                 .filter(([, value]) => typeof value !== "object" || value === null || Array.isArray(value))
                 .map(([key, value]) => {
                   const currentPath = [key];
-                  const pathString = currentPath.join("_");
+                  const pathString = currentPath.join(PATH_SEPARATOR);
                   return (
                     <SingleField
                       key={pathString}

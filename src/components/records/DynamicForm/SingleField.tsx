@@ -2,12 +2,13 @@ import React, { useState, useEffect, useRef } from "react";
 import { Input, GridItem, Field, Flex, Float, Circle } from "@chakra-ui/react";
 //import { useMergeRefs } from "@chakra-ui/hooks";
 import EditableLabel from "./EditableLabel";
-import { IconButton } from "@chakra-ui/react";
-import { MdDeleteOutline } from "react-icons/md";
+import { IconButton, Icon } from "@chakra-ui/react";
+import { MdDeleteOutline, MdOutlineKeyboardDoubleArrowDown } from "react-icons/md";
 import { DragHandle } from "./DragHandle";
 import { useDrag, useDrop } from "react-dnd";
 import { useSelection } from "@/hooks/useSelection";
 import { Checkbox } from "@chakra-ui/react";
+import { PATH_SEPARATOR } from "@/utils/dynamicFormUtils";
 
 interface SingleFieldProps {
   fieldKey: string;
@@ -40,19 +41,20 @@ const SingleField: React.FC<SingleFieldProps> = ({
 
   const [{ isDragging }, drag] = useDrag(() => ({
     type: 'field',
-    item: { id: pathString.replace(/\./g, '_'), path: currentPath, type: 'field' },
+    item: { id: pathString.replace(/\./g, PATH_SEPARATOR), path: currentPath, type: 'field' },
     collect: (monitor) => ({
       isDragging: monitor.isDragging(),
     }),
   }));
 
-  const [{ isOver }, drop] = useDrop(() => ({
+  const [{ isOver, draggedItem }, drop] = useDrop(() => ({
     accept: ['field', 'section'],
     drop: (item: { path: string[] }) => {
       onMoveItem(item.path, currentPath);
     },
     collect: (monitor) => ({
       isOver: monitor.isOver(),
+      draggedItem: monitor.getItem() as { path: string[] } | null,
     }),
   }));
 
@@ -122,10 +124,10 @@ const SingleField: React.FC<SingleFieldProps> = ({
             title="Click to edit value."
             mt="2px"
           />
-          {isOver && (
+          {isOver && draggedItem && (
             <Float offset="1">
-              <Circle size="5" bg="red" color="white">
-                3
+              <Circle size="6" bg="primary/40" color="white" borderStyle="solid" borderColor="primary" borderWidth="1px">
+                <Icon as={MdOutlineKeyboardDoubleArrowDown} size="sm" />
               </Circle>
             </Float>
           )}

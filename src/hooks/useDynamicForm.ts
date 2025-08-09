@@ -9,6 +9,7 @@ import {
 	removeNested,
 	insertNested,
 	getNestedValue,
+	PATH_SEPARATOR,
 } from "@/utils/dynamicFormUtils";
 
 export const useDynamicForm = (
@@ -245,7 +246,7 @@ export const useDynamicForm = (
 			);
 			const newLabels = {
 				...prevState.labels,
-				[[...parentPath, newKey].join("_")]: `New Section ${
+				[[...parentPath, newKey].join(PATH_SEPARATOR)]: `New Section ${
 					newKey.split("_")[1]
 				}`,
 			};
@@ -273,7 +274,7 @@ export const useDynamicForm = (
 			);
 			const newLabels = {
 				...prevState.labels,
-				[[...parentPath, newKey].join("_")]: `New Field ${
+				[[...parentPath, newKey].join(PATH_SEPARATOR)]: `New Field ${
 					newKey.split("_")[1]
 				}`,
 			};
@@ -292,11 +293,11 @@ export const useDynamicForm = (
 		setFormState((prevState) => {
 			const itemKey = fromPath[fromPath.length - 1];
 			const sourcePath = fromPath.slice(0, -1);
-			const targetPathString = toPath.join("_");
+			const targetPathString = toPath.join(PATH_SEPARATOR);
 
 			if (
-				sourcePath.join("_") === targetPathString ||
-				targetPathString.startsWith(fromPath.join("_"))
+				sourcePath.join(PATH_SEPARATOR) === targetPathString ||
+				targetPathString.startsWith(fromPath.join(PATH_SEPARATOR))
 			) {
 				return prevState;
 			}
@@ -337,6 +338,21 @@ export const useDynamicForm = (
 				}
 				insertIndex = keys.indexOf(toItemKey);
 				if (insertIndex === -1) insertIndex = keys.length;
+
+				// Adjust insertIndex if moving an item from an earlier position to a later position within the same parent
+				const sourceParentPath = fromPath.slice(0, -1);
+				if (sourceParentPath.join(PATH_SEPARATOR) === toParentPath.join(PATH_SEPARATOR)) {
+					const sourceParent = getNestedValue(prevState.formData, sourceParentPath) as Record<string, unknown>;
+					if (sourceParent) {
+						const sourceKeys = Object.keys(sourceParent);
+						const originalFromIndex = sourceKeys.indexOf(itemKey);
+						const originalToIndex = sourceKeys.indexOf(toItemKey);
+
+						if (originalFromIndex !== -1 && originalToIndex !== -1 && originalFromIndex < originalToIndex) {
+							insertIndex += 1;
+						}
+					}
+				}
 			}
 
 			const newFormData = insertNested(
@@ -349,8 +365,8 @@ export const useDynamicForm = (
 
 			// --- Labels Calculation ---
 			const newLabels = { ...prevState.labels };
-			const oldPathStr = fromPath.join("_");
-			const newPathStr = [...toParentPath, itemKey].join("_");
+			const oldPathStr = fromPath.join(PATH_SEPARATOR);
+			const newPathStr = [...toParentPath, itemKey].join(PATH_SEPARATOR);
 
 			// Move the label for the item itself
 			if (newLabels[oldPathStr]) {
@@ -360,8 +376,8 @@ export const useDynamicForm = (
 
 			// Move labels for all children of the item
 			Object.keys(newLabels).forEach((key) => {
-				if (key.startsWith(`${oldPathStr}_`)) {
-					const newKey = key.replace(`${oldPathStr}_`, `${newPathStr}_`);
+				if (key.startsWith(`${oldPathStr}${PATH_SEPARATOR}`)) {
+					const newKey = key.replace(`${oldPathStr}${PATH_SEPARATOR}`, `${newPathStr}${PATH_SEPARATOR}`);
 					newLabels[newKey] = newLabels[key];
 					delete newLabels[key];
 				}
@@ -381,9 +397,9 @@ export const useDynamicForm = (
 		setFormState((prevState) => {
 			const newFormData = removeNested({ ...prevState.formData }, path);
 			const newLabels = { ...prevState.labels };
-			const pathString = path.join("_");
+			const pathString = path.join(PATH_SEPARATOR);
 			delete newLabels[pathString];
-			const prefix = `${pathString}_`;
+			const prefix = `${pathString}${PATH_SEPARATOR}`;
 			Object.keys(newLabels).forEach((key) => {
 				if (key.startsWith(prefix)) {
 					delete newLabels[key];
@@ -405,10 +421,10 @@ export const useDynamicForm = (
 			let newFormData = { ...prevState.formData };
 			const newLabels = { ...prevState.labels };
 			paths.forEach((pathString) => {
-				const path = pathString.split("_");
+				const path = pathString.split(PATH_SEPARATOR);
 				newFormData = removeNested(newFormData, path);
 				delete newLabels[pathString];
-				const prefix = `${pathString}_`;
+				const prefix = `${pathString}${PATH_SEPARATOR}`;
 				Object.keys(newLabels).forEach((key) => {
 					if (key.startsWith(prefix)) {
 						delete newLabels[key];
@@ -436,8 +452,8 @@ export const useDynamicForm = (
 			);
 
 			for (const pathString of sortedPaths) {
-				const fromPath = pathString.split("_");
-				const parentPathStr = fromPath.slice(0, -1).join("_");
+				const fromPath = pathString.split(PATH_SEPARATOR);
+				const parentPathStr = fromPath.slice(0, -1).join(PATH_SEPARATOR);
 				if (paths.has(parentPathStr)) continue;
 
 				const itemKey = fromPath[fromPath.length - 1];
@@ -445,7 +461,7 @@ export const useDynamicForm = (
 				if (itemValue === undefined) continue;
 
 				const sourcePath = fromPath.slice(0, -1);
-				if (sourcePath.join("_") === destinationPath.join("_")) continue;
+				if (sourcePath.join(PATH_SEPARATOR) === destinationPath.join(PATH_SEPARATOR)) continue;
 
 				newFormData = removeNested(newFormData, fromPath);
 				const toParent = getNestedValue(
@@ -461,15 +477,15 @@ export const useDynamicForm = (
 					insertIndex
 				);
 
-				const oldPath = fromPath.join("_");
-				const newPath = [...destinationPath, itemKey].join("_");
+				const oldPath = fromPath.join(PATH_SEPARATOR);
+				const newPath = [...destinationPath, itemKey].join(PATH_SEPARATOR);
 				if (newLabels[oldPath]) {
 					newLabels[newPath] = newLabels[oldPath];
 					delete newLabels[oldPath];
 				}
 				Object.keys(newLabels).forEach((key) => {
-					if (key.startsWith(`${oldPath}_`)) {
-						const newKey = key.replace(`${oldPath}_`, `${newPath}_`);
+					if (key.startsWith(`${oldPath}${PATH_SEPARATOR}`)) {
+						const newKey = key.replace(`${oldPath}${PATH_SEPARATOR}`, `${newPath}${PATH_SEPARATOR}`);
 						newLabels[newKey] = newLabels[key];
 						delete newLabels[key];
 					}

@@ -7,6 +7,7 @@ import { MdAdd, MdTextFields, MdDeleteOutline, MdExpandMore, MdExpandLess } from
 import { DragHandle } from "./DragHandle";
 import { useDrag, useDrop } from "react-dnd";
 import { useSelection } from "@/hooks/useSelection";
+import { PATH_SEPARATOR } from "@/utils/dynamicFormUtils";
 
 interface FormFieldProps {
   depth?: number;
@@ -41,14 +42,14 @@ const FormField: React.FC<FormFieldProps> = ({
   isCollapsed,
   toggleCollapse
 }) => {
-  const pathString = path.join('_');
+  const pathString = path.join(PATH_SEPARATOR);
   const { selectedItems, toggleSelection } = useSelection();
   const boxRef = useRef<HTMLDivElement>(null);
   const gridItemRef = useRef<HTMLDivElement>(null);
   const [isHighlighted, setIsHighlighted] = useState(false);
 
   React.useEffect(() => {
-    if (newlyAddedPath && newlyAddedPath.join('_') === pathString && boxRef.current) {
+    if (newlyAddedPath && newlyAddedPath.join(PATH_SEPARATOR) === pathString && boxRef.current) {
       boxRef.current.scrollIntoView({ behavior: 'smooth', block: 'center' });
       setNewlyAddedPath(null); // Reset after scrolling
       setIsHighlighted(true); // Trigger highlight after scroll
@@ -71,7 +72,7 @@ const FormField: React.FC<FormFieldProps> = ({
       if (monitor.didDrop()) {
         return; // If a child has already handled the drop, do nothing
       }
-      if (item.path.join('_') !== pathString) {
+      if (item.path.join(PATH_SEPARATOR) !== pathString) {
         onMoveItem(item.path, path);
       }
     },
@@ -215,7 +216,7 @@ const FormField: React.FC<FormFieldProps> = ({
                 .filter(([, value]) => typeof value !== "object" || value === null || Array.isArray(value))
                 .map(([key, value]) => {
                   const currentPath = [...path, key];
-                  const currentPathString = currentPath.join('_');
+                  const currentPathString = currentPath.join(PATH_SEPARATOR);
                   return (
                     <SingleField
                       key={currentPathString}
@@ -235,7 +236,7 @@ const FormField: React.FC<FormFieldProps> = ({
                 .filter(([, value]) => typeof value === "object" && value !== null && !Array.isArray(value))
                 .map(([key, value]) => {
                   const currentPath = [...path, key];
-                  const currentPathString = currentPath.join('_');
+                  const currentPathString = currentPath.join(PATH_SEPARATOR);
                   return (
                     <FormField
                       key={currentPathString}
