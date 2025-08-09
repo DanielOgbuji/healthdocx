@@ -67,7 +67,10 @@ const FormField: React.FC<FormFieldProps> = ({
 
   const [{ isOver }, drop] = useDrop(() => ({
     accept: ['field', 'section'],
-    drop: (item: { path: string[] }) => {
+    drop: (item: { path: string[] }, monitor) => {
+      if (monitor.didDrop()) {
+        return; // If a child has already handled the drop, do nothing
+      }
       if (item.path.join('_') !== pathString) {
         onMoveItem(item.path, path);
       }
@@ -224,6 +227,7 @@ const FormField: React.FC<FormFieldProps> = ({
                       labels={labels}
                       onLabelChange={onLabelChange}
                       onRemoveFieldOrSection={onRemoveFieldOrSection}
+                      onMoveItem={onMoveItem}
                     />
                   );
                 })}

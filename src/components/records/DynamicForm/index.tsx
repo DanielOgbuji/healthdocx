@@ -67,9 +67,10 @@ const DynamicFormContent: React.FC<DynamicFormProps> = ({ structuredData, record
   const [, drop] = useDrop(() => ({
     accept: ['field', 'section'],
     drop: (item: { path: string[] }, monitor) => {
-      if (!monitor.didDrop()) {
-        handleMoveItem(item.path, []); // move to root
+      if (monitor.didDrop()) {
+        return; // If a child has already handled the drop, do nothing
       }
+      handleMoveItem(item.path, []); // move to root
     },
   }));
 
@@ -325,6 +326,7 @@ const DynamicFormContent: React.FC<DynamicFormProps> = ({ structuredData, record
                       labels={labels}
                       onLabelChange={handleLabelChange}
                       onRemoveFieldOrSection={handleRemoveFieldOrSection}
+                      onMoveItem={handleMoveItem}
                     />
                   );
                 })}

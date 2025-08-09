@@ -1,11 +1,11 @@
 import React, { useState, useEffect, useRef } from "react";
-import { Input, GridItem, Field, Flex } from "@chakra-ui/react";
+import { Input, GridItem, Field, Flex, Float, Circle } from "@chakra-ui/react";
 //import { useMergeRefs } from "@chakra-ui/hooks";
 import EditableLabel from "./EditableLabel";
 import { IconButton } from "@chakra-ui/react";
 import { MdDeleteOutline } from "react-icons/md";
 import { DragHandle } from "./DragHandle";
-import { useDrag } from "react-dnd";
+import { useDrag, useDrop } from "react-dnd";
 import { useSelection } from "@/hooks/useSelection";
 import { Checkbox } from "@chakra-ui/react";
 
@@ -18,6 +18,7 @@ interface SingleFieldProps {
   labels: Record<string, string>;
   onLabelChange: (path: string, label: string) => void;
   onRemoveFieldOrSection: (path: string[]) => void;
+  onMoveItem: (itemPath: string[], targetPath: string[]) => void;
 }
 
 const SingleField: React.FC<SingleFieldProps> = ({
@@ -29,6 +30,7 @@ const SingleField: React.FC<SingleFieldProps> = ({
   labels,
   onLabelChange,
   onRemoveFieldOrSection,
+  onMoveItem,
 }) => {
   const [inputValue, setInputValue] = useState(
     typeof value === "string" || typeof value === "number" ? value : ""
@@ -44,9 +46,20 @@ const SingleField: React.FC<SingleFieldProps> = ({
     }),
   }));
 
+  const [{ isOver }, drop] = useDrop(() => ({
+    accept: ['field', 'section'],
+    drop: (item: { path: string[] }) => {
+      onMoveItem(item.path, currentPath);
+    },
+    collect: (monitor) => ({
+      isOver: monitor.isOver(),
+    }),
+  }));
+
   const mergedRefs = (node: HTMLDivElement | null) => {
     gridItemRef.current = node;
     drag(node);
+    drop(node);
   };
 
   useEffect(() => {
@@ -100,14 +113,23 @@ const SingleField: React.FC<SingleFieldProps> = ({
             </IconButton>
           </Flex>
         </Field.Label>
-        <Input
-          id={pathString}
-          value={inputValue}
-          onChange={(e) => setInputValue(e.target.value)}
-          onBlur={() => onFieldChange(currentPath, inputValue as string)}
-          title="Click to edit value."
-          mt="2px"
-        />
+        <Flex position="relative" width="full">
+          <Input
+            id={pathString}
+            value={inputValue}
+            onChange={(e) => setInputValue(e.target.value)}
+            onBlur={() => onFieldChange(currentPath, inputValue as string)}
+            title="Click to edit value."
+            mt="2px"
+          />
+          {isOver && (
+            <Float offset="1">
+              <Circle size="5" bg="red" color="white">
+                3
+              </Circle>
+            </Float>
+          )}
+        </Flex>
       </Field.Root>
     </GridItem>
   );
