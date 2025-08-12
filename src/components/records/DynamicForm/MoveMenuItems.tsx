@@ -1,6 +1,7 @@
 import React from "react";
 import { Menu, Portal } from "@chakra-ui/react";
 import { LuChevronRight } from "react-icons/lu";
+import { PATH_SEPARATOR } from "@/utils/dynamicFormUtils";
 
 interface MoveMenuItemsProps {
   data: Record<string, unknown>;
@@ -20,7 +21,7 @@ const MoveMenuItems: React.FC<MoveMenuItemsProps> = ({
       {Object.entries(data).map(([key, value]) => {
         if (typeof value === "object" && value !== null && !Array.isArray(value)) {
           const newPath = [...currentPath, key];
-          const pathString = newPath.join("_");
+          const pathString = newPath.join(PATH_SEPARATOR);
           const hasSubsections = Object.values(value).some(
             (v) => typeof v === "object" && v !== null && !Array.isArray(v)
           );

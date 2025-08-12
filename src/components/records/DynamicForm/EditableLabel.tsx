@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import {
     Box,
     Input,
@@ -20,6 +20,10 @@ const EditableLabel: React.FC<EditableLabelProps> = ({
     const [isEditing, setIsEditing] = useState(false);
     const [value, setValue] = useState(initialValue);
     const ref = React.useRef<HTMLDivElement>(null);
+
+    useEffect(() => {
+        setValue(initialValue);
+    }, [initialValue]);
 
     useOutsideClick(ref, () => {
         if (isEditing) {
