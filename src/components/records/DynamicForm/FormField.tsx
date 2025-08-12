@@ -48,7 +48,7 @@ const FormField: React.FC<FormFieldProps> = ({
   const gridItemRef = useRef<HTMLDivElement>(null);
   const [isHighlighted, setIsHighlighted] = useState(false);
 
-  React.useEffect(() => {
+  React.useLayoutEffect(() => {
     if (newlyAddedPath && newlyAddedPath.join(PATH_SEPARATOR) === pathString && boxRef.current) {
       boxRef.current.scrollIntoView({ behavior: 'smooth', block: 'center' });
       setNewlyAddedPath(null); // Reset after scrolling
@@ -61,7 +61,7 @@ const FormField: React.FC<FormFieldProps> = ({
     if (isHighlighted) {
       timer = setTimeout(() => {
         setIsHighlighted(false);
-      }, 1000); // Highlight for 1 second
+      }, 1200); // Highlight for 1.2 seconds
     }
     return () => clearTimeout(timer);
   }, [isHighlighted]);
@@ -124,7 +124,7 @@ const FormField: React.FC<FormFieldProps> = ({
               _dark: depth === 0 ? "outlineVariant/20" : "outlineVariant/20"
             }}
             borderWidth={depth === 0 ? "1px" : "0 0 1px 0"}
-            borderColor="outlineVariant"
+            borderColor="outlineVariant/50"
             borderRadius={depth === 0 ? "md" : "none"}
             p={4}
             mt={depth === 0 ? 0 : 0}
@@ -132,7 +132,7 @@ const FormField: React.FC<FormFieldProps> = ({
             mb={depth === 0 ? 6 : 4}
             px="4"
             gap="4"
-            boxShadow={isHighlighted ? "0px 0px 30px var(--shadow-color)" : "none"}
+            boxShadow={isHighlighted ? "0px 0px 20px var(--shadow-color)" : "none"}
             scale={isHighlighted ? "1.01" : "1"}
             transition="scale 0.25s ease-in-out"
             shadowColor="onBackground/20"
