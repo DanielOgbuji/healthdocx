@@ -123,6 +123,7 @@ const SingleField: React.FC<SingleFieldProps> = ({
             onBlur={() => onFieldChange(currentPath, inputValue as string)}
             title="Click to edit value."
             mt="2px"
+            autoComplete="new-password"
           />
           {isOver && draggedItem && (
             <Float offset="1">
