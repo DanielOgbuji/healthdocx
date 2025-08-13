@@ -26,14 +26,12 @@ import SingleField from "./SingleField";
 import MoveMenuItems from "./MoveMenuItems";
 import { recordGroups, recordTypes } from "@/constants/recordOptions";
 import { MdOutlineCloudDone, MdOutlineFileUpload, MdOutlineUndo, MdAdd, MdTextFields, MdDeleteOutline, MdOutlineMoveUp, MdOutlineRestore, MdOutlineAccountTree, MdOutlineClearAll, MdExpandMore, MdExpandLess } from "react-icons/md";
-import { TouchBackend } from 'react-dnd-touch-backend'
 import { DndProvider, useDrop } from 'react-dnd';
 import { HTML5Backend } from 'react-dnd-html5-backend';
 import { SelectionProvider } from '@/contexts/SelectionProvider'; // Corrected import path
 import { useSelection } from '@/hooks/useSelection'; // Corrected import path
 import { useMergeRefs } from "@chakra-ui/hooks";
 import { PATH_SEPARATOR } from "@/utils/dynamicFormUtils"; // Corrected import path
-import { isMobile } from "@/utils/isMobile";
 
 interface DynamicFormProps {
   structuredData: string;
@@ -294,9 +292,9 @@ const DynamicFormContent: React.FC<DynamicFormProps> = ({ structuredData, record
       <Flex
         w="full"
         direction="column"
-        //p="6"
-        p={{ xl: "6vw", lg: "6vw", md: "6vw", sm: "6vw", base: "4" }}
-        pb="24"
+        px={{ xl: "6vw", lg: "6vw", md: "6vw", sm: "6vw", base: "4" }}
+        pt={{ xl: "6vw", lg: "6vw", md: "6vw", sm: "6vw", base: "4" }}
+        pb="100px"
         gap="6"
         boxShadow="sm"
         ref={mergedDropRefs} // Apply the mergedDropRefs to the main scrollable container
@@ -550,14 +548,10 @@ const DynamicFormContent: React.FC<DynamicFormProps> = ({ structuredData, record
 }
 
 const DynamicForm: React.FC<DynamicFormProps> = (props) => {
-  const backend = isMobile ? TouchBackend : HTML5Backend;
-
   return (
-    <DndProvider backend={backend} options={{
-      enableMouseEvents: true, scrollAngleRanges: [
-        { start: 30, end: 150 },
-        { start: 210, end: 330 }
-      ]
+    <DndProvider backend={HTML5Backend} options={{
+      scrollSensitivity: 100, // Start scrolling when pointer is 100px from edge
+      enableHoverOutsideTarget: true
     }}>
       <SelectionProvider>
         <DynamicFormContent {...props} />
