@@ -14,6 +14,7 @@ const RecordDetails = () => {
     const [error, setError] = useState<string | null>(null);
     const [structuredData, setStructuredData] = useState<string | null>(null);
     const [ocrText, setOcrText] = useState<string | null>(null);
+    const [rawFileUrl, setRawFileUrl] = useState<string | null>(null);
 
     const fetchRecord = useCallback(async (force = false) => {
         setLoading(true);
@@ -36,8 +37,11 @@ const RecordDetails = () => {
             const response = await getPatientRecordByID(id);
             const data = response.data.structuredData;
             const extractedOcrText = response.data.ocrText;
+            const imageUrl = response.rawFileUrl || '';
+            console.log("image link", imageUrl);
             setStructuredData(data);
             setOcrText(extractedOcrText);
+            setRawFileUrl(imageUrl);
             sessionStorage.setItem(`original_record_${id}`, data);
             sessionStorage.setItem(`original_ocr_text_${id}`, extractedOcrText);
             setError(null);
@@ -117,7 +121,7 @@ const RecordDetails = () => {
             direction="column"
             //p={{ xl: "6vw", lg: "6vw", md: "6vw", sm: "6vw", base: "4" }}
         >
-            {structuredData && <DynamicForm structuredData={structuredData} recordId={id} ocrText={ocrText} onRevert={handleRevert} />}
+            {structuredData && <DynamicForm structuredData={structuredData} recordId={id} ocrText={ocrText} onRevert={handleRevert} rawFileUrl={rawFileUrl} />}
         </Flex>
     );
 };
