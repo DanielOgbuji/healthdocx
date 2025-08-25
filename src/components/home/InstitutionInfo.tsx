@@ -17,7 +17,7 @@ const InstitutionInfo = ({ institution, loading }: InstitutionInfoProps) => {
                     {institution?.institutionName || "Loading Institution Name..."}
                 </Heading>
             </Skeleton>
-            <Skeleton loading={loading} height="24px">
+            <Skeleton loading={loading} height="24px" mb="4">
                 <Text color="outline">Hospital ID: {institution?.id || "Loading ID..."}</Text>
             </Skeleton>
         </Flex>

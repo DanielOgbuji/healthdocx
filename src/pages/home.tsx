@@ -1,4 +1,5 @@
 import { Flex, Text, Separator, Card, Icon } from "@chakra-ui/react";
+import { useNavigate } from "react-router";
 import InfoTile from "@/components/home/InfoTile";
 import { FiEdit3 } from "react-icons/fi";
 import { Banner } from "@/components/home/Banner";
@@ -15,6 +16,7 @@ import { useState } from "react";
 import { type FileChangeDetails } from "@zag-js/file-upload";
 
 const Home = () => {
+    const navigate = useNavigate();
     const [isDragging, setIsDragging] = useState(false);
     const {
         open,
@@ -34,18 +36,18 @@ const Home = () => {
         handleCancelCrop,
     } = useFileUpload();
     const {
-    	isCameraOpen,
-    	openCamera,
-    	closeCamera,
-    	devices,
-    	isSearching: isCameraSearching,
-    	stream,
-    	selectedDevice,
-    	selectDevice,
-    	captureImage,
-    	error: cameraError,
+        isCameraOpen,
+        openCamera,
+        closeCamera,
+        devices,
+        isSearching: isCameraSearching,
+        stream,
+        selectedDevice,
+        selectDevice,
+        captureImage,
+        error: cameraError,
     } = useCamera(handleFileChange);
-   
+
     const handleDrop = (e: React.DragEvent<HTMLDivElement>) => {
         e.preventDefault();
         setIsDragging(false);
@@ -106,7 +108,7 @@ const Home = () => {
             )}
             <SecondaryNavBar />
             <Flex mt="120px" direction="column" gap="4" w="full">
-            	<Banner />
+                <Banner />
                 <Flex w="full" direction="column" pt="8" px={{ xl: "6vw", lg: "6vw", md: "6vw", sm: "6vw", base: "4" }} gap="4" >
                     <InfoTile openCamera={openCamera} />
                     <CostSegment />
@@ -134,7 +136,7 @@ const Home = () => {
                                 <Flex direction="column" w="full" mt="8">
                                     <Flex justifyContent="space-between">
                                         <Text fontWeight="semibold">Recent records</Text>
-                                        <Text color="primary" fontSize="sm" fontWeight="semibold">See all</Text>
+                                        <Text color="primary" fontSize="sm" fontWeight="semibold" cursor="pointer" onClick={() => navigate("/records")}>See all</Text>
                                     </Flex>
                                     <Separator mt="2" />
                                     <RecentRecordsPane />
@@ -166,8 +168,8 @@ const Home = () => {
                     onRetry={handleRetry}
                     handleConfirmCrop={handleConfirmCrop}
                     handleCancelCrop={handleCancelCrop}
-                   />
-                   <CameraDialog
+                />
+                <CameraDialog
                     isCameraOpen={isCameraOpen}
                     closeCamera={closeCamera}
                     devices={devices}
@@ -177,10 +179,10 @@ const Home = () => {
                     selectDevice={selectDevice}
                     captureImage={captureImage}
                     error={cameraError}
-                   />
-                  </Flex>
-                 </Flex>
-                );
-               }
+                />
+            </Flex>
+        </Flex>
+    );
+}
 
 export default Home;
