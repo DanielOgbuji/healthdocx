@@ -26,9 +26,9 @@ export const extract = async (
 	return response.data;
 };
 
-export const getPatientRecords = async () => {
+export const getPatientRecords = async (options?: { signal?: AbortSignal }) => {
 	try {
-		const response = await api.get("/patient-records");
+		const response = await api.get("/patient-records", { signal: options?.signal });
 		return response.data;
 	} catch (error) {
 		console.error("Error fetching patient records:", error);

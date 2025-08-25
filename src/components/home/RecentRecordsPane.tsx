@@ -18,7 +18,7 @@ import { IoMdAdd } from "react-icons/io";
 import UploadButton from "@/components/home/UploadButton";
 import useFileUpload from "@/hooks/useFileUpload";
 import UploadDialog from "@/components/home/UploadDialog";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback } from "react";
 import { getPatientRecords } from "@/api/patient-records";
 import type { PatientRecord } from "@/types/api.types";
 import RecentRecordCard from "./RecentRecordCard";
@@ -49,21 +49,69 @@ const RecentRecordsPane = () => {
         handleCancelCrop,
     } = useFileUpload();
 
-    const fetchRecords = async () => {
-        try {
-            const data = await getPatientRecords();
-            setRecords(data);
-            setError(null); // Clear any previous errors on successful fetch
-        } catch {
-            setError("Failed to fetch patient records.");
-        } finally {
-            setLoading(false);
+    const RECORDS_STORAGE_KEY = "healthdocx_recent_records";
+
+    const fetchRecords = useCallback(async (signal: AbortSignal, isBackgroundFetch: boolean = false) => {
+        if (!isBackgroundFetch) {
+            setLoading(true);
+            setError(null);
         }
-    };
+
+        try {
+            const data = await getPatientRecords({ signal });
+            const storedRecords = localStorage.getItem(RECORDS_STORAGE_KEY);
+            const parsedStoredRecords: PatientRecord[] = storedRecords ? JSON.parse(storedRecords) : [];
+
+            if (JSON.stringify(data) !== JSON.stringify(parsedStoredRecords)) {
+                setRecords(data);
+                localStorage.setItem(RECORDS_STORAGE_KEY, JSON.stringify(data));
+            } else if (!isBackgroundFetch && parsedStoredRecords.length > 0) {
+                setRecords(parsedStoredRecords);
+            }
+        } catch (err: unknown) {
+            if (err instanceof Error && err.name === 'AbortError') {
+                console.log('Fetch aborted');
+                return;
+            }
+            console.error("Error fetching patient records:", err);
+            if (!isBackgroundFetch) {
+                setError("Failed to fetch patient records.");
+            }
+        } finally {
+            if (!isBackgroundFetch) {
+                setLoading(false);
+            }
+        }
+    }, []);
 
     useEffect(() => {
-        fetchRecords();
-    }, []);
+        const controller = new AbortController();
+        const signal = controller.signal;
+
+        const loadAndFetch = async () => {
+            const storedRecords = localStorage.getItem(RECORDS_STORAGE_KEY);
+            if (storedRecords) {
+                try {
+                    setRecords(JSON.parse(storedRecords));
+                    setLoading(false);
+                } catch (e) {
+                    console.error("Failed to parse stored records, fetching new data.", e);
+                    localStorage.removeItem(RECORDS_STORAGE_KEY);
+                    await fetchRecords(signal);
+                }
+            } else {
+                await fetchRecords(signal);
+            }
+
+            fetchRecords(signal, true);
+        };
+
+        loadAndFetch();
+
+        return () => {
+            controller.abort();
+        };
+    }, [fetchRecords]);
 
     if (loading) {
         return (
@@ -91,7 +139,7 @@ const RecentRecordsPane = () => {
                         <Button variant="outline" size="sm">
                             <Box as="span" fontSize="sm">Contact Support</Box>
                         </Button>
-                        <Button variant="solid" size="sm" onClick={() => fetchRecords()}>
+                        <Button variant="solid" size="sm" onClick={() => fetchRecords(new AbortController().signal)}>
                             <RxReload /> <Box as="span" fontSize="sm">Retry</Box>
                         </Button>
                     </Flex>

@@ -35,25 +35,12 @@ const ImageViewer: React.FC<ImageViewerProps> = ({ imageUrl }) => {
             const scaleX = clientWidth / naturalWidth;
             const scaleY = clientHeight / naturalHeight;
             const newZoom = Math.min(scaleX, scaleY);
-            setZoom(newZoom);
+            setZoom(1);
             const newX = (clientWidth - naturalWidth * newZoom) / 2;
             const newY = (clientHeight - naturalHeight * newZoom) / 2;
             setPosition({ x: newX, y: newY });
         }
     }, []);
-
-    useEffect(() => {
-        const image = imageRef.current;
-        if (image) {
-            const handleLoad = () => fitToScreen();
-            image.addEventListener('load', handleLoad);
-            // If the image is already cached and loaded, the load event might not fire
-            if (image.complete) {
-                fitToScreen();
-            }
-            return () => image.removeEventListener('load', handleLoad);
-        }
-    }, [fitToScreen, imageUrl]);
 
     useEffect(() => {
         const container = containerRef.current;
@@ -140,7 +127,7 @@ const ImageViewer: React.FC<ImageViewerProps> = ({ imageUrl }) => {
     };
 
     return (
-        <Flex direction="column" h="full" w="full" colorPalette="brand" bg="surface" borderStyle="solid" borderWidth="thin" borderColor="primary/50">
+        <Flex direction="column" h={{base: "50%", mdDown: "100%"}} w="full" colorPalette="brand" bg="surface" borderStyle="solid" borderWidth="thin" borderColor="primary/50">
             <Box
                 ref={containerRef}
                 flex="1"
@@ -176,15 +163,16 @@ const ImageViewer: React.FC<ImageViewerProps> = ({ imageUrl }) => {
                     <ButtonGroup attached variant="surface" size="md">
                         <Button onClick={() => setZoom(prev => Math.max(prev - 0.2, 0.2))} aria-label="Zoom out"><Icon as={MdZoomOut} /></Button>
                         <Button onClick={fitToScreen} aria-label="Fit to screen"><Icon as={MdFilterCenterFocus} /></Button>
-                        <Button onClick={() => setZoom(prev => Math.min(prev + 0.2, 5))} aria-label="Zoom in"><Icon as={MdZoomIn} /></Button>
+                        <Button onClick={() => setZoom(prev => Math.min(prev + 0.2, 10))} aria-label="Zoom in"><Icon as={MdZoomIn} /></Button>
                         <Button onClick={() => setShowFilters(!showFilters)} variant={showFilters ? 'solid' : 'surface'} aria-label="Image filters"><Icon as={MdPhotoFilter} /></Button>
                     </ButtonGroup>
                     <Slider.Root
                         width="200px"
-                        min={0.1}
-                        max={5}
+                        min={0.2}
+                        max={10}
                         step={0.1}
                         value={[zoom]}
+                        defaultValue={[1]}
                         onValueChange={(details) => setZoom(details.value[0])}
                     >
                         <Slider.Control>
