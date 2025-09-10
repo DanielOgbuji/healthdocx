@@ -10,6 +10,7 @@ import Home from '@/pages/home';
 import Records from '@/pages/records';
 import Analytics from '@/pages/analytics';
 import Settings from '@/pages/settings';
+import LinkPhone from '@/pages/link-phone';
 import WorkSpace from '@/containers/WorkSpace';
 import ForgotPasswordPage from '@/pages/forgot-password';
 import VerifyEmailPage from '@/pages/verify-email';
@@ -38,6 +39,7 @@ function App() {
                             <Route path="records/details/:id" element={<ProtectedRoute><RecordsDetails /></ProtectedRoute>} />
                             <Route path="analytics" element={<ProtectedRoute><Analytics /></ProtectedRoute>} />
                             <Route path="settings" element={<ProtectedRoute><Settings /></ProtectedRoute>} />
+                            <Route path="link-phone" element={<ProtectedRoute><LinkPhone /></ProtectedRoute>} />
                         </Route>
                     </Routes>
                 </BrowserRouter>

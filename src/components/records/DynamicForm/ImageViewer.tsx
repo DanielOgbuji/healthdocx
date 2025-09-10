@@ -127,7 +127,7 @@ const ImageViewer: React.FC<ImageViewerProps> = ({ imageUrl }) => {
     };
 
     return (
-        <Flex direction="column" h={{base: "50%", mdDown: "100%"}} w="full" colorPalette="brand" bg="surface" borderStyle="solid" borderWidth="thin" borderColor="primary/50">
+        <Flex direction="column" h={{base: "60vh", mdDown: "80vh"}} w="full" colorPalette="brand" bg="surface" borderStyle="solid" borderWidth="thin" borderColor="primary/50">
             <Box
                 ref={containerRef}
                 flex="1"

@@ -1,0 +1,446 @@
+{
+	"document": {
+		"date": "21 - 03 - 2025",
+		"title": "LABORATORY REQUEST FORM",
+		"elements": [
+			{
+				"type": "header",
+				"style": {
+					"fontSize": "16.0",
+					"textAlign": "left",
+					"fontWeight": "bold"
+				},
+				"content": "DIVINE BLESSED ASSURANCE MEDICAL CENTRE",
+				"position": {
+					"x": 27.2,
+					"y": 3.7,
+					"width": 64.9,
+					"height": 3.6
+				}
+			},
+			{
+				"type": "text",
+				"style": {
+					"fontSize": "9.0",
+					"textAlign": "left",
+					"fontWeight": "normal"
+				},
+				"content": "ENUGU SOUTH LOCAL GOVERNMENT AREA ENUGU STATE",
+				"position": {
+					"x": 30,
+					"y": 7.3,
+					"width": 59.9,
+					"height": 1.7
+				}
+			},
+			{
+				"type": "text",
+				"style": {
+					"fontSize": "9.0",
+					"textAlign": "left",
+					"fontWeight": "normal"
+				},
+				"content": "LABORATORY SERVICE DEPARTMENT",
+				"position": {
+					"x": 35.8,
+					"y": 9.4,
+					"width": 46.2,
+					"height": 1.7
+				}
+			},
+			{
+				"type": "text",
+				"style": {
+					"fontSize": "9.0",
+					"textAlign": "left",
+					"fontWeight": "normal"
+				},
+				"content": "6 Onyia Street, Ologo/New Site Ologo Quarters,\nOpposite Police Detective College, Agbani Road, Enugu.",
+				"position": {
+					"x": 30.5,
+					"y": 11.2,
+					"width": 60.1,
+					"height": 3.4
+				}
+			},
+			{
+				"type": "text",
+				"style": {
+					"fontSize": "9.0",
+					"textAlign": "left",
+					"fontWeight": "normal"
+				},
+				"content": "Tel: 08053749944",
+				"position": {
+					"x": 45.4,
+					"y": 14.5,
+					"width": 20.3,
+					"height": 1.8
+				}
+			},
+			{
+				"type": "header",
+				"style": {
+					"fontSize": "12.0",
+					"textAlign": "left",
+					"fontWeight": "bold"
+				},
+				"content": "LABORATORY REQUEST FORM",
+				"position": {
+					"x": 23.3,
+					"y": 17.6,
+					"width": 54.4,
+					"height": 2.9
+				}
+			},
+			{
+				"type": "text",
+				"style": {
+					"fontSize": "9.0",
+					"textAlign": "left",
+					"fontWeight": "normal"
+				},
+				"content": "Working Hours\nMonday - Sunday 8am - 7pm",
+				"position": {
+					"x": 6.8,
+					"y": 21.6,
+					"width": 31.8,
+					"height": 3.2
+				}
+			},
+			{
+				"type": "text",
+				"style": {
+					"fontSize": "9.0",
+					"textAlign": "left",
+					"fontWeight": "normal"
+				},
+				"content": "Surname _________________ Other Name _________________ Lab Number ______________",
+				"position": {
+					"x": 6.8,
+					"y": 27,
+					"width": 88,
+					"height": 2
+				}
+			},
+			{
+				"type": "text",
+				"style": {
+					"fontSize": "9.0",
+					"textAlign": "left",
+					"fontWeight": "normal"
+				},
+				"content": "Oph",
+				"position": {
+					"x": 20.6,
+					"y": 26.3,
+					"width": 10.9,
+					"height": 3.6
+				}
+			},
+			{
+				"type": "text",
+				"style": {
+					"fontSize": "9.0",
+					"textAlign": "left",
+					"fontWeight": "normal"
+				},
+				"content": "S. flyali",
+				"position": {
+					"x": 48,
+					"y": 26.2,
+					"width": 20.3,
+					"height": 4.1
+				}
+			},
+			{
+				"type": "text",
+				"style": {
+					"fontSize": "9.0",
+					"textAlign": "left",
+					"fontWeight": "normal"
+				},
+				"content": "Sex _______ Age: _______ Ward ____________ Folder Number ____________",
+				"position": {
+					"x": 6.8,
+					"y": 30.5,
+					"width": 88,
+					"height": 1.7
+				}
+			},
+			{
+				"type": "text",
+				"style": {
+					"fontSize": "9.0",
+					"textAlign": "left",
+					"fontWeight": "normal"
+				},
+				"content": "F",
+				"position": {
+					"x": 13,
+					"y": 30,
+					"width": 4.1,
+					"height": 3
+				}
+			},
+			{
+				"type": "text",
+				"style": {
+					"fontSize": "9.0",
+					"textAlign": "left",
+					"fontWeight": "normal"
+				},
+				"content": "X",
+				"position": {
+					"x": 29.8,
+					"y": 30,
+					"width": 4.6,
+					"height": 2.8
+				}
+			},
+			{
+				"type": "text",
+				"style": {
+					"fontSize": "9.0",
+					"textAlign": "left",
+					"fontWeight": "normal"
+				},
+				"content": "Address: ____________________________________________________________________",
+				"position": {
+					"x": 6.8,
+					"y": 33.9,
+					"width": 88,
+					"height": 1.7
+				}
+			},
+			{
+				"type": "text",
+				"style": {
+					"fontSize": "9.0",
+					"textAlign": "left",
+					"fontWeight": "normal"
+				},
+				"content": "Provisional Diagnosis ___________________________________________________________",
+				"position": {
+					"x": 6.8,
+					"y": 37.3,
+					"width": 88,
+					"height": 1.7
+				}
+			},
+			{
+				"type": "text",
+				"style": {
+					"fontSize": "9.0",
+					"textAlign": "left",
+					"fontWeight": "normal"
+				},
+				"content": "Clinical Details ________________________________________________________________",
+				"position": {
+					"x": 6.8,
+					"y": 40.7,
+					"width": 88,
+					"height": 1.7
+				}
+			},
+			{
+				"type": "table",
+				"style": {
+					"fontSize": "8.0",
+					"textAlign": "left",
+					"fontWeight": "normal"
+				},
+				"content": {
+					"rows": [
+						[
+							"Full Blood Count (FBC)",
+							"HB Genotype",
+							"Urine",
+							"Urinalysis",
+							"Routine",
+							""
+						],
+						[
+							"Haemoglobin (Hb)",
+							"Coagulation Screen",
+							"Urethral Smear",
+							"Urobilinogen",
+							"Occult",
+							""
+						],
+						["PCV", "LE Cells", "Vaginal Swab", "Bilirubin", "Blood", ""],
+						[
+							"Wbc Differential",
+							"Blood Sugar",
+							"Wound Swab",
+							"Bile Salts",
+							"",
+							""
+						],
+						[
+							"Platelets count",
+							"Blood Urea",
+							"Ear Swab",
+							"",
+							"Sputum",
+							"Pregnancy Test ✓"
+						],
+						[
+							"ESR",
+							"G.T.T.",
+							"Cervical Swab",
+							"",
+							"Microscopy",
+							"Seminalysis ✓"
+						],
+						[
+							"Eosinophils count",
+							"L.F.T.",
+							"Seminalysis",
+							"",
+							"Acid Fast Bacilli (AFB)",
+							"HCV ✓"
+						],
+						["Blood Film", "Blood electrolytes", "Faeces", "", "", "HIV ✓"],
+						["Malaria Parasite", "Serum Creatinine", "Semen", "", "", "HAV ✓"],
+						[
+							"Filarial Parasite",
+							"Serum Bilirubin",
+							"Blood",
+							"",
+							"",
+							"HbsAg ✓"
+						],
+						["Reticulocyte Count", "Serum Amylase", "", "", "", "Mantoux Test"],
+						["Grouping", "Serum Uric Acid", "", "", "", "Alpha Feto Protein"],
+						["X-matching", "Serum Protein", "", "", "", "Beta HCG Assay"],
+						["Kahn Test/VDRL", "Serum Cholesterol", "", "", "", "Skin Snip"],
+						[
+							"Australian Antigen",
+							"Serum Calcium",
+							"",
+							"",
+							"",
+							"Other Test: Blood Group"
+						],
+						["C-reactive Protein", "Rheumatoid Factor", "", "", "", ""],
+						["Coomb's Test", "Widal Test", "", "", "", ""]
+					],
+					"caption": "Examination Required (Please Tick)",
+					"headers": [
+						"BLOOD",
+						"BLOOD",
+						"CULTURES",
+						"URINE",
+						"FAECES",
+						"OTHER TESTS"
+					]
+				},
+				"position": {
+					"x": 5.9,
+					"y": 44.5,
+					"width": 90,
+					"height": 38.3
+				}
+			},
+			{
+				"type": "text",
+				"style": {
+					"fontSize": "9.0",
+					"textAlign": "left",
+					"fontWeight": "normal"
+				},
+				"content": "Date and Time of Collection__",
+				"position": {
+					"x": 6.8,
+					"y": 84.3,
+					"width": 59.8,
+					"height": 1.7
+				}
+			},
+			{
+				"type": "text",
+				"style": {
+					"fontSize": "9.0",
+					"textAlign": "left",
+					"fontWeight": "normal"
+				},
+				"content": "21 - 03 - 2025",
+				"position": {
+					"x": 42.1,
+					"y": 83.3,
+					"width": 46.1,
+					"height": 4.1
+				}
+			},
+			{
+				"type": "text",
+				"style": {
+					"fontSize": "9.0",
+					"textAlign": "left",
+					"fontWeight": "normal"
+				},
+				"content": "Name of Physician_",
+				"position": {
+					"x": 6.8,
+					"y": 87.7,
+					"width": 59.8,
+					"height": 1.7
+				}
+			},
+			{
+				"type": "text",
+				"style": {
+					"fontSize": "9.0",
+					"textAlign": "left",
+					"fontWeight": "normal"
+				},
+				"content": "Address _______________________________________________________",
+				"position": {
+					"x": 6.8,
+					"y": 91.1,
+					"width": 59.8,
+					"height": 1.7
+				}
+			},
+			{
+				"type": "text",
+				"style": {
+					"fontSize": "9.0",
+					"textAlign": "left",
+					"fontWeight": "normal"
+				},
+				"content": "Signature ____________________________________",
+				"position": {
+					"x": 50.1,
+					"y": 91.1,
+					"width": 43.1,
+					"height": 1.7
+				}
+			},
+			{
+				"type": "text",
+				"style": {
+					"fontSize": "9.0",
+					"textAlign": "left",
+					"fontWeight": "normal"
+				},
+				"content": "Date _________________",
+				"position": {
+					"x": 68.3,
+					"y": 93.6,
+					"width": 25,
+					"height": 1.7
+				}
+			}
+		]
+	},
+	"recordType": "Laboratory Request Form",
+	"boundingBoxes": [
+		{
+			"box_2d": [3.6, 6.7, 12, 16.3],
+			"category": "hospital_logo"
+		}
+	],
+	"recordTypeGroup": "diagnostic"
+}

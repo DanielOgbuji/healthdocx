@@ -30,7 +30,10 @@ export const getPatientRecords = async (options?: { signal?: AbortSignal }) => {
 	try {
 		const response = await api.get("/patient-records", { signal: options?.signal });
 		return response.data;
-	} catch (error) {
+	} catch (error: unknown) {
+		if (error instanceof Error && error.name === 'CanceledError') {
+			throw error;
+		}
 		console.error("Error fetching patient records:", error);
 		throw error;
 	}

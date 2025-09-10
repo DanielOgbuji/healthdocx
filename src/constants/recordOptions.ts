@@ -1,36 +1,44 @@
 export const recordGroups = [
-  { value: "clinical", label: "Clinical Records" },
-  { value: "diagnostic", label: "Diagnostic Reports" },
-  { value: "treatment", label: "Treatment and Procedures" },
-  { value: "prescriptions", label: "Prescriptions and Medications" },
-  { value: "administrative", label: "Administrative and Billing" },
+  { value: "Reg", label: "Registration and Check-In" },
+  { value: "Clin", label: "Clinical Records" },
+  { value: "Diag", label: "Diagnostic Reports" },
+  { value: "Trt", label: "Treatment and Procedures" },
+  { value: "Pres", label: "Prescriptions and Medications" },
+  { value: "Adm", label: "Administrative and Billing" },
 ];
 
 export const recordTypes = {
-  clinical: [
-    { value: "Chief complaints and symptoms", label: "Chief complaints and symptoms" },
-    { value: "Vital signs and measurements", label: "Vital signs and measurements" },
-    { value: "Differential diagnoses", label: "Differential diagnoses" },
-    { value: "SOAP Notes (Subjective, Objective, Assessment, Plan)", label: "SOAP Notes (Subjective, Objective, Assessment, Plan)" },
+  Reg: [
+    { value: "SF", label: "Scheduling form" },
+    { value: "RF", label: "Referral form" },
+    { value: "PP", label: "Patient profile" },
+    { value: "CF", label: "Consent form" },
   ],
-  diagnostic: [
-    { value: "Laboratory Tests", label: "Laboratory Tests" },
-    { value: "Radiology", label: "Radiology" },
-    { value: "Pathology Reports", label: "Pathology Reports" },
+  Clin: [
+    { value: "CCS", label: "Chief complaints and symptoms" },
+    { value: "VSM", label: "Vital signs and measurements" },
+    { value: "DD", label: "Differential diagnoses" },
+    { value: "SOAP", label: "SOAP Notes (Subjective, Objective, Assessment, Plan)" },
   ],
-  treatment: [
-    { value: "Inpatient vs. Outpatient treatments", label: "Inpatient vs. Outpatient treatments" },
-    { value: "Physical therapy and rehabilitation notes", label: "Physical therapy and rehabilitation notes" },
-    { value: "Surgery and anesthesia records", label: "Surgery and anesthesia records" },
+  Diag: [
+    { value: "LT", label: "Laboratory tests" },
+    { value: "RR", label: "Radiology report" },
+    { value: "PR", label: "Pathology report" },
   ],
-  prescriptions: [
-    { value: "Active and past prescriptions", label: "Active and past prescriptions" },
-    { value: "Pharmacy dispensing records", label: "Pharmacy dispensing records" },
-    { value: "Medication allergies and adverse reactions", label: "Medication allergies and adverse reactions" },
+  Trt: [
+    { value: "IO", label: "Inpatient vs. Outpatient" },
+    { value: "PTR", label: "Physical therapy and rehabilitation notes" },
+    { value: "SAR", label: "Surgery and anesthesia record" },
+    { value: "DIS", label: "Discharge note" },
   ],
-  administrative: [
-    { value: "Insurance claims and authorizations", label: "Insurance claims and authorizations" },
-    { value: "Payment receipts and invoices", label: "Payment receipts and invoices" },
-    { value: "Employee health coverage documents", label: "Employee health coverage documents" },
+  Pres: [
+    { value: "APP", label: "Active and past prescription" },
+    { value: "PDR", label: "Pharmacy dispensing record" },
+    { value: "MAR", label: "Medication allergies and adverse reactions" },
+  ],
+  Adm: [
+    { value: "ICA", label: "Insurance claims and authorizations" },
+    { value: "PRI", label: "Payment receipts and invoices" },
+    { value: "EHCD", label: "Employee health coverage documents" },
   ],
 };
