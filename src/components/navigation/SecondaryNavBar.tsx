@@ -14,6 +14,7 @@ const SecondaryNavBar = () => {
                 zIndex="docked"
                 top="72px"
                 px={{ xl: "6vw", lg: "6vw", md: "6vw", sm: "6vw", base: "4" }}
+                color="backface"
             >
                 <Box as="nav" height="full">
                     <List.Root listStyle="none" display="flex" flexDirection="row" h="full" fontSize="sm" fontWeight="medium" >

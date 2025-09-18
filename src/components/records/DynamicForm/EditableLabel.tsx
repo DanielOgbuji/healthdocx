@@ -48,6 +48,11 @@ const EditableLabel: React.FC<EditableLabelProps> = ({
                 <Input
                     value={value}
                     onChange={(e) => setValue(e.target.value)}
+                    onKeyDown={(e) => {
+                        if (e.key === "Enter") {
+                            handleSave();
+                        }
+                    }}
                     size="sm"
                     variant="flushed"
                     autoFocus

@@ -281,7 +281,7 @@ const Records = () => {
           </Flex>
         </Stack>
       ) : records.length === 0 ? (
-        <EmptyState.Root>
+        <EmptyState.Root display="flex" alignItems="center" justifyContent="center" h="full">
           <EmptyState.Content>
             <EmptyState.Indicator>
               <Image src={colorMode === "dark" ? noRecordDark : noRecord} />

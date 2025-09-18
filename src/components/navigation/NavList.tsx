@@ -8,7 +8,7 @@ const NavList = () => {
 
     return (
         <>
-            <Box as="nav" height="full" display={{ mdDown: "none" }}>
+            <Box as="nav" height="full" display={{ mdDown: "none" }} color="backface">
                 <List.Root listStyle="none" display="flex" flexDirection="row" h="full" fontSize="sm" fontWeight="medium" >
                     <List.Item h="full">
                         <ChakraLink h="full" px="4" asChild textDecoration="none" focusRing="none" borderRadius="none" _hover={{ bg: "secondary/6" }}>
