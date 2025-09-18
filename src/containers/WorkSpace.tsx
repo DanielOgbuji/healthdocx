@@ -1,4 +1,4 @@
-import { Stack, VStack, Spinner, Text, Flex } from "@chakra-ui/react";
+import { Stack, VStack, Spinner, Text } from "@chakra-ui/react";
 import { lazy, Suspense } from "react";
 
 const Outlet = lazy(() => import("react-router").then(module => ({ default: module.Outlet })));
@@ -17,10 +17,8 @@ const WorkSpace = () => {
     return (
         <>
             <Suspense fallback={<LoadingFallback />}>
-                <Flex bgColor="backface" color="onBackground">
-                    <NavBar />
-                    <Outlet />
-                </Flex>
+                <NavBar />
+                <Outlet />
             </Suspense>
         </>
     );

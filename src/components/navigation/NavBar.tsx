@@ -114,7 +114,7 @@ const NavBar = () => {
                                         </Flex>
                                     </Flex>
                                     <Menu.Separator />
-                                    <Menu.Item value="account"><Icon size="md" color="outline"><MdPersonOutline /></Icon> View profile</Menu.Item>
+                                    <Menu.Item value="account" disabled><Icon size="md" color="outline"><MdPersonOutline /></Icon> View profile</Menu.Item>
                                     <Menu.Item value="settings"><Icon size="md" color="outline"><MdOutlineSupport /></Icon> Support</Menu.Item>
                                     <Menu.Separator />
                                     <Menu.Item value="logout" color="error"
