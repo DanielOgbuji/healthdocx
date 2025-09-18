@@ -2,7 +2,7 @@ export interface DragItem {
   id: string;
   path: string[];
   type: 'field' | 'section';
-  originalIndex: number;
+  originalIndex?: number;
 }
 
 export type DropResult = {

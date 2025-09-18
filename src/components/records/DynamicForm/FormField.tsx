@@ -6,8 +6,9 @@ import SingleField from "./SingleField";
 import { MdAdd, MdTextFields, MdDeleteOutline, MdExpandMore, MdExpandLess } from "react-icons/md";
 import { DragHandle } from "./DragHandle";
 import { useDrag, useDrop } from "react-dnd";
-import { useSelection } from "@/hooks/useSelection";
-import { PATH_SEPARATOR } from "@/utils/dynamicFormUtils";
+import { useSelection } from "../../../hooks/useSelection";
+import { PATH_SEPARATOR } from "../../../utils/dynamicFormUtils";
+import type { DragItem } from "../../../types/dnd";
 
 interface FormFieldProps {
   depth?: number;
@@ -19,7 +20,7 @@ interface FormFieldProps {
   onAddSection: (path: string[]) => void;
   onAddField: (path: string[]) => void;
   onRemoveFieldOrSection: (path: string[]) => void;
-  onMoveItem: (fromPath: string[], toPath: string[]) => void;
+  onMoveItem: (fromPath: string[], toPath: string[], moveType?: "reorder" | "moveInto") => void;
   newlyAddedPath: string[] | null;
   setNewlyAddedPath: (path: string[] | null) => void;
   isCollapsed: (pathString: string) => boolean;
@@ -45,6 +46,7 @@ const FormField: React.FC<FormFieldProps> = ({
   const pathString = path.join(PATH_SEPARATOR);
   const { selectedItems, toggleSelection } = useSelection();
   const boxRef = useRef<HTMLDivElement>(null);
+  const headerRef = useRef<HTMLDivElement>(null);
   const gridItemRef = useRef<HTMLDivElement>(null);
   const [isHighlighted, setIsHighlighted] = useState(false);
 
@@ -66,20 +68,33 @@ const FormField: React.FC<FormFieldProps> = ({
     return () => clearTimeout(timer);
   }, [isHighlighted]);
 
-  const [{ isOver }, drop] = useDrop(() => ({
+  const [{ isOverBody }, dropBody] = useDrop(() => ({
     accept: ['field', 'section'],
-    drop: (item: { path: string[] }, monitor) => {
+    drop: (item: DragItem, monitor) => {
       if (monitor.didDrop()) {
-        return; // If a child has already handled the drop, do nothing
+        return;
       }
       if (item.path.join(PATH_SEPARATOR) !== pathString) {
-        onMoveItem(item.path, path);
+        onMoveItem(item.path, path, "moveInto");
       }
     },
     collect: (monitor) => ({
-      isOver: monitor.isOver(),
+      isOverBody: monitor.isOver({ shallow: true }),
     }),
   }));
+
+  const [{ isOverHeader }, dropHeader] = useDrop(() => ({
+    accept: 'section',
+    drop: (item: DragItem) => {
+      if (item.path.join(PATH_SEPARATOR) !== pathString) {
+        onMoveItem(item.path, path, 'reorder');
+      }
+    },
+    collect: (monitor) => ({
+      isOverHeader: monitor.isOver({ shallow: true }),
+    }),
+  }));
+
 
   const [{ isDragging }, drag] = useDrag(() => ({
     type: 'section',
@@ -90,15 +105,16 @@ const FormField: React.FC<FormFieldProps> = ({
   }));
 
   const mergedDragRefs = useMergeRefs(boxRef, drag as unknown as React.RefCallback<Element>);
-  const mergedDropRefs = useMergeRefs(gridItemRef, drop as unknown as React.RefCallback<Element>);
+  const mergedDropRefs = useMergeRefs(gridItemRef, dropBody as unknown as React.RefCallback<Element>);
+  const mergedHeaderRefs = useMergeRefs(headerRef, dropHeader as unknown as React.RefCallback<Element>);
 
   return (
     <GridItem
       key={pathString}
       colSpan={{ base: 1, lg: 2 }}
       ref={mergedDropRefs}
-      border={isOver ? "2px dashed" : "none"}
-      borderColor={isOver ? "primary" : "none"}
+      border={isOverBody && !isOverHeader ? "2px dashed" : "none"}
+      borderColor={isOverBody && !isOverHeader ? "primary" : "none"}
       colorPalette="brand"
     >
       <Collapsible.Root
@@ -119,7 +135,8 @@ const FormField: React.FC<FormFieldProps> = ({
         >
 
           <Flex
-            bg={{
+            ref={mergedHeaderRefs}
+            bg={isOverHeader ? "tertiaryContainer/50" : {
               _light: depth === 0 ? "primaryContainer/10" : "primaryContainer/10",
               _dark: depth === 0 ? "outlineVariant/20" : "outlineVariant/20"
             }}

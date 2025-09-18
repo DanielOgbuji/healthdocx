@@ -1,8 +1,8 @@
 // useDynamicForm.ts
 import { useState, useEffect, useRef } from "react";
-import { api } from "@/api/axios";
-import { type ApiError } from "@/types/api.types";
-import { toaster } from "@/components/ui/toaster";
+import { api } from "../api/axios";
+import { type ApiError } from "../types/api.types";
+import { toaster } from "../components/ui/toaster";
 import {
 	updateNested,
 	buildPayload,
@@ -10,7 +10,7 @@ import {
 	insertNested,
 	getNestedValue,
 	PATH_SEPARATOR,
-} from "@/utils/dynamicFormUtils";
+} from "../utils/dynamicFormUtils";
 
 export const useDynamicForm = (
 	structuredData: string | Record<string, unknown>,
@@ -195,7 +195,11 @@ export const useDynamicForm = (
 		});
 	};
 
-	const handleMoveItem = (fromPath: string[], toPath: string[]) => {
+	const handleMoveItem = (
+		fromPath: string[],
+		toPath: string[],
+		moveType: "reorder" | "moveInto" = "moveInto"
+	) => {
 		setFormState((prevState) => {
 			const itemKey = fromPath[fromPath.length - 1];
 			const sourcePath = fromPath.slice(0, -1);
@@ -213,6 +217,10 @@ export const useDynamicForm = (
 
 			const without = removeNested(prevState.formData, fromPath);
 			const targetValue = getNestedValue(without, toPath);
+			const isTargetASection =
+				typeof targetValue === "object" &&
+				targetValue !== null &&
+				!Array.isArray(targetValue);
 
 			let toParentPath: string[];
 			let insertIndex: number;
@@ -220,11 +228,7 @@ export const useDynamicForm = (
 			if (toPath.length === 0) {
 				toParentPath = [];
 				insertIndex = Object.keys(without).length;
-			} else if (
-				typeof targetValue === "object" &&
-				targetValue !== null &&
-				!Array.isArray(targetValue)
-			) {
+			} else if (isTargetASection && moveType === "moveInto") {
 				toParentPath = toPath;
 				insertIndex = Object.keys(targetValue).length;
 			} else {
