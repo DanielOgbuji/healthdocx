@@ -1,7 +1,7 @@
 export interface DragItem {
   id: string;
   path: string[];
-  type: 'field' | 'section';
+  type: 'field' | 'section' | 'table-row' | 'list-item';
   originalIndex?: number;
 }
 

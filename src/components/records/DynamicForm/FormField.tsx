@@ -3,6 +3,8 @@ import { Box, Grid, GridItem, Flex, Heading, Icon, IconButton, Checkbox, Collaps
 import { useMergeRefs } from "@chakra-ui/hooks";
 import EditableLabel from "./EditableLabel";
 import SingleField from "./SingleField";
+import EditableTableField from "./EditableTableField";
+import EditableListField from "./EditableListField";
 import { MdAdd, MdTextFields, MdDeleteOutline, MdExpandMore, MdExpandLess } from "react-icons/md";
 import { DragHandle } from "./DragHandle";
 import { useDrag, useDrop } from "react-dnd";
@@ -14,7 +16,7 @@ interface FormFieldProps {
   depth?: number;
   data: Record<string, unknown>;
   path: string[];
-  onFieldChange: (path: string[], value: string) => void;
+  onFieldChange: (path: string[], value: string | Array<Record<string, string>> | string[]) => void;
   labels: Record<string, string>;
   onLabelChange: (path: string, label: string) => void;
   onAddSection: (path: string[]) => void;
@@ -25,6 +27,9 @@ interface FormFieldProps {
   setNewlyAddedPath: (path: string[] | null) => void;
   isCollapsed: (pathString: string) => boolean;
   toggleCollapse: (pathString: string) => void;
+  onAddArrayItem: (path: string[], item: Record<string, string> | string) => void;
+  onRemoveArrayItem: (path: string[], index: number) => void;
+  onReorderArrayItem: (path: string[], fromIndex: number, toIndex: number) => void;
 }
 
 const FormField: React.FC<FormFieldProps> = ({
@@ -41,7 +46,10 @@ const FormField: React.FC<FormFieldProps> = ({
   newlyAddedPath,
   setNewlyAddedPath,
   isCollapsed,
-  toggleCollapse
+  toggleCollapse,
+  onAddArrayItem,
+  onRemoveArrayItem,
+  onReorderArrayItem,
 }) => {
   const pathString = path.join(PATH_SEPARATOR);
   const { selectedItems, toggleSelection } = useSelection();
@@ -52,7 +60,10 @@ const FormField: React.FC<FormFieldProps> = ({
 
   React.useLayoutEffect(() => {
     if (newlyAddedPath && newlyAddedPath.join(PATH_SEPARATOR) === pathString && boxRef.current) {
-      boxRef.current.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      // Use requestAnimationFrame to ensure smooth scrolling
+      requestAnimationFrame(() => {
+        boxRef.current?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      });
       setNewlyAddedPath(null); // Reset after scrolling
       setIsHighlighted(true); // Trigger highlight after scroll
     }
@@ -136,7 +147,7 @@ const FormField: React.FC<FormFieldProps> = ({
 
           <Flex
             ref={mergedHeaderRefs}
-            bg={isOverHeader ? "tertiaryContainer/50" : {
+            bg={isOverHeader ? "tertiaryContainer/40" : {
               _light: depth === 0 ? "primaryContainer/10" : "primaryContainer/10",
               _dark: depth === 0 ? "outlineVariant/20" : "outlineVariant/20"
             }}
@@ -229,31 +240,61 @@ const FormField: React.FC<FormFieldProps> = ({
 
           <Collapsible.Content p="1" pt="0">
             <Grid templateColumns={{ base: "1fr", lg: "repeat(2, 1fr)" }} gap={4}>
-              {Object.entries(data)
-                .filter(([, value]) => typeof value !== "object" || value === null || Array.isArray(value))
-                .map(([key, value]) => {
-                  const currentPath = [...path, key];
-                  const currentPathString = currentPath.join(PATH_SEPARATOR);
-                  return (
-                    <SingleField
-                      key={currentPathString}
-                      fieldKey={key}
-                      value={value}
-                      currentPath={currentPath}
-                      pathString={currentPathString}
-                      onFieldChange={onFieldChange}
-                      labels={labels}
-                      onLabelChange={onLabelChange}
-                      onRemoveFieldOrSection={onRemoveFieldOrSection}
-                      onMoveItem={onMoveItem}
-                    />
-                  );
-                })}
-              {Object.entries(data)
-                .filter(([, value]) => typeof value === "object" && value !== null && !Array.isArray(value))
-                .map(([key, value]) => {
-                  const currentPath = [...path, key];
-                  const currentPathString = currentPath.join(PATH_SEPARATOR);
+              {Object.entries(data).map(([key, value]) => {
+                const currentPath = [...path, key];
+                const currentPathString = currentPath.join(PATH_SEPARATOR);
+
+                if (Array.isArray(value)) {
+                  // Check if it's an array of objects (table) or array of strings (list)
+                  const isTable = value.length > 0 && typeof value[0] === 'object' && value[0] !== null;
+                  if (isTable) {
+                    return (
+                      <EditableTableField
+                        key={currentPathString}
+                        fieldKey={key}
+                        value={value as Array<Record<string, string>>}
+                        currentPath={currentPath}
+                        pathString={currentPathString}
+                        onFieldChange={onFieldChange}
+                        labels={labels}
+                        onLabelChange={onLabelChange}
+                        onRemoveFieldOrSection={onRemoveFieldOrSection}
+                        onMoveItem={onMoveItem}
+                        onAddArrayItem={onAddArrayItem}
+                        onRemoveArrayItem={onRemoveArrayItem}
+                        onReorderArrayItem={onReorderArrayItem}
+                        isCollapsed={isCollapsed(currentPathString)}
+                        toggleCollapse={() => toggleCollapse(currentPathString)}
+                        depth={depth + 1}
+                        newlyAddedPath={newlyAddedPath}
+                        setNewlyAddedPath={setNewlyAddedPath}
+                      />
+                    );
+                  } else {
+                    return (
+                      <EditableListField
+                        key={currentPathString}
+                        fieldKey={key}
+                        value={value as string[]}
+                        currentPath={currentPath}
+                        pathString={currentPathString}
+                        onFieldChange={onFieldChange}
+                        labels={labels}
+                        onLabelChange={onLabelChange}
+                        onRemoveFieldOrSection={onRemoveFieldOrSection}
+                        onMoveItem={onMoveItem}
+                        onAddArrayItem={onAddArrayItem}
+                        onRemoveArrayItem={onRemoveArrayItem}
+                        onReorderArrayItem={onReorderArrayItem}
+                        isCollapsed={isCollapsed(currentPathString)}
+                        toggleCollapse={() => toggleCollapse(currentPathString)}
+                        depth={depth + 1}
+                        newlyAddedPath={newlyAddedPath}
+                        setNewlyAddedPath={setNewlyAddedPath}
+                      />
+                    );
+                  }
+                } else if (typeof value === "object" && value !== null) {
                   return (
                     <FormField
                       key={currentPathString}
@@ -271,9 +312,30 @@ const FormField: React.FC<FormFieldProps> = ({
                       setNewlyAddedPath={setNewlyAddedPath}
                       isCollapsed={isCollapsed}
                       toggleCollapse={toggleCollapse}
+                      onAddArrayItem={onAddArrayItem}
+                      onRemoveArrayItem={onRemoveArrayItem}
+                      onReorderArrayItem={onReorderArrayItem}
                     />
                   );
-                })}
+                } else {
+                  return (
+                    <SingleField
+                      key={currentPathString}
+                      fieldKey={key}
+                      value={value}
+                      currentPath={currentPath}
+                      pathString={currentPathString}
+                      onFieldChange={onFieldChange}
+                      labels={labels}
+                      onLabelChange={onLabelChange}
+                      onRemoveFieldOrSection={onRemoveFieldOrSection}
+                      onMoveItem={onMoveItem}
+                      newlyAddedPath={newlyAddedPath}
+                      setNewlyAddedPath={setNewlyAddedPath}
+                    />
+                  );
+                }
+              })}
             </Grid>
           </Collapsible.Content>
 

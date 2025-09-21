@@ -5,8 +5,11 @@ import { FiAlertTriangle } from "react-icons/fi"
 import { RxReload } from "react-icons/rx"
 import DynamicForm from "@/components/records/DynamicForm";
 import { getPatientRecordByID } from "@/api/patient-records";
+import { getByUser as getInstitutionsByUser } from "@/api/institution";
 import { toaster } from "@/components/ui/toaster";
 import { type ApiError } from "@/types/api.types";
+import { useSelector } from 'react-redux';
+import { type RootState } from "@/store/store";
 
 const RecordDetails = () => {
     const { id } = useParams<{ id: string }>();
@@ -15,6 +18,9 @@ const RecordDetails = () => {
     const [structuredData, setStructuredData] = useState<string | null>(null);
     const [ocrText, setOcrText] = useState<string | null>(null);
     const [rawFileUrl, setRawFileUrl] = useState<string | null>(null);
+    const [institutionName, setInstitutionName] = useState<string | undefined>(undefined);
+
+    const userId = useSelector((state: RootState) => state.auth.user?.id);
 
     const fetchRecord = useCallback(async (force = false) => {
         setLoading(true);
@@ -71,6 +77,41 @@ const RecordDetails = () => {
         fetchRecord();
     }, [fetchRecord]);
 
+    useEffect(() => {
+        const fetchInstitutionName = async () => {
+            if (!userId) {
+                setInstitutionName(undefined);
+                return;
+            }
+
+            const localStorageKey = `institutions-${userId}`;
+            const storedInstitutions = localStorage.getItem(localStorageKey);
+
+            if (storedInstitutions) {
+                try {
+                    const parsedInstitutions = JSON.parse(storedInstitutions);
+                    if (parsedInstitutions && parsedInstitutions.length > 0) {
+                        setInstitutionName(parsedInstitutions[0].institutionName);
+                    }
+                } catch (error) {
+                    console.error("Error parsing institutions from local storage:", error);
+                }
+            } else {
+                try {
+                    const data = await getInstitutionsByUser(userId);
+                    if (data && data.length > 0) {
+                        setInstitutionName(data[0].institutionName);
+                        localStorage.setItem(localStorageKey, JSON.stringify(data));
+                    }
+                } catch (error) {
+                    console.error("Error fetching institutions from API:", error);
+                }
+            }
+        };
+
+        fetchInstitutionName();
+    }, [userId]);
+
     const handleRevert = () => {
         if (id) {
             sessionStorage.removeItem(`autosave_form_${id}`);
@@ -121,7 +162,7 @@ const RecordDetails = () => {
             direction="column"
             //p={{ xl: "6vw", lg: "6vw", md: "6vw", sm: "6vw", base: "4" }}
         >
-            {structuredData && <DynamicForm structuredData={structuredData} recordId={id} ocrText={ocrText} onRevert={handleRevert} rawFileUrl={rawFileUrl} />}
+            {structuredData && <DynamicForm structuredData={structuredData} recordId={id} ocrText={ocrText} onRevert={handleRevert} rawFileUrl={rawFileUrl} institutionName={institutionName} />}
         </Flex>
     );
 };

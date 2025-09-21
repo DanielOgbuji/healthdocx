@@ -117,6 +117,51 @@ export const insertNested = (
 	return { ...obj, [head]: newHeadValue }; // Return a new object for the current level
 };
 
+export const addArrayItem = (
+	obj: Record<string, unknown>,
+	path: string[],
+	item: unknown
+): Record<string, unknown> => {
+	const array = getNestedValue(obj, path);
+	if (!Array.isArray(array)) {
+		console.warn("Target is not an array:", path);
+		return obj;
+	}
+	const newArray = [...array, item];
+	return updateNested(obj, path, newArray);
+};
+
+export const removeArrayItem = (
+	obj: Record<string, unknown>,
+	path: string[],
+	index: number
+): Record<string, unknown> => {
+	const array = getNestedValue(obj, path);
+	if (!Array.isArray(array)) {
+		console.warn("Target is not an array:", path);
+		return obj;
+	}
+	const newArray = array.filter((_, i) => i !== index);
+	return updateNested(obj, path, newArray);
+};
+
+export const reorderArrayItem = (
+	obj: Record<string, unknown>,
+	path: string[],
+	fromIndex: number,
+	toIndex: number
+): Record<string, unknown> => {
+	const array = getNestedValue(obj, path);
+	if (!Array.isArray(array)) {
+		console.warn("Target is not an array:", path);
+		return obj;
+	}
+	const newArray = [...array];
+	const [movedItem] = newArray.splice(fromIndex, 1);
+	newArray.splice(toIndex, 0, movedItem);
+	return updateNested(obj, path, newArray);
+};
+
 export const formatLabel = (label: string): string =>
 	label
 		.replace(/([a-z])([A-Z])/g, "$1 $2")

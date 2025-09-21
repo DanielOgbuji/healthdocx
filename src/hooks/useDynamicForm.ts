@@ -9,6 +9,9 @@ import {
 	removeNested,
 	insertNested,
 	getNestedValue,
+	addArrayItem as utilAddArrayItem, // Renamed to avoid conflict
+	removeArrayItem as utilRemoveArrayItem, // Renamed to avoid conflict
+	reorderArrayItem as utilReorderArrayItem, // Renamed to avoid conflict
 	PATH_SEPARATOR,
 } from "../utils/dynamicFormUtils";
 
@@ -155,12 +158,15 @@ export const useDynamicForm = (
 	};
 
     // --- ACTION HANDLERS ---
-	const handleFieldChange = (path: string[], value: string) => {
+	const handleFieldChange = (path: string[], value: string | Array<Record<string, string>> | string[]) => {
 		setFormState((prevState) => {
 			const currentValue = getNestedValue(prevState.formData, path);
-			const normalizedCurrentValue = currentValue === null || currentValue === undefined ? "" : String(currentValue);
-			const normalizedNewValue = value === null || value === undefined ? "" : String(value);
-			if (normalizedCurrentValue === normalizedNewValue) return prevState;
+			// Special handling for array types to avoid unnecessary updates
+			if (Array.isArray(currentValue) && Array.isArray(value)) {
+				if (JSON.stringify(currentValue) === JSON.stringify(value)) return prevState;
+			} else if (currentValue === value) {
+				return prevState;
+			}
 			const newFormData = updateNested({ ...prevState.formData }, path, value);
 			return { ...prevState, formData: newFormData };
 		});
@@ -191,7 +197,53 @@ export const useDynamicForm = (
 			const newKey = generateUniqueKey(parentPath);
 			const newFormData = insertNested({ ...prevState.formData }, parentPath, newKey, "", 0);
 			const newLabels = { ...prevState.labels, [[...parentPath, newKey].join(PATH_SEPARATOR)]: `New Field ${newKey.split("_")[1]}` };
+			setNewlyAddedPath([...parentPath, newKey]);
 			return { formData: newFormData, labels: newLabels };
+		});
+	};
+
+	const handleAddTable = (parentPath: string[]) => {
+		setFormState((prevState) => {
+			const newKey = generateUniqueKey(parentPath);
+			const parentObject = parentPath.length === 0 ? prevState.formData : (getNestedValue(prevState.formData, parentPath) as Record<string, unknown>);
+			const insertPosition = parentObject ? Object.keys(parentObject).length : 0;
+			const newFormData = insertNested({ ...prevState.formData }, parentPath, newKey, [{ "New Column 1": "" }], insertPosition);
+			const newLabels = { ...prevState.labels, [[...parentPath, newKey].join(PATH_SEPARATOR)]: `New Table ${newKey.split("_")[1]}` };
+			setNewlyAddedPath([...parentPath, newKey]);
+			return { formData: newFormData, labels: newLabels };
+		});
+	};
+
+	const handleAddList = (parentPath: string[]) => {
+		setFormState((prevState) => {
+			const newKey = generateUniqueKey(parentPath);
+			const parentObject = parentPath.length === 0 ? prevState.formData : (getNestedValue(prevState.formData, parentPath) as Record<string, unknown>);
+			const insertPosition = parentObject ? Object.keys(parentObject).length : 0;
+			const newFormData = insertNested({ ...prevState.formData }, parentPath, newKey, [], insertPosition);
+			const newLabels = { ...prevState.labels, [[...parentPath, newKey].join(PATH_SEPARATOR)]: `New List ${newKey.split("_")[1]}` };
+			setNewlyAddedPath([...parentPath, newKey]);
+			return { formData: newFormData, labels: newLabels };
+		});
+	};
+
+	const handleAddArrayItem = (path: string[], item: Record<string, string> | string) => {
+		setFormState((prevState) => {
+			const newFormData = utilAddArrayItem({ ...prevState.formData }, path, item);
+			return { ...prevState, formData: newFormData };
+		});
+	};
+
+	const handleRemoveArrayItem = (path: string[], index: number) => {
+		setFormState((prevState) => {
+			const newFormData = utilRemoveArrayItem({ ...prevState.formData }, path, index);
+			return { ...prevState, formData: newFormData };
+		});
+	};
+
+	const handleReorderArrayItem = (path: string[], fromIndex: number, toIndex: number) => {
+		setFormState((prevState) => {
+			const newFormData = utilReorderArrayItem({ ...prevState.formData }, path, fromIndex, toIndex);
+			return { ...prevState, formData: newFormData };
 		});
 	};
 
@@ -281,25 +333,35 @@ export const useDynamicForm = (
 				insertIndex
 			);
 
-			const newLabels = { ...prevState.labels };
 			const oldPathStr = fromPath.join(PATH_SEPARATOR);
 			const newPathStr = [...toParentPath, itemKey].join(PATH_SEPARATOR);
+			const newLabels = { ...prevState.labels };
 
+			const labelsToMove: Record<string, string> = {};
+
+			// Collect the item's own label
 			if (newLabels[oldPathStr]) {
-				newLabels[newPathStr] = newLabels[oldPathStr];
-				delete newLabels[oldPathStr];
+				labelsToMove[oldPathStr] = newLabels[oldPathStr];
 			}
 
+			// Collect children's labels
+			const prefix = `${oldPathStr}${PATH_SEPARATOR}`;
 			Object.keys(newLabels).forEach((key) => {
-				if (key.startsWith(`${oldPathStr}${PATH_SEPARATOR}`)) {
-					const newKey = key.replace(
-						`${oldPathStr}${PATH_SEPARATOR}`,
-						`${newPathStr}${PATH_SEPARATOR}`
-					);
-					newLabels[newKey] = newLabels[key];
-					delete newLabels[key];
+				if (key.startsWith(prefix)) {
+					labelsToMove[key] = newLabels[key];
 				}
 			});
+
+			// Delete all old labels
+			Object.keys(labelsToMove).forEach((key) => {
+				delete newLabels[key];
+			});
+
+			// Add labels back with new paths
+			for (const oldKey in labelsToMove) {
+				const newKey = newPathStr + oldKey.substring(oldPathStr.length);
+				newLabels[newKey] = labelsToMove[oldKey];
+			}
 
 			return { formData: newFormData, labels: newLabels };
 		});
@@ -379,20 +441,31 @@ export const useDynamicForm = (
 
 				const oldPath = fromPath.join(PATH_SEPARATOR);
 				const newPath = [...destinationPath, itemKey].join(PATH_SEPARATOR);
+
+				const labelsToMove: Record<string, string> = {};
+				
+				// Collect the item's own label
 				if (newLabels[oldPath]) {
-					newLabels[newPath] = newLabels[oldPath];
-					delete newLabels[oldPath];
+					labelsToMove[oldPath] = newLabels[oldPath];
 				}
+				const prefix = `${oldPath}${PATH_SEPARATOR}`;
+				// Collect children's labels
 				Object.keys(newLabels).forEach((key) => {
-					if (key.startsWith(`${oldPath}${PATH_SEPARATOR}`)) {
-						const newKey = key.replace(
-							`${oldPath}${PATH_SEPARATOR}`,
-							`${newPath}${PATH_SEPARATOR}`
-						);
-						newLabels[newKey] = newLabels[key];
-						delete newLabels[key];
+					if (key.startsWith(prefix)) {
+						labelsToMove[key] = newLabels[key];
 					}
 				});
+
+				// Delete all old labels
+				Object.keys(labelsToMove).forEach((key) => {
+					delete newLabels[key];
+				});
+
+				// Add labels back with new paths
+				for (const oldKey in labelsToMove) {
+					const newKey = newPath + oldKey.substring(oldPath.length);
+					newLabels[newKey] = labelsToMove[oldKey];
+				}
 			}
 			return { formData: newFormData, labels: newLabels };
 		});
@@ -446,6 +519,11 @@ export const useDynamicForm = (
 		handleSubmit,
 		handleAddSection,
 		handleAddField,
+		handleAddTable,
+		handleAddList,
+		handleAddArrayItem,
+		handleRemoveArrayItem,
+		handleReorderArrayItem,
 		handleMoveItem,
 		handleRemoveFieldOrSection,
 		handleBulkDelete,
