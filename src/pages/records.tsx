@@ -18,9 +18,13 @@ import {
   Image,
   Button,
   Checkbox,
+  Kbd,
+  Input, // Added Input for search
+  InputGroup,
+  Highlight, // Added Highlight for search results
 } from "@chakra-ui/react";
-import { LuChevronLeft, LuChevronRight } from "react-icons/lu";
-import { useEffect, useState, useCallback } from "react";
+import { LuChevronLeft, LuChevronRight, LuSearch } from "react-icons/lu";
+import { useEffect, useState, useCallback, useRef } from "react";
 import { getPatientRecords } from "@/api/patient-records";
 import { useNavigate } from "react-router";
 import noRecord from "@/assets/images/norecord.svg";
@@ -35,6 +39,7 @@ import useFileUpload from "@/hooks/useFileUpload";
 import InfoTile from "@/components/home/InfoTile";
 import { useCamera } from "@/hooks/useCamera";
 import { CameraDialog } from "@/components/home/CameraDialog";
+import { MdArrowUpward } from "react-icons/md";
 
 // Caching mechanism implemented for patient records
 interface PatientRecord {
@@ -52,6 +57,55 @@ const Records = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [selection, setSelection] = useState<string[]>([]);
+  const [searchQuery, setSearchQuery] = useState(""); // State for search query
+  const [filteredRecords, setFilteredRecords] = useState<PatientRecord[]>([]); // State for filtered records
+  const searchInputRef = useRef<HTMLInputElement>(null); // Ref for the search input
+  const [sortColumn, setSortColumn] = useState<string | null>(null);
+  const [sortOrder, setSortOrder] = useState<'asc' | 'desc'>('asc');
+
+  const capitalizeFirstLetter = (string: string) => {
+    if (!string) return '';
+    return string.charAt(0).toUpperCase() + string.slice(1);
+  };
+
+  const handleSort = useCallback((column: string) => {
+    if (sortColumn === column) {
+      setSortOrder((prevOrder) => (prevOrder === 'asc' ? 'desc' : 'asc'));
+    } else {
+      setSortColumn(column);
+      setSortOrder('asc');
+    }
+  }, [sortColumn]);
+
+  const getSortedRecords = useCallback((recordsToSort: PatientRecord[], column: string | null, order: 'asc' | 'desc') => {
+    if (!column) {
+      return recordsToSort;
+    }
+
+    const sorted = [...recordsToSort].sort((a, b) => {
+      let compareValue = 0;
+
+      switch (column) {
+        case 'id':
+          compareValue = a.id.localeCompare(b.id);
+          break;
+        case 'groupType':
+          compareValue = a.recordTypeGroup.localeCompare(b.recordTypeGroup) || a.recordType.localeCompare(b.recordType);
+          break;
+        case 'created':
+          compareValue = new Date(a.uploadedAt).getTime() - new Date(b.uploadedAt).getTime();
+          break;
+        case 'status':
+          compareValue = a.status.localeCompare(b.status);
+          break;
+        default:
+          break;
+      }
+
+      return order === 'asc' ? compareValue : -compareValue;
+    });
+    return sorted;
+  }, []);
 
   const {
     open,
@@ -108,7 +162,7 @@ const Records = () => {
         setRecords(sortedStoredRecords);
       }
     } catch (err: unknown) {
-      if (err instanceof Error && err.name === 'AbortError') {
+      if (err instanceof Error && (err.name === 'AbortError' || err.name === 'CanceledError')) {
         console.log('Fetch aborted');
         return;
       }
@@ -155,14 +209,47 @@ const Records = () => {
     };
   }, [fetchRecords]);
 
+  // Update filtered records whenever records, searchQuery, sortColumn, or sortOrder changes
+  useEffect(() => {
+    let currentFilteredRecords = records;
+
+    if (searchQuery) {
+      const lowerCaseQuery = searchQuery.toLowerCase();
+      currentFilteredRecords = records.filter(record =>
+        record.id.toLowerCase().includes(lowerCaseQuery) ||
+        record.recordTypeGroup.toLowerCase().includes(lowerCaseQuery) ||
+        record.recordType.toLowerCase().includes(lowerCaseQuery)
+      );
+    }
+
+    const sortedAndFilteredRecords = getSortedRecords(currentFilteredRecords, sortColumn, sortOrder);
+    setFilteredRecords(sortedAndFilteredRecords);
+    setCurrentPage(1); // Reset to first page on search or sort
+  }, [records, searchQuery, sortColumn, sortOrder, getSortedRecords]);
+
   const itemsPerPage = 8;
   const [currentPage, setCurrentPage] = useState(1);
 
   const startIndex = (currentPage - 1) * itemsPerPage;
   const endIndex = startIndex + itemsPerPage;
-  const currentRecords = records.slice(startIndex, endIndex);
+  const currentRecords = filteredRecords.slice(startIndex, endIndex); // Use filteredRecords here
 
   const indeterminate = selection.length > 0 && selection.length < currentRecords.length;
+
+  useEffect(() => {
+    const handleKeyDown = (event: KeyboardEvent) => {
+      if (event.ctrlKey && event.key === 'k') {
+        event.preventDefault();
+        searchInputRef.current?.focus();
+      }
+    };
+
+    window.addEventListener('keydown', handleKeyDown);
+
+    return () => {
+      window.removeEventListener('keydown', handleKeyDown);
+    };
+  }, []);
 
   return (
     <>
@@ -194,7 +281,7 @@ const Records = () => {
           </Flex>
         </Stack>
       ) : records.length === 0 ? (
-        <EmptyState.Root>
+        <EmptyState.Root display="flex" alignItems="center" justifyContent="center" h="full">
           <EmptyState.Content>
             <EmptyState.Indicator>
               <Image src={colorMode === "dark" ? noRecordDark : noRecord} />
@@ -222,17 +309,25 @@ const Records = () => {
       ) : (
         <Stack width="full" alignItems="center" px={{ xl: "6vw", lg: "6vw", md: "6vw", sm: "6vw", base: "4" }} pb={{ xl: "6vw", lg: "6vw", md: "6vw", sm: "6vw", base: "4" }} mt="120px" gap="0">
           <InfoTile openCamera={openCamera} />
-          <Table.ScrollArea borderWidth="1px" w="full" borderTopRadius="md" colorPalette="brand" mt="8">
-            <Flex w="full" p="4" pt="3">
-              <Flex direction="column" gap="1">
-                <Flex textStyle="md" fontWeight="semibold" gap="2" alignItems="center">
-                  Your Records
-                  <Flex fontSize="x-small" px="2" py="1" rounded="full" lineHeight="short" bgColor="surface" color="primary">{records.length} records</Flex>
-                </Flex>
-                <Flex textStyle="xs" color="fg.muted/80">Keep track of every record extracted, unextracted & created.</Flex>
+          <Flex w="full" p="4" pt="3" justifyContent="space-between" alignItems={{ base: "center", mdDown: "start"}} borderStyle="solid" borderWidth="1px" borderBottomWidth="0" borderColor="border.default" roundedTop="md" mt="8" direction={{ base: "row", mdDown: "column" }} gap={{ base: "4", md: "0" }} colorPalette="brand">
+            <Flex direction="column" gap="1">
+              <Flex textStyle="md" fontWeight="semibold" gap="2" alignItems="center">
+                Your Records
+                <Flex fontSize="x-small" px="2" py="1" rounded="full" lineHeight="short" bgColor="surface" color="primary">{filteredRecords.length} records</Flex>
               </Flex>
-              <Flex></Flex>
+              <Flex textStyle="xs" color="fg.muted/80">Keep track of every record extracted, unextracted & created.</Flex>
             </Flex>
+            <InputGroup startElement={<LuSearch />} width={{ base: "full", md: "240px" }} endElement={<Kbd>Ctrl + K</Kbd>}>
+              <Input
+                ref={searchInputRef}
+                size="sm"
+                placeholder="Search records..."
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+              />
+            </InputGroup>
+          </Flex>
+          <Table.ScrollArea borderWidth="1px" w="full" colorPalette="brand">
             <Table.Root size="sm" variant="outline" interactive>
               <Table.Header>
                 <Table.Row>
@@ -253,11 +348,29 @@ const Records = () => {
                       <Checkbox.Control />
                     </Checkbox.Root>
                   </Table.ColumnHeader>
-                  <Table.ColumnHeader><Text fontSize="sm">Name/ID</Text></Table.ColumnHeader>
-                  <Table.ColumnHeader><Text fontSize="sm">Group/Type</Text></Table.ColumnHeader>
-                  <Table.ColumnHeader><Text fontSize="sm">Created</Text></Table.ColumnHeader>
-                  <Table.ColumnHeader><Text fontSize="sm">Origin</Text></Table.ColumnHeader>
-                  <Table.ColumnHeader><Text fontSize="sm">Status</Text></Table.ColumnHeader>
+                  <Table.ColumnHeader onClick={() => handleSort('id')} cursor="pointer">
+                    <Text fontSize="sm" display="flex" alignItems="center" gap="1" color={sortColumn === 'id' ? 'primary' : 'fg.muted'}>
+                      Name/ID <Flex color={sortColumn === 'id' ? 'primary' : 'fg.muted'} transform={sortColumn === 'id' && sortOrder === 'desc' ? 'rotate(180deg)' : 'none'} transition="transform 0.2s ease-in-out"><MdArrowUpward/></Flex>
+                    </Text>
+                  </Table.ColumnHeader>
+                  <Table.ColumnHeader onClick={() => handleSort('groupType')} cursor="pointer">
+                    <Text fontSize="sm" display="flex" alignItems="center" gap="1" color={sortColumn === 'groupType' ? 'primary' : 'fg.muted'}>
+                      Group/Type <Flex color={sortColumn === 'groupType' ? 'primary' : 'fg.muted'} transform={sortColumn === 'groupType' && sortOrder === 'desc' ? 'rotate(180deg)' : 'none'} transition="transform 0.2s ease-in-out"><MdArrowUpward/></Flex>
+                    </Text>
+                  </Table.ColumnHeader>
+                  <Table.ColumnHeader onClick={() => handleSort('created')} cursor="pointer">
+                    <Text fontSize="sm" display="flex" alignItems="center" gap="1" color={sortColumn === 'created' ? 'primary' : 'fg.muted'}>
+                      Created <Flex color={sortColumn === 'created' ? 'primary' : 'fg.muted'} transform={sortColumn === 'created' && sortOrder === 'desc' ? 'rotate(180deg)' : 'none'} transition="transform 0.2s ease-in-out"><MdArrowUpward/></Flex>
+                    </Text>
+                  </Table.ColumnHeader>
+                  <Table.ColumnHeader>
+                    <Text fontSize="sm" display="flex" alignItems="center" gap="1">Origin</Text>
+                  </Table.ColumnHeader>
+                  <Table.ColumnHeader onClick={() => handleSort('status')} cursor="pointer">
+                    <Text fontSize="sm" display="flex" alignItems="center" gap="1" color={sortColumn === 'status' ? 'primary' : 'fg.muted'}>
+                      Status <Flex color={sortColumn === 'status' ? 'primary' : 'fg.muted'} transform={sortColumn === 'status' && sortOrder === 'desc' ? 'rotate(180deg)' : 'none'} transition="transform 0.2s ease-in-out"><MdArrowUpward/></Flex>
+                    </Text>
+                  </Table.ColumnHeader>
                 </Table.Row>
               </Table.Header>
               <Table.Body>
@@ -285,13 +398,23 @@ const Records = () => {
                         <Checkbox.Control />
                       </Checkbox.Root>
                     </Table.Cell>
-                    <Table.Cell onClick={() => navigate(`/records/details/${record.id}`)}><Text truncate lineClamp="2" fontWeight="semibold" cursor="pointer">{record.id}</Text></Table.Cell>
-                    <Table.Cell>
-                      <Text textTransform="capitalize" fontWeight="semibold">
-                        {record.recordTypeGroup}
+                    <Table.Cell onClick={() => navigate(`/records/details/${record.id}`)}>
+                      <Text truncate lineClamp="2" fontWeight="semibold" cursor="pointer">
+                        <Highlight ignoreCase query={[searchQuery]} styles={{ bg: "gray.emphasized" }}>
+                          {record.id}
+                        </Highlight>
                       </Text>
-                      <Text textTransform="capitalize" color="fg.muted/80">
-                        {record.recordType}
+                    </Table.Cell>
+                    <Table.Cell>
+                      <Text fontWeight="semibold">
+                        <Highlight ignoreCase query={[searchQuery]} styles={{ bg: "gray.emphasized" }}>
+                          {capitalizeFirstLetter(record.recordTypeGroup)}
+                        </Highlight>
+                      </Text>
+                      <Text color="fg.muted/80">
+                        <Highlight ignoreCase query={[searchQuery]} styles={{ bg: "gray.emphasized" }}>
+                          {capitalizeFirstLetter(record.recordType)}
+                        </Highlight>
                       </Text>
                     </Table.Cell>
                     <Table.Cell>
@@ -299,7 +422,7 @@ const Records = () => {
                       <Text color="fg.muted/80">{formatTime(record.uploadedAt)}</Text>
                     </Table.Cell>
                     <Table.Cell>Extracted</Table.Cell>
-                    <Table.Cell textTransform="capitalize">
+                    <Table.Cell>
                       <Status.Root size="sm" color="fg.warning" fontWeight="medium" rounded="full" bgColor="bg.warning" px="2" py="1">
                         <Status.Indicator boxSize="1.5" bg="border.warning" />
                         {record.status}
@@ -314,7 +437,7 @@ const Records = () => {
           <Pagination.Root
             display="flex"
             justifyContent="center"
-            count={records.length}
+            count={filteredRecords.length} // Use filteredRecords.length for pagination count
             pageSize={itemsPerPage}
             page={currentPage}
             onPageChange={(details) => setCurrentPage(details.page as number)}

@@ -69,7 +69,7 @@ const RecentRecordsPane = () => {
                 setRecords(parsedStoredRecords);
             }
         } catch (err: unknown) {
-            if (err instanceof Error && err.name === 'AbortError') {
+            if (err instanceof Error && (err.name === 'AbortError' || err.name === 'CanceledError')) {
                 console.log('Fetch aborted');
                 return;
             }

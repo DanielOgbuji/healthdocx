@@ -2,7 +2,7 @@ import { Flex } from "@chakra-ui/react";
 
 const Analytics = () => {
     return (
-        <Flex w="full" h="full" alignItems="center" justifyContent="center">Analytics</Flex>
+        <Flex w="100vw" h="100vh" alignItems="center" justifyContent="center" color="onBackground" bgColor="backface">Analytics</Flex>
     );
 }
 
