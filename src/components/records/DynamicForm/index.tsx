@@ -27,10 +27,13 @@ import {
 import { useDynamicForm } from "@/hooks/useDynamicForm";
 import FormField from "./FormField";
 import SingleField from "./SingleField";
+import EditableTableField from "./EditableTableField"; // Import new table component
+import EditableListField from "./EditableListField"; // Import new list component
 import MoveMenuItems from "./MoveMenuItems";
 import ImageViewer from "./ImageViewer";
+import DocumentPreview from "./DocumentPreview"; // Import the new component
 import { recordGroups, recordTypes } from "@/constants/recordOptions";
-import { MdOutlineCloudDone, MdOutlineFileUpload, MdOutlineUndo, MdAdd, MdTextFields, MdDeleteOutline, MdOutlineMoveUp, MdOutlineRestore, MdOutlineAccountTree, MdOutlineClearAll, MdExpandMore, MdExpandLess, MdOutlineImage, MdOutlineModeEditOutline, MdOutlinePreview } from "react-icons/md";
+import { MdOutlineCloudDone, MdOutlineFileUpload, MdOutlineUndo, MdAdd, MdTextFields, MdDeleteOutline, MdOutlineMoveUp, MdOutlineRestore, MdOutlineAccountTree, MdOutlineClearAll, MdExpandMore, MdExpandLess, MdOutlineImage, MdOutlineModeEditOutline, MdOutlinePreview, MdOutlineTableChart, MdOutlineFormatListBulleted } from "react-icons/md";
 import { DndProvider, useDrop } from 'react-dnd';
 import { HTML5Backend } from 'react-dnd-html5-backend';
 import { SelectionProvider } from '@/contexts/SelectionProvider'; // Corrected import path
@@ -44,9 +47,10 @@ interface DynamicFormProps {
   ocrText: string | null;
   onRevert: () => void;
   rawFileUrl: string | null;
+  institutionName?: string;
 }
 
-const DynamicFormContent: React.FC<DynamicFormProps> = ({ structuredData, recordId, ocrText, onRevert, rawFileUrl }) => {
+const DynamicFormContent: React.FC<DynamicFormProps> = ({ structuredData, recordId, ocrText, onRevert, rawFileUrl, institutionName }) => {
   const {
     formData,
     labels,
@@ -59,6 +63,8 @@ const DynamicFormContent: React.FC<DynamicFormProps> = ({ structuredData, record
     handleSubmit,
     handleAddSection,
     handleAddField,
+    handleAddTable,
+    handleAddList,
     handleRemoveFieldOrSection,
     handleMoveItem,
     handleBulkDelete,
@@ -69,7 +75,10 @@ const DynamicFormContent: React.FC<DynamicFormProps> = ({ structuredData, record
     toggleCollapse,
     undo,
     redo,
-    changesCount
+    changesCount,
+    handleAddArrayItem, // New prop
+    handleRemoveArrayItem, // New prop
+    handleReorderArrayItem, // New prop
   } = useDynamicForm(structuredData, recordId, ocrText);
   const { selectedItems, clearSelection } = useSelection();
   const scrollContainerRef = useRef<HTMLDivElement>(null);
@@ -265,6 +274,22 @@ const DynamicFormContent: React.FC<DynamicFormProps> = ({ structuredData, record
                               title="Add a text field to the root."
                             >
                               <MdTextFields title="Add a text field to the root." />
+                            </Button>
+                            <Button
+                              onClick={() => handleAddTable([])}
+                              size="sm"
+                              variant="ghost"
+                              title="Add a table to the root."
+                            >
+                              <MdOutlineTableChart title="Add a table to the root." />
+                            </Button>
+                            <Button
+                              onClick={() => handleAddList([])}
+                              size="sm"
+                              variant="ghost"
+                              title="Add a list to the root."
+                            >
+                              <MdOutlineFormatListBulleted title="Add a list to the root." />
                             </Button>
                             <Button
                               onClick={() => {
@@ -565,34 +590,66 @@ const DynamicFormContent: React.FC<DynamicFormProps> = ({ structuredData, record
                 </Tag.Root>
               </Flex>
               <Grid templateColumns={{ base: "1fr", lg: "repeat(2, 1fr)" }} gap={4} w="full" title="Root" pt="9">
-                {Object.entries(formData)
-                  .filter(([, value]) => typeof value !== "object" || value === null || Array.isArray(value))
-                  .map(([key, value]) => {
-                    const currentPath = [key];
-                    const pathString = currentPath.join(PATH_SEPARATOR);
-                    return (
-                      <SingleField
-                        key={pathString}
-                        fieldKey={key}
-                        value={value}
-                        currentPath={currentPath}
-                        pathString={pathString}
-                        onFieldChange={handleFieldChange}
-                        labels={labels}
-                        onLabelChange={handleLabelChange}
-                        onRemoveFieldOrSection={handleRemoveFieldOrSection}
-                        onMoveItem={handleMoveItem}
-                      />
-                    );
-                  })}
-                {Object.entries(formData)
-                  .filter(([, value]) => typeof value === "object" && value !== null && !Array.isArray(value))
-                  .map(([key, value]) => {
+                {Object.entries(formData).map(([key, value]) => {
+                  const currentPath = [key];
+                  const currentPathString = currentPath.join(PATH_SEPARATOR);
+
+                  if (Array.isArray(value)) {
+                    const isTable = value.length > 0 && typeof value[0] === 'object' && value[0] !== null;
+                    if (isTable) {
+                      return (
+                        <EditableTableField
+                          key={currentPathString}
+                          fieldKey={key}
+                          value={value as Array<Record<string, string>>}
+                          currentPath={currentPath}
+                          pathString={currentPathString}
+                          onFieldChange={handleFieldChange}
+                          labels={labels}
+                          onLabelChange={handleLabelChange}
+                          onRemoveFieldOrSection={handleRemoveFieldOrSection}
+                          onMoveItem={handleMoveItem}
+                          onAddArrayItem={handleAddArrayItem}
+                          onRemoveArrayItem={handleRemoveArrayItem}
+                          onReorderArrayItem={handleReorderArrayItem}
+                          isCollapsed={isCollapsed(currentPathString)}
+                          toggleCollapse={() => toggleCollapse(currentPathString)}
+                          depth={0}
+                          newlyAddedPath={newlyAddedPath}
+                          setNewlyAddedPath={setNewlyAddedPath}
+                        />
+                      );
+                    } else {
+                      return (
+                        <EditableListField
+                          key={currentPathString}
+                          fieldKey={key}
+                          value={value as string[]}
+                          currentPath={currentPath}
+                          pathString={currentPathString}
+                          onFieldChange={handleFieldChange}
+                          labels={labels}
+                          onLabelChange={handleLabelChange}
+                          onRemoveFieldOrSection={handleRemoveFieldOrSection}
+                          onMoveItem={handleMoveItem}
+                          onAddArrayItem={handleAddArrayItem}
+                          onRemoveArrayItem={handleRemoveArrayItem}
+                          onReorderArrayItem={handleReorderArrayItem}
+                          isCollapsed={isCollapsed(currentPathString)}
+                          toggleCollapse={() => toggleCollapse(currentPathString)}
+                          depth={0}
+                          newlyAddedPath={newlyAddedPath}
+                          setNewlyAddedPath={setNewlyAddedPath}
+                        />
+                      );
+                    }
+                  } else if (typeof value === "object" && value !== null) {
                     return (
                       <FormField
-                        key={key}
+                        key={currentPathString}
+                        depth={0} // Root level sections have depth 0
                         data={value as Record<string, unknown>}
-                        path={[key]}
+                        path={currentPath}
                         onFieldChange={handleFieldChange}
                         labels={labels}
                         onLabelChange={handleLabelChange}
@@ -604,10 +661,30 @@ const DynamicFormContent: React.FC<DynamicFormProps> = ({ structuredData, record
                         setNewlyAddedPath={setNewlyAddedPath}
                         isCollapsed={isCollapsed}
                         toggleCollapse={toggleCollapse}
+                        onAddArrayItem={handleAddArrayItem}
+                        onRemoveArrayItem={handleRemoveArrayItem}
+                        onReorderArrayItem={handleReorderArrayItem}
                       />
-
                     );
-                  })}
+                  } else {
+                    return (
+                      <SingleField
+                        key={currentPathString}
+                        fieldKey={key}
+                        value={value}
+                        currentPath={currentPath}
+                        pathString={currentPathString}
+                        onFieldChange={handleFieldChange}
+                        labels={labels}
+                        onLabelChange={handleLabelChange}
+                        onRemoveFieldOrSection={handleRemoveFieldOrSection}
+                        onMoveItem={handleMoveItem}
+                        newlyAddedPath={newlyAddedPath}
+                        setNewlyAddedPath={setNewlyAddedPath}
+                      />
+                    );
+                  }
+                })}
               </Grid>
             </Flex>
           </VStack>
@@ -615,10 +692,8 @@ const DynamicFormContent: React.FC<DynamicFormProps> = ({ structuredData, record
         <Box display={currentView === 'image' ? 'block' : 'none'}>
           {rawFileUrl && <ImageViewer imageUrl={rawFileUrl} />}
         </Box>
-        <Box display={currentView === 'preview' ? 'block' : 'none'}>
-          <Flex justify="center" align="center" h="full">
-            <Text>Preview Component Goes Here</Text>
-          </Flex>
+        <Box display={currentView === 'preview' ? 'block' : 'none'} pt="8">
+          <DocumentPreview formData={formData} labels={labels} institutionName={institutionName} />
         </Box>
       </Flex>
     </Flex >

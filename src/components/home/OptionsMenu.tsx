@@ -28,7 +28,7 @@ const OptionsMenu = ({ isOpen, setIsOpen, openCamera }: OptionsMenuProps) => {
                             Camera
                         </Menu.Item>
                         <Menu.Item value="scanner" asChild _hover={{ bgColor: "brand.subtle" }} color="brand.fg">
-                            <NavLink to="/" end>
+                            <NavLink to="/scanner" end>
                                 <GrScan />
                                 Scanner
                             </NavLink>

@@ -39,6 +39,7 @@ const useFileUpload = () => {
 		setUploadStatus("uploading");
 		setErrorMessage("");
 		setOpen(true);
+		console.log("useFileUpload: uploadFile - setOpen(true), uploadStatus: uploading"); // Added log
 
 		const cancelTokenSource = axios.CancelToken.source();
 		setUploadCancelToken(cancelTokenSource);
@@ -76,6 +77,7 @@ const useFileUpload = () => {
 	};
 
 	const handleFileChange = async (details: FileChangeDetails) => {
+		console.log("useFileUpload: handleFileChange called with details:", details); // Added log
 		if (
 			details?.rejectedFiles[0]?.errors &&
 			details?.rejectedFiles[0]?.errors[0] === "FILE_TOO_LARGE"
@@ -124,6 +126,7 @@ const useFileUpload = () => {
 
 		// For PDF files, skip cropping and go straight to upload
 		if (file.type === "application/pdf") {
+			console.log("useFileUpload: PDF file detected, calling uploadFile."); // Added log
 			await uploadFile(file);
 			return;
 		}
@@ -134,6 +137,7 @@ const useFileUpload = () => {
 			setFilePreview(reader.result as string);
 			setUploadStatus("cropping");
 			setOpen(true);
+			console.log("useFileUpload: Image file detected, setOpen(true), uploadStatus: cropping"); // Added log
 		};
 		reader.readAsDataURL(file);
 	};
