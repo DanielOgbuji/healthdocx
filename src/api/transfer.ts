@@ -57,6 +57,7 @@ export interface TransferSessionStatus {
     connectedAt: string;
     completedAt: string;
     expiresAt: string;
+    wsUrl?: string;
 }
 
 export const getTransferSessionStatus = async (sessionId: string) => {

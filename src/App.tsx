@@ -17,6 +17,7 @@ import VerifyEmailPage from '@/pages/verify-email';
 import PasswordResetPage from '@/pages/password-reset';
 import ResetSuccessfulPage from '@/pages/reset-successful';
 import RecordsDetails from '@/pages/record-details';
+import Scanner from '@/pages/scanner';
 import { BrowserRouter, Routes, Route } from 'react-router';
 
 function App() {
@@ -40,6 +41,7 @@ function App() {
                             <Route path="analytics" element={<ProtectedRoute><Analytics /></ProtectedRoute>} />
                             <Route path="settings" element={<ProtectedRoute><Settings /></ProtectedRoute>} />
                             <Route path="link-phone" element={<ProtectedRoute><LinkPhone /></ProtectedRoute>} />
+                            <Route path="scanner" element={<ProtectedRoute><Scanner /></ProtectedRoute>} />
                         </Route>
                     </Routes>
                 </BrowserRouter>
