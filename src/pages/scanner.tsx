@@ -106,7 +106,7 @@ const Scanner = () => {
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         if (!(window as any).scanner) {
             const script = document.createElement('script');
-            script.src = "/src/scannerjs/scanner.js"; // Adjust path as necessary
+            script.src = "/scannerjs/scanner.js"; // Adjust path as necessary
             script.async = true;
             document.body.appendChild(script);
             script.onload = () => {
