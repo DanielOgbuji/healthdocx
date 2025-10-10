@@ -16,6 +16,7 @@ export const INSTITUTION_TYPE_OPTIONS = [
 	"Hospital",
 	"Clinic",
 	"Primary Health Center",
+	"Veterinary",
 	"Diagnostic Center",
 	"Pharmacy",
 	"Rehabilitation Center",
