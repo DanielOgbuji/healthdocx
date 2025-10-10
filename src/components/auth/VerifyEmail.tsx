@@ -6,6 +6,7 @@ import { useAnimate } from "motion/react"
 import { AnimatePresence, motion } from "motion/react"
 import { toaster } from "@/components/ui/toaster"
 import { INITIAL_RESEND_TIMER, MAX_RESEND_ATTEMPTS, RESEND_TIMER_INCREMENT } from '@/constants/formConstants';
+import { forgotPassword } from "@/api/auth";
 
 interface FormValues {
     pin: string[]
@@ -23,13 +24,15 @@ export default function VerifyEmail({ onSuccess }: VerifyEmailProps) {
     const [resendTimer, setResendTimer] = React.useState(0)
     const resendAttemptsRef = React.useRef(0)
 
+    // Get email from sessionStorage (set by ForgotPassword component)
+    const email = sessionStorage.getItem("resetPasswordEmail")
+
     const defaultPin = ['', '', '', '']
 
     const {
         handleSubmit,
         control,
         watch,
-        setError,
         reset,
         formState: { errors, isSubmitting }
     } = useForm<FormValues>({
@@ -58,50 +61,68 @@ export default function VerifyEmail({ onSuccess }: VerifyEmailProps) {
         }
     }, [otpError, animate, scope])
 
-    const onSubmit = handleSubmit(async ({ pin }) => {
-        setOtpError(null)
+    const onSubmit = handleSubmit(({ pin }) => {
         const otp = pin.join('')
+
+        if (!email) {
+            setOtpError("Email not found. Please try the forgot password process again.")
+            return
+        }
+
+        // Store OTP in sessionStorage for use in PasswordReset component
+        sessionStorage.setItem("resetPasswordOtp", otp)
+
+        setIsVisible(false)
+        setTimeout(() => {
+            navigate("/password-reset")
+            onSuccess?.()
+        }, 500)
+
+        reset({ pin: defaultPin })
+    })
+
+    const handleResend = async () => {
+        if (!email) {
+            toaster.create({
+                duration: 3000,
+                title: "Error",
+                description: "Email not found. Please try the forgot password process again.",
+                type: "error",
+            })
+            return
+        }
+
         try {
-            // Simulate API call
-            await new Promise((resolve, reject) =>
-                setTimeout(() => otp === "1234" ? resolve(true) : reject(new Error()), 500)
-            )
+            await forgotPassword(email)
+
+            if (resendAttemptsRef.current >= MAX_RESEND_ATTEMPTS) {
+                resendAttemptsRef.current = 0
+                setResendTimer(INITIAL_RESEND_TIMER)
+            } else {
+                resendAttemptsRef.current++
+                setResendTimer(INITIAL_RESEND_TIMER + resendAttemptsRef.current * RESEND_TIMER_INCREMENT)
+            }
 
             toaster.create({
                 duration: 3000,
-                title: "Success",
-                description: "Email verified successfully.",
+                title: "Code has been resent",
+                description: "Check your inbox or spam for code",
                 type: "success",
             })
+        } catch (error: unknown) {
+            const errorMessage = error && typeof error === 'object' && 'response' in error &&
+                error.response && typeof error.response === 'object' && 'data' in error.response &&
+                error.response.data && typeof error.response.data === 'object' && 'error' in error.response.data
+                ? (error.response.data as { error: string }).error
+                : "Failed to resend code. Please try again."
 
-            setIsVisible(false)
-            setTimeout(() => {
-                navigate("/password-reset")
-                onSuccess?.()
-            }, 500)
-
-            reset({ pin: defaultPin })
-        } catch {
-            setOtpError("The code you entered is incorrect.")
-            setError("pin", { type: "manual", message: "The code you entered is incorrect." })
+            toaster.create({
+                duration: 3000,
+                title: "Error",
+                description: errorMessage,
+                type: "error",
+            })
         }
-    })
-
-    const handleResend = () => {
-        if (resendAttemptsRef.current >= MAX_RESEND_ATTEMPTS) {
-            resendAttemptsRef.current = 0
-            setResendTimer(INITIAL_RESEND_TIMER)
-        } else {
-            resendAttemptsRef.current++
-            setResendTimer(INITIAL_RESEND_TIMER + resendAttemptsRef.current * RESEND_TIMER_INCREMENT)
-        }
-
-        toaster.create({
-            duration: 3000,
-            title: "Code has been resent",
-            description: "Check your inbox or spam for code",
-            type: "success",
-        })
     }
 
     return (

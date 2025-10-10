@@ -11,7 +11,7 @@ import {
     For,
     Flex
 } from "@chakra-ui/react";
-import { MdOutlineUndo, MdOutlinePersonOutline, MdOutlineAlternateEmail, MdOutlinePassword, MdOutlineArrowForward } from "react-icons/md";
+import { MdOutlineUndo, MdOutlinePersonOutline, MdOutlineAlternateEmail, MdOutlinePassword, MdOutlineArrowForward, MdOutlineConfirmationNumber } from "react-icons/md";
 import Flag from "@/assets/images/ng.png";
 import { PasswordInput, PasswordStrengthMeter } from "@/components/ui/password-input";
 import { useForm } from "react-hook-form";
@@ -34,6 +34,7 @@ export default function FormOne() {
             role: "",
             phoneNumber: "",
             password: "",
+            invitationCode: "",
         }
     });
 
@@ -174,6 +175,34 @@ export default function FormOne() {
                             />
                         </InputGroup>
                         <Field.ErrorText id="phone-error">{errors.phoneNumber?.message?.toString()}</Field.ErrorText>
+                    </Field.Root>
+                    <Field.Root invalid={!!errors.invitationCode} required>
+                        <Field.Label>Invitation Code<Field.RequiredIndicator /></Field.Label>
+                        <InputGroup
+                            startElement={<Icon size="md" color="outline"><MdOutlineConfirmationNumber /></Icon>}>
+                            <Input
+                                aria-describedby={errors.invitationCode ? "invitation-code-error" : undefined}
+                                id="invitationCode"
+                                type="text"
+                                placeholder="Enter your invitation code"
+                                {...register("invitationCode", {
+                                    required: "Invitation code is required",
+                                    minLength: {
+                                        value: 6,
+                                        message: "Invitation code must be at least 6 characters"
+                                    },
+                                    maxLength: {
+                                        value: 50,
+                                        message: "Invitation code must not exceed 50 characters"
+                                    },
+                                    pattern: {
+                                        value: /^[A-Z0-9]+$/i,
+                                        message: "Invitation code can only contain letters and numbers"
+                                    }
+                                })}
+                            />
+                        </InputGroup>
+                        <Field.ErrorText id="invitation-code-error">{errors.invitationCode?.message?.toString()}</Field.ErrorText>
                     </Field.Root>
                     <Field.Root invalid={!!errors.password} required>
                         <Field.Label>Password<Field.RequiredIndicator /></Field.Label>
