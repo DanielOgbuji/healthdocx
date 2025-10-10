@@ -84,6 +84,8 @@ const DraggableTableRow: React.FC<DraggableTableRowProps> = ({
             onBlur={handleBlur}
             size="sm"
             variant="flushed"
+            truncate
+            lineClamp="2"
           />
         </Table.Cell>
       ))}

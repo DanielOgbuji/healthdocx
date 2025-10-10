@@ -16,6 +16,7 @@ import { toaster } from "@/components/ui/toaster";
 import { useForm } from "react-hook-form";
 import { AnimatePresence, motion } from "motion/react";
 import { MdOutlineArrowCircleRight, MdOutlineAlternateEmail } from "react-icons/md";
+import { forgotPassword } from "@/api/auth";
 
 interface FormValues {
     email: string;
@@ -37,12 +38,17 @@ const ForgotPassword = () => {
         },
     });
 
-    // Handle submission for development
+    // Handle submission with real API
     const onSubmit = async (values: FormValues) => {
         try {
             console.log("Password reset email submitted:", values);
 
-            // Simulated success for testing
+            // Call the real API
+            await forgotPassword(values.email);
+
+            // Store email in sessionStorage for use in VerifyEmail component
+            sessionStorage.setItem("resetPasswordEmail", values.email);
+
             setIsVisible(false);
             setTimeout(() => {
                 navigate("/verify-email");
@@ -54,12 +60,17 @@ const ForgotPassword = () => {
                 description: "Password reset email sent successfully",
                 type: "success",
             });
-        } catch (error) {
+        } catch (error: unknown) {
             console.error('An error occurred:', error);
+            const errorMessage = error && typeof error === 'object' && 'response' in error &&
+                error.response && typeof error.response === 'object' && 'data' in error.response &&
+                error.response.data && typeof error.response.data === 'object' && 'error' in error.response.data
+                ? (error.response.data as { error: string }).error
+                : "An error occurred while submitting the form. Please try again later.";
             toaster.create({
                 duration: 3000,
                 title: "Error",
-                description: "An error occurred while submitting the form. Please try again later.",
+                description: errorMessage,
                 type: "error",
             });
         }

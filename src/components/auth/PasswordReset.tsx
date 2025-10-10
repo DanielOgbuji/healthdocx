@@ -9,6 +9,7 @@ import {
 import * as motion from "motion/react-client";
 import { toaster } from "@/components/ui/toaster";
 import { PASSWORD_MIN_LENGTH, calculatePasswordStrength, validatePassword } from "@/utils/passwordUtils";
+import { resetPassword } from "@/api/auth";
 
 interface FormValues {
     password: string;
@@ -32,10 +33,38 @@ const PasswordResetForm = () => {
 
     const password = watch("password", "");
 
+    // Get email and OTP from sessionStorage (set by ForgotPassword and VerifyEmail components)
+    const email = sessionStorage.getItem("resetPasswordEmail");
+    const otp = sessionStorage.getItem("resetPasswordOtp");
+
     const onSubmit = async (data: FormValues) => {
+        if (!email) {
+            toaster.create({
+                duration: 3000,
+                title: "Error",
+                description: "Email not found. Please try the forgot password process again.",
+                type: "error",
+            });
+            return;
+        }
+
+        if (!otp) {
+            toaster.create({
+                duration: 3000,
+                title: "Error",
+                description: "OTP not found. Please enter the verification code first.",
+                type: "error",
+            });
+            return;
+        }
+
         try {
-            // API call would go here
-            console.log("Password reset successfully:", data);
+            // Call the real API with email, OTP, and new password
+            await resetPassword(email, otp, data.password);
+
+            // Clear stored data after successful reset
+            sessionStorage.removeItem("resetPasswordEmail");
+            sessionStorage.removeItem("resetPasswordOtp");
 
             setTimeout(() => {
                 navigate("/reset-successful");
@@ -46,12 +75,18 @@ const PasswordResetForm = () => {
                     type: "success",
                 });
             }, 500);
-        } catch (error) {
+        } catch (error: unknown) {
             console.error("Error during password reset:", error);
+            const errorMessage = error && typeof error === 'object' && 'response' in error &&
+                error.response && typeof error.response === 'object' && 'data' in error.response &&
+                error.response.data && typeof error.response.data === 'object' && 'error' in error.response.data
+                ? (error.response.data as { error: string }).error
+                : "An error occurred while resetting your password";
+
             toaster.create({
                 duration: 3000,
                 title: "Error",
-                description: "An error occurred while resetting your password",
+                description: errorMessage,
                 type: "error",
             });
         }
