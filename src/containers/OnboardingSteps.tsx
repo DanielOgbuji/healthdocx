@@ -25,6 +25,8 @@ const LoadingFallback = () => (
 const OnboardingSteps = () => {
     const [step, setStep] = useState(0);
     const [searchParams] = useSearchParams();
+    const invitationCode = searchParams.get("code");
+
     useEffect(() => {
         const continueStep = searchParams.get("continueStep");
         if (continueStep === "1") {
@@ -38,7 +40,7 @@ const OnboardingSteps = () => {
             title: "Your details",
             description: "Provide your essential details",
             icon: MdOutlinePersonOutline,
-            formComponent: <FormOne />,
+            formComponent: <FormOne invitationCode={invitationCode} />,
             formLegend: "Create an account",
             formHelperText: "Fill in your details as it is in your National ID."
         },
