@@ -25,7 +25,11 @@ import { type ApiError } from '@/types/api.types';
 import { ROLE_OPTIONS } from "@/constants/formConstants";
 import { register as registerUser } from "@/api/auth";
 
-export default function FormOne() {
+interface FormOneProps {
+    invitationCode?: string | null;
+}
+
+export default function FormOne({ invitationCode }: FormOneProps) {
     const { register, handleSubmit, formState, watch, reset } = useForm({
         mode: 'onChange',
         defaultValues: {
@@ -34,7 +38,7 @@ export default function FormOne() {
             role: "",
             phoneNumber: "",
             password: "",
-            invitationCode: "",
+            invitationCode: invitationCode || "",
         }
     });
 
