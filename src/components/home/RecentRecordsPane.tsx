@@ -199,6 +199,7 @@ const RecentRecordsPane = () => {
                 <RecentRecordCard
                     key={record.id}
                     imageUrl={record.rawFileUrl}
+                    recordCode={record.recordCode}
                     recordID={record.id}
                     recordType={record.recordType}
                     recordGroup={record.recordTypeGroup}

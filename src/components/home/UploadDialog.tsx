@@ -23,6 +23,7 @@ interface UploadDialogProps {
     filePreview: string;
     croppedImage?: string | null;
     uploadProgress: number;
+    isPreviewLoading?: boolean;
     onClose: () => void;
     onRetry: () => Promise<void>;
     handleConfirmCrop?: (croppedImageData: string) => Promise<void>;
@@ -112,6 +113,7 @@ const UploadDialog = ({
     fileType,
     filePreview,
     uploadProgress,
+    isPreviewLoading = false,
     onClose,
     onRetry,
     handleConfirmCrop,
@@ -194,19 +196,28 @@ const UploadDialog = ({
                                     </Flex>
                                     <Flex w="full" h="full" pt="0" gap="12" direction={{ base: "column", mdDown: "column", lg: "row" }} justifyContent="center" alignItems="center">
                                         <Flex position="relative" width="full" height={{ base: "full", lgDown: "400px", mdDown: "300px" }} rounded="md" overflow="hidden" borderWidth="1px" borderColor="outlineVariant">
-                                            <Cropper
-                                                image={filePreview}
-                                                crop={crop}
-                                                objectFit="contain"
-                                                zoom={zoom}
-                                                rotation={rotation}
-                                                cropSize={{ width: cropWidth, height: cropHeight }}
-                                                //aspect={aspectRatio}
-                                                onCropChange={setCrop}
-                                                zoomWithScroll={false}
-                                                onCropComplete={onCropComplete}
-                                                onZoomChange={setZoom}
-                                            />
+                                            {isPreviewLoading || !filePreview ? (
+                                                <Stack flexGrow="1" height="100%" alignItems="center" justifyContent="center">
+                                                    <VStack gap="4">
+                                                        <Spinner size="xl" borderWidth="4px" color="primary" />
+                                                        <Text color="primary" textAlign="center">Loading image...</Text>
+                                                    </VStack>
+                                                </Stack>
+                                            ) : (
+                                                <Cropper
+                                                    image={filePreview}
+                                                    crop={crop}
+                                                    objectFit="contain"
+                                                    zoom={zoom}
+                                                    rotation={rotation}
+                                                    cropSize={{ width: cropWidth, height: cropHeight }}
+                                                    //aspect={aspectRatio}
+                                                    onCropChange={setCrop}
+                                                    zoomWithScroll={false}
+                                                    onCropComplete={onCropComplete}
+                                                    onZoomChange={setZoom}
+                                                />
+                                            )}
                                         </Flex>
 
                                         <Flex width={{ base: "80%", mdDown: "90%" }} direction="column" gap="8">
@@ -412,8 +423,11 @@ const UploadDialog = ({
                                     </Flex>
                                     <Flex gap="4" justifyContent="center" width="full" colorPalette="brand" direction={{ base: "row", mdDown: "column" }} px={{ mdDown: "8" }}>
                                         <Button variant="solid" size="sm" onClick={handleSubmit} loading={isExtracting} loadingText="Extracting...">
-                                            <PiSparkle /> <Box as="span" fontSize="sm">Extract record</Box>
+                                            <PiSparkle /> <Box as="span" fontSize="sm">Open record</Box>
                                         </Button>
+                                        <Dialog.CloseTrigger asChild onClick={onClose} colorPalette="red">
+                                            <CloseButton size="sm" />
+                                        </Dialog.CloseTrigger>
                                     </Flex>
                                 </Flex>
                             )}

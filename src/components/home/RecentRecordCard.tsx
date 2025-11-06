@@ -10,6 +10,7 @@ interface RecentRecordCardProps {
     recordID: string;
     recordType: string;
     recordGroup: string;
+    recordCode: string;
     createdAt: string;
 }
 
@@ -18,6 +19,7 @@ const RecentRecordCard = ({
     recordID,
     recordType,
     recordGroup,
+    recordCode,
     createdAt,
 }: RecentRecordCardProps) => {
     const navigate = useNavigate();
@@ -65,8 +67,8 @@ const RecentRecordCard = ({
         >
             <Card.Body bgGradient="to-b" gradientFrom="surface" gradientTo="transparent" borderWidth="1px" gap="4" backdropFilter="blur(1.2px)">
                 <VStack alignItems="start">
-                    <Card.Title textTransform="capitalize" fontSize="lg" lineHeight="shorter" fontWeight="bold" color="onSurface">
-                        {recordID}
+                    <Card.Title textTransform="capitalize" fontSize="lg" lineHeight="shorter" fontWeight="bold" color="secondary">
+                        {recordCode}
                     </Card.Title >
                     <Text textTransform="capitalize" fontSize="md" lineHeight="short" fontStyle="italic" color="onSurfaceVariant" fontWeight="medium">
                         {recordType}

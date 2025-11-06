@@ -18,7 +18,10 @@ const RecordDetails = () => {
     const [structuredData, setStructuredData] = useState<string | null>(null);
     const [ocrText, setOcrText] = useState<string | null>(null);
     const [rawFileUrl, setRawFileUrl] = useState<string | null>(null);
+    const [recordCode, setRecordCode] = useState<string | undefined>(undefined);
     const [institutionName, setInstitutionName] = useState<string | undefined>(undefined);
+    const [recordTypeGroup, setRecordTypeGroup] = useState<string | undefined>(undefined);
+    const [recordType, setRecordType] = useState<string | undefined>(undefined);
 
     const userId = useSelector((state: RootState) => state.auth.user?.id);
 
@@ -30,26 +33,35 @@ const RecordDetails = () => {
             return;
         }
 
-        const autoSavedData = sessionStorage.getItem(`autosave_form_${id}`);
-        const autoSavedOcrText = sessionStorage.getItem(`autosave_ocr_text_${id}`);
-        if (autoSavedData && autoSavedOcrText && !force) {
-            setStructuredData(autoSavedData);
-            setOcrText(autoSavedOcrText);
-            setLoading(false);
-            return;
-        }
-
         try {
+            // Always fetch from API to get the up-to-date recordCode and other metadata
             const response = await getPatientRecordByID(id);
             const data = response.data.structuredData;
             const extractedOcrText = response.data.ocrText;
             const imageUrl = response.rawFileUrl || '';
+            const recordCodeFromResponse = response.recordCode; // Only use actual recordCode from response
             console.log("image link", imageUrl);
-            setStructuredData(data);
-            setOcrText(extractedOcrText);
+
+            // Check for auto-saved data (but use API data if force is true)
+            const autoSavedData = sessionStorage.getItem(`autosave_form_${id}`);
+            const autoSavedOcrText = sessionStorage.getItem(`autosave_ocr_text_${id}`);
+
+            const finalStructuredData = (!force && autoSavedData) ? autoSavedData : data;
+            const finalOcrText = (!force && autoSavedOcrText) ? autoSavedOcrText : extractedOcrText;
+
+            setStructuredData(finalStructuredData);
+            setOcrText(finalOcrText);
             setRawFileUrl(imageUrl);
-            sessionStorage.setItem(`original_record_${id}`, data);
-            sessionStorage.setItem(`original_ocr_text_${id}`, extractedOcrText);
+            setRecordCode(recordCodeFromResponse);
+            setRecordTypeGroup(response.recordTypeGroup);
+            setRecordType(response.recordType);
+
+            if (force) {
+                // When forcing a refresh, update the original data in sessionStorage
+                sessionStorage.setItem(`original_record_${id}`, data);
+                sessionStorage.setItem(`original_ocr_text_${id}`, extractedOcrText);
+            }
+
             setError(null);
             toaster.create({
                 title: "Record extracted successfully",
@@ -162,7 +174,7 @@ const RecordDetails = () => {
             direction="column"
             //p={{ xl: "6vw", lg: "6vw", md: "6vw", sm: "6vw", base: "4" }}
         >
-            {structuredData && <DynamicForm structuredData={structuredData} recordId={id} ocrText={ocrText} onRevert={handleRevert} rawFileUrl={rawFileUrl} institutionName={institutionName} />}
+            {structuredData && <DynamicForm structuredData={structuredData} recordId={id} recordCode={recordCode} ocrText={ocrText} onRevert={handleRevert} rawFileUrl={rawFileUrl} institutionName={institutionName} recordTypeGroup={recordTypeGroup} recordType={recordType} />}
         </Flex>
     );
 };
