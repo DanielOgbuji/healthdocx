@@ -23,6 +23,7 @@ export interface PatientRecord {
 	id: string;
 	institutionId: number;
 	recordType: string;
+	recordCode: string;
 	recordTypeGroup:
 		| "clinical"
 		| "diagnostic"

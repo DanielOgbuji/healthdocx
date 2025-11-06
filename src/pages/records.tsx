@@ -46,6 +46,7 @@ interface PatientRecord {
   id: string;
   recordTypeGroup: string;
   recordType: string;
+  recordCode: string;
   uploadedAt: string;
   status: string;
 }
@@ -309,7 +310,7 @@ const Records = () => {
       ) : (
         <Stack width="full" alignItems="center" px={{ xl: "6vw", lg: "6vw", md: "6vw", sm: "6vw", base: "4" }} pb={{ xl: "6vw", lg: "6vw", md: "6vw", sm: "6vw", base: "4" }} mt="120px" gap="0">
           <InfoTile openCamera={openCamera} />
-          <Flex w="full" p="4" pt="3" justifyContent="space-between" alignItems={{ base: "center", mdDown: "start"}} borderStyle="solid" borderWidth="1px" borderBottomWidth="0" borderColor="border.default" roundedTop="md" mt="8" direction={{ base: "row", mdDown: "column" }} gap={{ base: "4", md: "0" }} colorPalette="brand">
+          <Flex w="full" p="4" pt="3" justifyContent="space-between" alignItems={{ base: "center", mdDown: "start" }} borderStyle="solid" borderWidth="1px" borderBottomWidth="0" borderColor="border.default" roundedTop="md" mt="8" direction={{ base: "row", mdDown: "column" }} gap={{ base: "4", md: "0" }} colorPalette="brand">
             <Flex direction="column" gap="1">
               <Flex textStyle="md" fontWeight="semibold" gap="2" alignItems="center">
                 Your Records
@@ -350,17 +351,17 @@ const Records = () => {
                   </Table.ColumnHeader>
                   <Table.ColumnHeader onClick={() => handleSort('id')} cursor="pointer">
                     <Text fontSize="sm" display="flex" alignItems="center" gap="1" color={sortColumn === 'id' ? 'primary' : 'fg.muted'}>
-                      Name/ID <Flex color={sortColumn === 'id' ? 'primary' : 'fg.muted'} transform={sortColumn === 'id' && sortOrder === 'desc' ? 'rotate(180deg)' : 'none'} transition="transform 0.2s ease-in-out"><MdArrowUpward/></Flex>
+                      Name/ID <Flex color={sortColumn === 'id' ? 'primary' : 'fg.muted'} transform={sortColumn === 'id' && sortOrder === 'desc' ? 'rotate(180deg)' : 'none'} transition="transform 0.2s ease-in-out"><MdArrowUpward /></Flex>
                     </Text>
                   </Table.ColumnHeader>
                   <Table.ColumnHeader onClick={() => handleSort('groupType')} cursor="pointer">
                     <Text fontSize="sm" display="flex" alignItems="center" gap="1" color={sortColumn === 'groupType' ? 'primary' : 'fg.muted'}>
-                      Group/Type <Flex color={sortColumn === 'groupType' ? 'primary' : 'fg.muted'} transform={sortColumn === 'groupType' && sortOrder === 'desc' ? 'rotate(180deg)' : 'none'} transition="transform 0.2s ease-in-out"><MdArrowUpward/></Flex>
+                      Group/Type <Flex color={sortColumn === 'groupType' ? 'primary' : 'fg.muted'} transform={sortColumn === 'groupType' && sortOrder === 'desc' ? 'rotate(180deg)' : 'none'} transition="transform 0.2s ease-in-out"><MdArrowUpward /></Flex>
                     </Text>
                   </Table.ColumnHeader>
                   <Table.ColumnHeader onClick={() => handleSort('created')} cursor="pointer">
                     <Text fontSize="sm" display="flex" alignItems="center" gap="1" color={sortColumn === 'created' ? 'primary' : 'fg.muted'}>
-                      Created <Flex color={sortColumn === 'created' ? 'primary' : 'fg.muted'} transform={sortColumn === 'created' && sortOrder === 'desc' ? 'rotate(180deg)' : 'none'} transition="transform 0.2s ease-in-out"><MdArrowUpward/></Flex>
+                      Created <Flex color={sortColumn === 'created' ? 'primary' : 'fg.muted'} transform={sortColumn === 'created' && sortOrder === 'desc' ? 'rotate(180deg)' : 'none'} transition="transform 0.2s ease-in-out"><MdArrowUpward /></Flex>
                     </Text>
                   </Table.ColumnHeader>
                   <Table.ColumnHeader>
@@ -368,7 +369,7 @@ const Records = () => {
                   </Table.ColumnHeader>
                   <Table.ColumnHeader onClick={() => handleSort('status')} cursor="pointer">
                     <Text fontSize="sm" display="flex" alignItems="center" gap="1" color={sortColumn === 'status' ? 'primary' : 'fg.muted'}>
-                      Status <Flex color={sortColumn === 'status' ? 'primary' : 'fg.muted'} transform={sortColumn === 'status' && sortOrder === 'desc' ? 'rotate(180deg)' : 'none'} transition="transform 0.2s ease-in-out"><MdArrowUpward/></Flex>
+                      Status <Flex color={sortColumn === 'status' ? 'primary' : 'fg.muted'} transform={sortColumn === 'status' && sortOrder === 'desc' ? 'rotate(180deg)' : 'none'} transition="transform 0.2s ease-in-out"><MdArrowUpward /></Flex>
                     </Text>
                   </Table.ColumnHeader>
                 </Table.Row>
@@ -400,6 +401,11 @@ const Records = () => {
                     </Table.Cell>
                     <Table.Cell onClick={() => navigate(`/records/details/${record.id}`)}>
                       <Text truncate lineClamp="2" fontWeight="semibold" cursor="pointer">
+                        <Highlight ignoreCase query={[searchQuery]} styles={{ bg: "gray.emphasized" }}>
+                          {record.recordCode}
+                        </Highlight>
+                      </Text>
+                      <Text truncate lineClamp="2" color="fg.muted/80" cursor="pointer">
                         <Highlight ignoreCase query={[searchQuery]} styles={{ bg: "gray.emphasized" }}>
                           {record.id}
                         </Highlight>
@@ -448,7 +454,7 @@ const Records = () => {
             p="4"
             w="full"
           >
-            <ButtonGroup display="flex" w="full" variant="outline" size="sm" wrap="wrap" justifyContent="space-between">
+            <ButtonGroup display="flex" w="full" variant="ghost" size="sm" wrap="wrap" justifyContent="space-between">
               <Pagination.PrevTrigger asChild>
                 <Button aria-label="Previous page">
                   <LuChevronLeft />
@@ -460,7 +466,7 @@ const Records = () => {
                 <Pagination.Items
                   render={(page) => (
                     <IconButton
-                      variant={page.value === currentPage ? "outline" : "ghost"}
+                      variant={page.value === currentPage ? "surface" : "ghost"}
                       aria-label={`Page ${page.value}`}
                     >
                       {page.value}

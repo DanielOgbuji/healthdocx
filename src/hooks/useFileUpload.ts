@@ -23,6 +23,7 @@ const useFileUpload = () => {
 	const [uploadKey, setUploadKey] = useState(0);
 	const [selectedFile, setSelectedFile] = useState<File | null>(null);
 	const [croppedImage, setCroppedImage] = useState<string | null>(null);
+	const [isPreviewLoading, setIsPreviewLoading] = useState(false);
 
 	const uploadFile = async (file: File) => {
 		setFileName(file.name);
@@ -131,13 +132,22 @@ const useFileUpload = () => {
 			return;
 		}
 
-		// For image files, show cropping UI
+		// For image files, show cropping UI immediately
+		setUploadStatus("cropping");
+		setOpen(true);
+		setIsPreviewLoading(true);
+		console.log("useFileUpload: Image file detected, setOpen(true), uploadStatus: cropping"); // Added log
+
+		// Load preview asynchronously
 		const reader = new FileReader();
 		reader.onloadend = () => {
 			setFilePreview(reader.result as string);
-			setUploadStatus("cropping");
-			setOpen(true);
-			console.log("useFileUpload: Image file detected, setOpen(true), uploadStatus: cropping"); // Added log
+			setIsPreviewLoading(false);
+			console.log("useFileUpload: Image preview loaded"); // Added log
+		};
+		reader.onerror = () => {
+			setIsPreviewLoading(false);
+			setErrorMessage("Failed to load image preview");
 		};
 		reader.readAsDataURL(file);
 	};
@@ -230,6 +240,7 @@ const useFileUpload = () => {
 		croppedImage,
 		uploadCancelToken,
 		uploadKey,
+		isPreviewLoading,
 		handleFileChange,
 		handleCloseDialog,
 		handleRetry,

@@ -8,10 +8,8 @@ import {
   Flex,
   Text,
   Editable,
-  Field,
   Button,
   VStack,
-  NativeSelect,
   Icon,
   IconButton,
   Spinner,
@@ -21,6 +19,8 @@ import {
   Portal,
   HStack,
   SegmentGroup,
+  Select,
+  createListCollection,
   //Kbd,
   Tag,
 } from "@chakra-ui/react";
@@ -30,27 +30,33 @@ import SingleField from "./SingleField";
 import EditableTableField from "./EditableTableField"; // Import new table component
 import EditableListField from "./EditableListField"; // Import new list component
 import MoveMenuItems from "./MoveMenuItems";
+
 import ImageViewer from "./ImageViewer";
 import DocumentPreview from "./DocumentPreview"; // Import the new component
-import { recordGroups, recordTypes } from "@/constants/recordOptions";
+
 import { MdOutlineCloudDone, MdOutlineFileUpload, MdOutlineUndo, MdAdd, MdTextFields, MdDeleteOutline, MdOutlineMoveUp, MdOutlineRestore, MdOutlineAccountTree, MdOutlineClearAll, MdExpandMore, MdExpandLess, MdOutlineImage, MdOutlineModeEditOutline, MdOutlinePreview, MdOutlineTableChart, MdOutlineFormatListBulleted } from "react-icons/md";
+import { LuCheck, LuPencilLine, LuX } from "react-icons/lu"
 import { DndProvider, useDrop } from 'react-dnd';
 import { HTML5Backend } from 'react-dnd-html5-backend';
 import { SelectionProvider } from '@/contexts/SelectionProvider'; // Corrected import path
 import { useSelection } from '@/hooks/useSelection'; // Corrected import path
 import { useMergeRefs } from "@chakra-ui/hooks";
 import { PATH_SEPARATOR } from "@/utils/dynamicFormUtils"; // Corrected import path
+import { recordGroups } from "@/constants/recordOptions";
 
 interface DynamicFormProps {
   structuredData: string;
   recordId: string | undefined;
+  recordCode: string | undefined;
   ocrText: string | null;
   onRevert: () => void;
   rawFileUrl: string | null;
   institutionName?: string;
+  recordTypeGroup?: string;
+  recordType?: string;
 }
 
-const DynamicFormContent: React.FC<DynamicFormProps> = ({ structuredData, recordId, ocrText, onRevert, rawFileUrl, institutionName }) => {
+const DynamicFormContent: React.FC<DynamicFormProps> = ({ structuredData, recordId, recordCode, ocrText, onRevert, rawFileUrl, institutionName, recordTypeGroup: initialRecordTypeGroup, recordType: initialRecordType }) => {
   const {
     formData,
     labels,
@@ -79,17 +85,18 @@ const DynamicFormContent: React.FC<DynamicFormProps> = ({ structuredData, record
     handleAddArrayItem, // New prop
     handleRemoveArrayItem, // New prop
     handleReorderArrayItem, // New prop
-  } = useDynamicForm(structuredData, recordId, ocrText);
+  } = useDynamicForm(structuredData, recordId, ocrText, initialRecordTypeGroup, initialRecordType);
   const { selectedItems, clearSelection } = useSelection();
   const scrollContainerRef = useRef<HTMLDivElement>(null);
   const scrollPositions = useRef<{ [key: string]: number }>({});
-  const [selectedGroup, setSelectedGroup] = useState("");
-  const [availableTypes, setAvailableTypes] = useState<
-    { value: string; label: string }[]
-  >([]);
   const [isActionsOpen, setIsActionsOpen] = useState(false);
   const [isAlertOpen, setIsAlertOpen] = useState(false);
   const [currentView, setCurrentView] = useState("edit");
+  const initialGroupValue = recordGroups.find(g => g.label === initialRecordTypeGroup)?.value || recordGroups.find(g => g.value === initialRecordTypeGroup)?.value || recordGroups[0].value;
+  const [recordTypeGroup, setRecordTypeGroup] = useState(initialGroupValue);
+  const [recordType, setRecordType] = useState(initialRecordType || "Loading...");
+
+  const recordGroupCollection = createListCollection({ items: recordGroups });
 
 
   const [, drop] = useDrop(() => ({
@@ -111,12 +118,6 @@ const DynamicFormContent: React.FC<DynamicFormProps> = ({ structuredData, record
     if (details.value) {
       setCurrentView(details.value);
     }
-  };
-
-  const handleGroupChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
-    const group = event.target.value;
-    setSelectedGroup(group);
-    setAvailableTypes(recordTypes[group as keyof typeof recordTypes] || []);
   };
 
   useEffect(() => {
@@ -218,7 +219,7 @@ const DynamicFormContent: React.FC<DynamicFormProps> = ({ structuredData, record
                     <Text display={{ base: "none", md: "inline" }}>Revert to Original</Text>
                   </Button>
                   <Button
-                    onClick={handleSubmit}
+                    onClick={() => handleSubmit(recordTypeGroup, recordType)}
                     variant="surface"
                     colorPalette="brand"
                     loading={loading}
@@ -420,8 +421,8 @@ const DynamicFormContent: React.FC<DynamicFormProps> = ({ structuredData, record
         <Flex alignItems="center" justifyContent="space-between" direction={{ lgDown: "column" }} gap="6">
           <Flex justifyContent="space-between" w="full" gap="4">
             <Flex alignItems="start" mr="2">
-              <Editable.Root defaultValue={recordId} activationMode="dblclick" fontSize="xl" fontWeight="bold" colorPalette="brand" color="onBackground">
-                <Editable.Preview px="2" lineHeight="normal" color="primary" />
+              <Editable.Root defaultValue={recordCode} activationMode="dblclick" fontSize="xl" fontWeight="bold" colorPalette="brand" color="onBackground">
+                <Editable.Preview lineHeight="normal" color="primary" />
                 <Editable.Input />
               </Editable.Root>
               {/*<Text fontSize="xl" fontWeight="bold">{recordId}</Text>*/}
@@ -442,47 +443,55 @@ const DynamicFormContent: React.FC<DynamicFormProps> = ({ structuredData, record
           </Flex>
         </Flex>
         <Box display={currentView === 'edit' ? 'contents' : 'none'}>
-          <Flex w="full" justifyContent="space-between" gap="6" alignItems="end" direction={{ mdDown: "column" }} colorPalette="brand">
-            <Field.Root>
-              <NativeSelect.Root
-                size="md"
-                width="full"
-                variant="outline"
-              >
-                <NativeSelect.Field
-                  placeholder="Choose record group"
-                  value={selectedGroup}
-                  onChange={handleGroupChange}
-                >
-                  {recordGroups.map((group) => (
-                    <option key={group.value} value={group.value}>
-                      {group.label}
-                    </option>
-                  ))}
-                </NativeSelect.Field>
-                <NativeSelect.Indicator />
-              </NativeSelect.Root>
-            </Field.Root>
-            <Field.Root>
-              <NativeSelect.Root
-                size="md"
-                width="full"
-                variant="outline"
-                disabled={!selectedGroup}
-              >
-                <NativeSelect.Field
-                  placeholder="Choose record type"
-
-                >
-                  {availableTypes.map((type) => (
-                    <option key={type.value} value={type.value}>
-                      {type.label}
-                    </option>
-                  ))}
-                </NativeSelect.Field>
-                <NativeSelect.Indicator />
-              </NativeSelect.Root>
-            </Field.Root>
+          <Flex w="full" justifyContent="space-between" alignItems="start" direction="column" colorPalette="brand" gap="2">
+            <Select.Root collection={recordGroupCollection} value={recordTypeGroup ? [recordTypeGroup] : []} onValueChange={(e) => setRecordTypeGroup(e.value[0] || recordGroups[0].value)} size="sm" variant="subtle" w="300px">
+              <Select.HiddenSelect />
+              <Select.Control>
+                <Select.Trigger>
+                  <Select.ValueText placeholder="Select record type group" />
+                </Select.Trigger>
+                <Select.IndicatorGroup>
+                  <Select.Indicator />
+                </Select.IndicatorGroup>
+              </Select.Control>
+              <Portal>
+                <Select.Positioner>
+                  <Select.Content>
+                    {recordGroupCollection.items.map((item) => (
+                      <Select.Item item={item} key={item.value}>
+                        {item.label}
+                        <Select.ItemIndicator />
+                      </Select.Item>
+                    ))}
+                  </Select.Content>
+                </Select.Positioner>
+              </Portal>
+            </Select.Root>
+            <Editable.Root
+              defaultValue={recordType || "Loading..."}
+              onValueCommit={(details) => setRecordType(details.value)}
+              activationMode="dblclick"
+            >
+              <Editable.Preview borderRadius="full" borderStyle="solid" borderWidth="thin" p="10px" lineHeight="1px" minH="fit-content" fontSize="xs" color="tertiary" borderColor="tertiary" fontStyle="italic" />
+              <Editable.Input placeholder="Enter record type" />
+              <Editable.Control>
+                <Editable.EditTrigger asChild>
+                  <IconButton variant="ghost" size="xs">
+                    <LuPencilLine />
+                  </IconButton>
+                </Editable.EditTrigger>
+                <Editable.CancelTrigger asChild>
+                  <IconButton variant="outline" size="xs">
+                    <LuX />
+                  </IconButton>
+                </Editable.CancelTrigger>
+                <Editable.SubmitTrigger asChild>
+                  <IconButton variant="outline" size="xs">
+                    <LuCheck />
+                  </IconButton>
+                </Editable.SubmitTrigger>
+              </Editable.Control>
+            </Editable.Root>
           </Flex>
           <VStack align="stretch" gap="6">
             {error && (

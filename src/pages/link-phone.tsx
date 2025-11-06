@@ -97,6 +97,7 @@ const LinkPhone = () => {
     fileType,
     filePreview,
     uploadProgress,
+    isPreviewLoading,
   } = useFileUpload();
 
   const store = usePinInput({
@@ -901,6 +902,7 @@ const LinkPhone = () => {
         fileType={fileType}
         filePreview={filePreview}
         uploadProgress={uploadProgress}
+        isPreviewLoading={isPreviewLoading}
         onClose={handleCloseDialog}
         onRetry={handleRetry}
         handleConfirmCrop={handleConfirmCrop}
@@ -963,14 +965,16 @@ const LinkPhone = () => {
         <Portal>
           <Dialog.Backdrop />
           <Dialog.Positioner>
-            <Dialog.Content maxW="500px">
+            <Dialog.Content maxW="fit-content">
               <Dialog.Body>
                 <VStack gap="6" align="center">
                   {qrCodeData?.code && token && (
                     <Box position="relative" display="inline-block">
                       <QrCode.Root
                         value={`${token}:${qrCodeData.code}`}
-                        size="2xl"
+                        w="lg"
+                        h="lg"
+                        size="full"
                         encoding={{ ecc: "Q" }}
                         bgColor="backface"
                         borderStyle="solid"
