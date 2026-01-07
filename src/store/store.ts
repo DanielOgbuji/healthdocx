@@ -1,5 +1,5 @@
 import { configureStore, combineReducers } from "@reduxjs/toolkit";
-import onboardingReducer from "@/features/onboardingSlice";
+import onboardingReducer from "@/features/onboarding-slice";
 import { persistStore, persistReducer } from "redux-persist";
 import storage from "redux-persist/lib/storage";
 import authReducer from "@/features/authSlice";

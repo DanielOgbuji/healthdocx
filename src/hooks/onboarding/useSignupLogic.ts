@@ -1,7 +1,7 @@
 import { useForm } from "react-hook-form";
 import { useDispatch } from "react-redux";
 import { toaster } from "@/components/ui/toaster";
-import { completeStep } from "@/features/onboardingSlice";
+import { completeStep } from '@/features/onboarding-slice';
 import { register as registerUser } from "@/api/auth";
 import { type ApiError } from '@/types/api.types';
 
