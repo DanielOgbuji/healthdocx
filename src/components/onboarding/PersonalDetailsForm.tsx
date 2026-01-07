@@ -14,67 +14,23 @@ import {
 import { MdOutlineUndo, MdOutlinePersonOutline, MdOutlineAlternateEmail, MdOutlinePassword, MdOutlineArrowForward, MdOutlineConfirmationNumber } from "react-icons/md";
 import Flag from "@/assets/images/ng.png";
 import { PasswordInput, PasswordStrengthMeter } from "@/components/ui/password-input";
-import { useForm } from "react-hook-form";
 import { useHookFormMask } from "use-mask-input";
-import { toaster } from "@/components/ui/toaster";
-import { useDispatch } from "react-redux";
 import * as motion from "motion/react-client";
-import { completeStep } from "@/features/OnboardingSlice";
 import { PASSWORD_MIN_LENGTH, calculatePasswordStrength, validatePassword } from "@/utils/passwordUtils";
-import { type ApiError } from '@/types/api.types';
 import { ROLE_OPTIONS } from "@/constants/formConstants";
-import { register as registerUser } from "@/api/auth";
+import { useSignupLogic } from "@/hooks/onboarding/useSignupLogic";
 
-interface FormOneProps {
+interface PersonalDetailsFormProps {
     invitationCode?: string | null;
 }
 
-export default function FormOne({ invitationCode }: FormOneProps) {
-    const { register, handleSubmit, formState, watch, reset } = useForm({
-        mode: 'onChange',
-        defaultValues: {
-            fullName: "",
-            email: "",
-            role: "",
-            phoneNumber: "",
-            password: "",
-            invitationCode: invitationCode || "",
-        }
-    });
+export default function PersonalDetailsForm({ invitationCode }: PersonalDetailsFormProps) {
+    const { formMethods, onSubmit, isSubmitting, isValid, errors } = useSignupLogic(invitationCode);
+    const { register, watch, reset } = formMethods;
 
-    const { errors, isSubmitting, isValid } = formState;
+    // Use the mask hook with the register method from the form
     const registerWithMask = useHookFormMask(register);
     const password = watch("password", "");
-    const dispatch = useDispatch();
-
-    // Handle form submission
-    const onSubmit = handleSubmit(async (data) => {
-        try {
-            const response = await registerUser(data);
-            console.log('Form submitted successfully:', response);
-            toaster.create({
-                duration: 3000,
-                title: "Success",
-                description: "Account created successfully.",
-                type: "success",
-            });
-            sessionStorage.setItem("onboardingEmail", data.email);
-            sessionStorage.setItem("userID", response.userId);
-            // Mark the first step as completed
-            dispatch(completeStep(0));
-            reset();
-        } catch (err) {
-            console.error('Form submission failed:', err);
-            const apiError = err as ApiError;
-            toaster.create({
-                title: "Registration Failed",
-                description: apiError.response?.data?.error ?? "An error occurred during registration. Please try again.",
-                type: "error",
-                duration: 5000,
-            });
-            console.error('Error details:', apiError.response?.data);
-        }
-    });
 
     return (
         <form onSubmit={onSubmit} onReset={() => reset({})} noValidate aria-label="User registration form">
@@ -246,7 +202,7 @@ export default function FormOne({ invitationCode }: FormOneProps) {
                         _disabled={{ bgColor: "onSurface/12", color: "onSurface/38" }}
                     >
                         Get Started
-                        {!isSubmitting && formState.isValid && (
+                        {!isSubmitting && isValid && (
                             <motion.div
                                 initial={{ transform: "translateX(0px)" }}
                                 animate={{

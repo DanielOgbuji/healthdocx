@@ -16,102 +16,35 @@ import noRecordDark from "@/assets/images/norecord-dark.svg";
 import { useColorMode } from "@/components/ui/color-mode";
 import { IoMdAdd } from "react-icons/io";
 import UploadButton from "@/components/home/UploadButton";
-import useFileUpload from "@/hooks/useFileUpload";
-import UploadDialog from "@/components/home/UploadDialog";
-import { useEffect, useState, useCallback } from "react";
 import { getPatientRecords } from "@/api/patient-records";
 import type { PatientRecord } from "@/types/api.types";
 import RecentRecordCard from "./RecentRecordCard";
 import { FiAlertTriangle } from "react-icons/fi"
 import { RxReload } from "react-icons/rx"
+import { useQuery } from "@tanstack/react-query";
 
-const RecentRecordsPane = () => {
+import { memo } from "react";
+
+import { StorageKeys } from "@/constants/upload";
+import { type FileChangeDetails } from "@zag-js/file-upload";
+
+interface RecentRecordsPaneProps {
+    handleFileChange: (details: FileChangeDetails) => Promise<void>;
+}
+
+const RecentRecordsPane = ({ handleFileChange }: RecentRecordsPaneProps) => {
     const { colorMode } = useColorMode();
-    const [records, setRecords] = useState<PatientRecord[]>([]);
-    const [loading, setLoading] = useState(true);
-    const [error, setError] = useState<string | null>(null);
 
-    const {
-        open,
-        setOpen,
-        uploadProgress,
-        uploadStatus,
-        errorMessage,
-        fileSize,
-        fileName,
-        fileType,
-        filePreview,
-        croppedImage,
-        handleFileChange,
-        handleCloseDialog,
-        handleRetry,
-        handleConfirmCrop,
-        handleCancelCrop,
-    } = useFileUpload();
-
-    const RECORDS_STORAGE_KEY = "healthdocx_recent_records";
-
-    const fetchRecords = useCallback(async (signal: AbortSignal, isBackgroundFetch: boolean = false) => {
-        if (!isBackgroundFetch) {
-            setLoading(true);
-            setError(null);
-        }
-
-        try {
+    const { data: records = [], isLoading: loading, isError: isError, error: queryError, refetch } = useQuery({
+        queryKey: [StorageKeys.RecentRecords],
+        queryFn: async ({ signal }) => {
             const data = await getPatientRecords({ signal });
-            const storedRecords = localStorage.getItem(RECORDS_STORAGE_KEY);
-            const parsedStoredRecords: PatientRecord[] = storedRecords ? JSON.parse(storedRecords) : [];
+            return data;
+        },
+        staleTime: 1000 * 60 * 5, // 5 minutes
+    });
 
-            if (JSON.stringify(data) !== JSON.stringify(parsedStoredRecords)) {
-                setRecords(data);
-                localStorage.setItem(RECORDS_STORAGE_KEY, JSON.stringify(data));
-            } else if (!isBackgroundFetch && parsedStoredRecords.length > 0) {
-                setRecords(parsedStoredRecords);
-            }
-        } catch (err: unknown) {
-            if (err instanceof Error && (err.name === 'AbortError' || err.name === 'CanceledError')) {
-                console.log('Fetch aborted');
-                return;
-            }
-            console.error("Error fetching patient records:", err);
-            if (!isBackgroundFetch) {
-                setError("Failed to fetch patient records.");
-            }
-        } finally {
-            if (!isBackgroundFetch) {
-                setLoading(false);
-            }
-        }
-    }, []);
-
-    useEffect(() => {
-        const controller = new AbortController();
-        const signal = controller.signal;
-
-        const loadAndFetch = async () => {
-            const storedRecords = localStorage.getItem(RECORDS_STORAGE_KEY);
-            if (storedRecords) {
-                try {
-                    setRecords(JSON.parse(storedRecords));
-                    setLoading(false);
-                } catch (e) {
-                    console.error("Failed to parse stored records, fetching new data.", e);
-                    localStorage.removeItem(RECORDS_STORAGE_KEY);
-                    await fetchRecords(signal);
-                }
-            } else {
-                await fetchRecords(signal);
-            }
-
-            fetchRecords(signal, true);
-        };
-
-        loadAndFetch();
-
-        return () => {
-            controller.abort();
-        };
-    }, [fetchRecords]);
+    const error = isError ? (queryError instanceof Error ? queryError.message : "Failed to fetch patient records.") : null;
 
     if (loading) {
         return (
@@ -139,7 +72,7 @@ const RecentRecordsPane = () => {
                         <Button variant="outline" size="sm">
                             <Box as="span" fontSize="sm">Contact Support</Box>
                         </Button>
-                        <Button variant="solid" size="sm" onClick={() => fetchRecords(new AbortController().signal)}>
+                        <Button variant="solid" size="sm" onClick={() => refetch()}>
                             <RxReload /> <Box as="span" fontSize="sm">Retry</Box>
                         </Button>
                     </Flex>
@@ -173,29 +106,13 @@ const RecentRecordsPane = () => {
                         <UploadButton handleFileChange={handleFileChange} />
                     </ButtonGroup>
                 </EmptyState.Content>
-                <UploadDialog
-                    open={open}
-                    setOpen={setOpen}
-                    uploadStatus={uploadStatus}
-                    errorMessage={errorMessage}
-                    fileSize={fileSize}
-                    fileName={fileName}
-                    fileType={fileType}
-                    filePreview={filePreview}
-                    croppedImage={croppedImage}
-                    uploadProgress={uploadProgress}
-                    onClose={handleCloseDialog}
-                    onRetry={handleRetry}
-                    handleConfirmCrop={handleConfirmCrop}
-                    handleCancelCrop={handleCancelCrop}
-                />
             </EmptyState.Root>
         );
     }
 
     return (
         <Stack gap={4} mt="4" flexDirection={{ base: "column", md: "row" }}>
-            {records.slice(-2).map((record) => (
+            {records.slice(-2).map((record: PatientRecord) => (
                 <RecentRecordCard
                     key={record.id}
                     imageUrl={record.rawFileUrl}
@@ -210,4 +127,4 @@ const RecentRecordsPane = () => {
     );
 };
 
-export default RecentRecordsPane;
+export default memo(RecentRecordsPane);

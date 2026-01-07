@@ -5,7 +5,9 @@ import { type FileChangeDetails } from "@zag-js/file-upload";
 import axios, { type CancelTokenSource } from "axios";
 import { toaster } from "@/components/ui/toaster";
 import { type ApiError } from "@/types/api.types";
-import { extract as extract } from "@/api/patient-records";
+import { extract } from "@/api/patient-records";
+import { StorageKeys } from "@/constants/upload";
+import { base64ToFile } from "@/utils/imageUtils";
 
 const useFileUpload = () => {
 	const [open, setOpen] = useState(false);
@@ -18,6 +20,7 @@ const useFileUpload = () => {
 	const [fileName, setFileName] = useState("");
 	const [fileType, setFileType] = useState("");
 	const [filePreview, setFilePreview] = useState("");
+	const [uploadedRecordId, setUploadedRecordId] = useState<string | null>(null);
 	const [uploadCancelToken, setUploadCancelToken] =
 		useState<CancelTokenSource | null>(null);
 	const [uploadKey, setUploadKey] = useState(0);
@@ -40,13 +43,11 @@ const useFileUpload = () => {
 		setUploadStatus("uploading");
 		setErrorMessage("");
 		setOpen(true);
-		console.log("useFileUpload: uploadFile - setOpen(true), uploadStatus: uploading"); // Added log
 
 		const cancelTokenSource = axios.CancelToken.source();
 		setUploadCancelToken(cancelTokenSource);
 
 		try {
-			console.log("Uploading file:", file);
 			const response = await extract(
 				{
 					image: file,
@@ -59,14 +60,13 @@ const useFileUpload = () => {
 					setUploadProgress(progress);
 				}
 			);
-			console.log("Upload success:", response);
-			localStorage.setItem("recordId", response.record.id)
+			localStorage.setItem(StorageKeys.RecordId, response.record.id)
+			setUploadedRecordId(response.record.id);
 			setUploadStatus("success");
 		} catch (err) {
 			if (axios.isCancel(err)) {
-				console.log("Upload cancelled:", err.message);
+				// Upload cancelled
 			} else {
-				console.error("Upload error:", err);
 				const apiError = err as ApiError;
 				setErrorMessage(
 					apiError.response?.data?.message ||
@@ -78,7 +78,6 @@ const useFileUpload = () => {
 	};
 
 	const handleFileChange = async (details: FileChangeDetails) => {
-		console.log("useFileUpload: handleFileChange called with details:", details); // Added log
 		if (
 			details?.rejectedFiles[0]?.errors &&
 			details?.rejectedFiles[0]?.errors[0] === "FILE_TOO_LARGE"
@@ -114,7 +113,6 @@ const useFileUpload = () => {
 			});
 			return;
 		}
-		console.log("FileChangeDetails:", details);
 		const files = details?.acceptedFiles;
 		if (!files || files.length === 0) return;
 		const file = files[0];
@@ -127,7 +125,6 @@ const useFileUpload = () => {
 
 		// For PDF files, skip cropping and go straight to upload
 		if (file.type === "application/pdf") {
-			console.log("useFileUpload: PDF file detected, calling uploadFile."); // Added log
 			await uploadFile(file);
 			return;
 		}
@@ -136,14 +133,12 @@ const useFileUpload = () => {
 		setUploadStatus("cropping");
 		setOpen(true);
 		setIsPreviewLoading(true);
-		console.log("useFileUpload: Image file detected, setOpen(true), uploadStatus: cropping"); // Added log
 
 		// Load preview asynchronously
 		const reader = new FileReader();
 		reader.onloadend = () => {
 			setFilePreview(reader.result as string);
 			setIsPreviewLoading(false);
-			console.log("useFileUpload: Image preview loaded"); // Added log
 		};
 		reader.onerror = () => {
 			setIsPreviewLoading(false);
@@ -154,22 +149,7 @@ const useFileUpload = () => {
 
 	const handleRetry = async () => {
 		if (croppedImage && selectedFile) {
-			const byteString = atob(croppedImage.split(",")[1]);
-			const mimeString = croppedImage
-				.split(",")[0]
-				.split(":")[1]
-				.split(";")[0];
-			const ab = new ArrayBuffer(byteString.length);
-			const ia = new Uint8Array(ab);
-
-			for (let i = 0; i < byteString.length; i++) {
-				ia[i] = byteString.charCodeAt(i);
-			}
-
-			const blob = new Blob([ab], { type: mimeString });
-			const croppedFile = new File([blob], selectedFile.name, {
-				type: mimeString,
-			});
+			const croppedFile = base64ToFile(croppedImage, selectedFile.name);
 			await uploadFile(croppedFile);
 		} else if (selectedFile) {
 			await uploadFile(selectedFile);
@@ -181,22 +161,7 @@ const useFileUpload = () => {
 
 		// Convert base64 string to a File object
 		if (selectedFile) {
-			const byteString = atob(croppedImageData.split(",")[1]);
-			const mimeString = croppedImageData
-				.split(",")[0]
-				.split(":")[1]
-				.split(";")[0];
-			const ab = new ArrayBuffer(byteString.length);
-			const ia = new Uint8Array(ab);
-
-			for (let i = 0; i < byteString.length; i++) {
-				ia[i] = byteString.charCodeAt(i);
-			}
-
-			const blob = new Blob([ab], { type: mimeString });
-			const croppedFile = new File([blob], selectedFile.name, {
-				type: mimeString,
-			});
+			const croppedFile = base64ToFile(croppedImageData, selectedFile.name);
 
 			// Upload the cropped file
 			await uploadFile(croppedFile);
@@ -224,6 +189,7 @@ const useFileUpload = () => {
 		setFileType("");
 		setFilePreview("");
 		setCroppedImage(null);
+		setUploadedRecordId(null);
 		setUploadKey((prevKey) => prevKey + 1);
 	};
 
@@ -238,6 +204,7 @@ const useFileUpload = () => {
 		fileType,
 		filePreview,
 		croppedImage,
+		uploadedRecordId,
 		uploadCancelToken,
 		uploadKey,
 		isPreviewLoading,

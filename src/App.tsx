@@ -16,6 +16,7 @@ import ForgotPasswordPage from '@/pages/forgot-password';
 import VerifyEmailPage from '@/pages/verify-email';
 import PasswordResetPage from '@/pages/password-reset';
 import ResetSuccessfulPage from '@/pages/reset-successful';
+import ContactSupport from '@/pages/contact-support';
 import RecordsDetails from '@/pages/record-details';
 import Scanner from '@/pages/scanner';
 import { BrowserRouter, Routes, Route } from 'react-router';
@@ -34,6 +35,7 @@ function App() {
                         <Route path="/verify-email" element={<VerifyEmailPage />} />
                         <Route path="/password-reset" element={<PasswordResetPage />} />
                         <Route path="/reset-successful" element={<ResetSuccessfulPage />} />
+                        <Route path="/contact-form" element={<ContactSupport />} />
                         <Route element={<WorkSpace />}>
                             <Route path="home" element={<ProtectedRoute><Home /></ProtectedRoute>} />
                             <Route path="records" element={<ProtectedRoute><Records /></ProtectedRoute>} />

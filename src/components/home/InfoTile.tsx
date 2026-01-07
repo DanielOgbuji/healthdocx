@@ -1,4 +1,4 @@
-import { useState, useEffect, memo } from "react";
+import { useState, memo } from "react";
 import { Box, Flex, Button } from "@chakra-ui/react";
 import { IoMdAdd } from "react-icons/io";
 import { getByUser as getInstitutionsByUser } from "@/api/institution";
@@ -7,78 +7,29 @@ import { type RootState } from "@/store/store";
 import InstitutionInfo from "./InstitutionInfo";
 import OptionsMenu from "./OptionsMenu";
 import UploadButton from "./UploadButton";
-import UploadDialog from "./UploadDialog";
-import useFileUpload from "@/hooks/useFileUpload";
+import { useQuery } from "@tanstack/react-query";
+import { StorageKeys } from "@/constants/upload";
+import { type FileChangeDetails } from "@zag-js/file-upload";
 
-interface Institution {
-    id: number;
-    institutionName: string;
+interface InfoTileProps {
+    openCamera: () => void;
+    handleFileChange: (details: FileChangeDetails) => Promise<void>;
 }
 
-const InfoTile = ({ openCamera }: { openCamera: () => void }) => {
+const InfoTile = ({ openCamera, handleFileChange }: InfoTileProps) => {
     const [isOpen, setIsOpen] = useState(false);
     const userId = useSelector((state: RootState) => state.auth.user?.id);
-    const [institutions, setInstitutions] = useState<Institution[]>([]);
-    const [isLoading, setIsLoading] = useState(true); // New state for loading
-    const {
-        open,
-        setOpen,
-        uploadProgress,
-        uploadStatus,
-        errorMessage,
-        fileSize,
-        fileName,
-        fileType,
-        filePreview,
-        handleFileChange,
-        handleCloseDialog,
-        handleRetry,
-        handleConfirmCrop,
-        handleCancelCrop,
-    } = useFileUpload();
 
-    useEffect(() => {
-        const fetchInstitutions = async () => {
-            if (!userId) {
-                setInstitutions([]);
-                setIsLoading(false);
-                return;
-            }
-
-            const localStorageKey = `institutions-${userId}`;
-            const storedInstitutions = localStorage.getItem(localStorageKey);
-
-            if (storedInstitutions) {
-                try {
-                    const parsedInstitutions = JSON.parse(storedInstitutions) as Institution[];
-                    setInstitutions(parsedInstitutions);
-                    setIsLoading(false); // Data loaded from local storage, no need for skeleton
-                    console.log("Institutions loaded from local storage");
-                    return; // Exit early if local storage data is valid
-                } catch (error) {
-                    console.error("Error parsing institutions from local storage:", error);
-                    // Fall through to API fetch if local storage parsing fails
-                }
-            }
-
-            // If local storage was empty or parsing failed, proceed with API fetch
-            setIsLoading(true); // Set loading to true only if API call is needed
-            try {
-                const data = await getInstitutionsByUser(userId);
-                console.log("Fetching institutions from API", data);
-                setInstitutions(data);
-                localStorage.setItem(localStorageKey, JSON.stringify(data));
-                console.log("Institutions fetched from API and saved to local storage");
-            } catch (error) {
-                console.error("Error fetching institutions from API:", error);
-                setInstitutions([]); // Clear institutions on error
-            } finally {
-                setIsLoading(false); // Always set loading to false after API attempt
-            }
-        };
-
-        fetchInstitutions();
-    }, [userId]);
+    const { data: institutions = [], isLoading } = useQuery({
+        queryKey: [StorageKeys.InstitutionsPrefix, userId],
+        queryFn: async () => {
+            if (!userId) return [];
+            const data = await getInstitutionsByUser(userId);
+            return data;
+        },
+        enabled: !!userId,
+        staleTime: 1000 * 60 * 60, // 1 hour
+    });
 
     return (
         <>
@@ -96,21 +47,6 @@ const InfoTile = ({ openCamera }: { openCamera: () => void }) => {
                     <UploadButton handleFileChange={handleFileChange} />
                 </Flex>
             </Flex>
-            <UploadDialog
-                open={open}
-                setOpen={setOpen}
-                uploadStatus={uploadStatus}
-                errorMessage={errorMessage}
-                fileSize={fileSize}
-                fileName={fileName}
-                fileType={fileType}
-                filePreview={filePreview}
-                uploadProgress={uploadProgress}
-                onClose={handleCloseDialog}
-                onRetry={handleRetry}
-                handleConfirmCrop={handleConfirmCrop}
-                handleCancelCrop={handleCancelCrop}
-            />
         </>
     );
 }

@@ -14,10 +14,10 @@ import {
 } from "@chakra-ui/react";
 import { useForm } from "react-hook-form";
 import { useNavigate } from "react-router";
-import Logo from "@/assets/images/Off-Jeay.svg";
-import LogoDark from "@/assets/images/Off-Jeay-Dark.svg";
+import Logo from "@/assets/images/off-jeay.svg";
+import LogoDark from "@/assets/images/off-jeay-dark.svg";
 import { useColorMode } from "@/components/ui/color-mode";
-import * as motion from "motion/react-client";
+import { motion } from "motion/react";
 import { MdOutlineArrowForward, MdOutlinePersonOutline, MdOutlinePassword } from "react-icons/md";
 import { toaster } from "@/components/ui/toaster";
 import { useDispatch } from "react-redux";
@@ -25,6 +25,8 @@ import { type AppDispatch } from "@/store/store";
 import { type ApiError } from '@/types/api.types';
 import { login as login } from "@/api/auth";
 import { loginSuccess } from "@/features/authSlice";
+import { getErrorMessage } from "@/utils/apiUtils";
+import { EMAIL_REGEX, STORAGE_KEYS } from "@/constants/formConstants";
 
 interface SignInValues {
     email: string;
@@ -61,19 +63,31 @@ export default function SignIn() {
         } catch (err) {
             console.error('Form submission failed:', err);
             const apiError = err as ApiError;
-            if (apiError.response?.data?.error === "Account not verified. Please verify your email.") {
-                const data = typeof apiError.config?.data === "string"
-                    ? JSON.parse(apiError.config.data)
-                    : apiError.config?.data;
+            // Check for specific error message that indicates unverified account
+            // This relies on the backend sending this exact string
+            const errorMessage = getErrorMessage(err);
 
-                const email = data?.email ?? "";
-                sessionStorage.setItem("onboardingEmail", email);
+            if (errorMessage === "Account not verified. Please verify your email.") {
+                let email = "";
+                // Safely extract email from config data if available
+                if (apiError.config?.data) {
+                    try {
+                        const data = typeof apiError.config.data === "string"
+                            ? JSON.parse(apiError.config.data)
+                            : apiError.config.data;
+                        email = data?.email ?? "";
+                    } catch (e) {
+                        console.error("Failed to parse request data", e);
+                    }
+                }
+
+                sessionStorage.setItem(STORAGE_KEYS.ONBOARDING_EMAIL, email);
 
                 navigate("/sign-up?continueStep=1");
             } else {
                 toaster.create({
                     title: "Sign In Failed",
-                    description: apiError.response?.data?.error ?? "An error occurred while signing you in. Please try again.",
+                    description: errorMessage,
                     type: "error",
                     duration: 5000,
                 });
@@ -140,7 +154,7 @@ export default function SignIn() {
                                     {...register("email", {
                                         required: "Email is required",
                                         pattern: {
-                                            value: /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i,
+                                            value: EMAIL_REGEX,
                                             message: "Invalid email address"
                                         }
                                     })}

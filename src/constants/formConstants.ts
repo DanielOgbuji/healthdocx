@@ -2,6 +2,15 @@ export const INITIAL_RESEND_TIMER = 30; // 30 seconds
 export const MAX_RESEND_ATTEMPTS = 4;
 export const RESEND_TIMER_INCREMENT = 30; // Increases by 30 seconds each time
 
+export const EMAIL_REGEX = /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i;
+
+export const STORAGE_KEYS = {
+    ONBOARDING_EMAIL: "onboardingEmail",
+    RESET_PWD_EMAIL: "resetPasswordEmail",
+    RESET_PWD_OTP: "resetPasswordOtp",
+};
+
+
 export const ROLE_OPTIONS = [
 	"IT Administrator",
 	"Health Records Officer",

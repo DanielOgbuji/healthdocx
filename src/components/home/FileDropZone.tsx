@@ -8,7 +8,7 @@ interface FileDropZoneProps {
 
 const FileDropZone = ({ handleFileChange }: FileDropZoneProps) => {
     return (
-        <FileUpload.Root unstyled flex={1} key={Math.random()} accept={["image/png", "image/jpeg", "application/pdf"]} onFileChange={handleFileChange} maxFileSize={10 * 1024 * 1024} maxFiles={1}>
+        <FileUpload.Root unstyled flex={1} accept={["image/png", "image/jpeg", "application/pdf"]} onFileChange={handleFileChange} maxFileSize={10 * 1024 * 1024} maxFiles={1}>
             <FileUpload.HiddenInput />
             <FileUpload.Trigger asChild>
                 <Card.Root cursor="pointer">

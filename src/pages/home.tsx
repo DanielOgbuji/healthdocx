@@ -29,6 +29,7 @@ const Home = () => {
         fileType,
         filePreview,
         croppedImage,
+        uploadedRecordId,
         handleFileChange,
         handleCloseDialog,
         handleRetry,
@@ -110,7 +111,7 @@ const Home = () => {
             <Flex mt="120px" direction="column" gap="4" w="full">
                 <Banner />
                 <Flex w="full" direction="column" pt="8" px={{ xl: "6vw", lg: "6vw", md: "6vw", sm: "6vw", base: "4" }} gap="4" >
-                    <InfoTile openCamera={openCamera} />
+                    <InfoTile openCamera={openCamera} handleFileChange={handleFileChange} />
                     <CostSegment />
                     <Flex direction="column">
                         <Text fontWeight="semibold">Digitize your records</Text>
@@ -139,7 +140,7 @@ const Home = () => {
                                         <Text color="primary" fontSize="sm" fontWeight="semibold" cursor="pointer" onClick={() => navigate("/records")}>See all</Text>
                                     </Flex>
                                     <Separator mt="2" />
-                                    <RecentRecordsPane />
+                                    <RecentRecordsPane handleFileChange={handleFileChange} />
                                 </Flex>
                             </Flex>
                             <Flex direction="column" w={{ base: "full", xl: "35vw" }} pl={{ base: "0", xl: "4" }}>
@@ -163,6 +164,7 @@ const Home = () => {
                     fileType={fileType}
                     filePreview={filePreview}
                     croppedImage={croppedImage}
+                    uploadedRecordId={uploadedRecordId}
                     uploadProgress={uploadProgress}
                     onClose={handleCloseDialog}
                     onRetry={handleRetry}
