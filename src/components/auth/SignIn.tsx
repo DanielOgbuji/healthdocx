@@ -14,8 +14,8 @@ import {
 } from "@chakra-ui/react";
 import { useForm } from "react-hook-form";
 import { useNavigate } from "react-router";
-import Logo from "@/assets/images/off-jeay.svg";
-import LogoDark from "@/assets/images/off-jeay-dark.svg";
+import Logo from "@/assets/images/logo.svg";
+import LogoDark from "@/assets/images/logo-dark.svg";
 import { useColorMode } from "@/components/ui/color-mode";
 import { motion } from "motion/react";
 import { MdOutlineArrowForward, MdOutlinePersonOutline, MdOutlinePassword } from "react-icons/md";

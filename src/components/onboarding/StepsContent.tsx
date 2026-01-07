@@ -1,7 +1,7 @@
 import { Button, ButtonGroup, Image, Text, Stack, Steps, Link, Flex } from "@chakra-ui/react";
 import { useColorMode } from "@/components/ui/color-mode";
-import Logo from "@/assets/images/off-jeay.svg";
-import LogoDark from "@/assets/images/off-jeay-dark.svg";
+import Logo from "@/assets/images/logo.svg";
+import LogoDark from "@/assets/images/logo-dark.svg";
 import type { IconType } from "react-icons";
 import { InfoTip } from "@/components/ui/privacy-tip";
 import type { ReactElement, ReactNode } from "react";

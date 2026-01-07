@@ -4,8 +4,8 @@ import { MdOutlineNotifications, MdPersonOutline, MdOutlineSupport, MdOutlineLog
 import { IoMdAdd } from "react-icons/io";
 import { RxLightningBolt } from "react-icons/rx";
 import NavList from "@/components/navigation/NavList";
-import Logo from "@/assets/images/off-jeay.svg";
-import LogoDark from "@/assets/images/off-jeay-dark.svg";
+import Logo from "@/assets/images/logo.svg";
+import LogoDark from "@/assets/images/logo-dark.svg";
 import { useColorMode } from "@/components/ui/color-mode";
 import { useDispatch, useSelector } from 'react-redux';
 import { useNavigate } from "react-router";
