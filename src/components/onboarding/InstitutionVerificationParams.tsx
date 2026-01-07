@@ -11,7 +11,7 @@ import { useColorMode } from "@/components/ui/color-mode";
 import pendingImage from "@/assets/images/animate.svg";
 import pendingImageDark from "@/assets/images/animate-dark.svg";
 
-const AccountVerification = () => {
+const InstitutionVerificationParams = () => {
     const { colorMode } = useColorMode();
     return (
         <Stack gap="6" alignItems="center">
@@ -66,4 +66,4 @@ const AccountVerification = () => {
         </Stack>
     );
 }
-export default AccountVerification;
+export default InstitutionVerificationParams;

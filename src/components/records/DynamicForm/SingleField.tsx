@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect, useRef, memo } from "react";
 import { Input, GridItem, Field, Flex, Float, Circle } from "@chakra-ui/react";
 import EditableLabel from "./EditableLabel";
 import { IconButton, Icon } from "@chakra-ui/react";
@@ -8,49 +8,46 @@ import { useDrag, useDrop } from "react-dnd";
 import { useSelection } from "@/hooks/useSelection";
 import { Checkbox } from "@chakra-ui/react";
 import { PATH_SEPARATOR } from "@/utils/dynamicFormUtils";
+import { useDynamicFormContext } from "@/contexts/DynamicFormContext";
 
 interface SingleFieldProps {
   fieldKey: string;
   value: unknown;
-  currentPath: string[];
+  currentPath: string[]; // passed as 'currentPath' in renderer
   pathString: string;
-  onFieldChange: (path: string[], value: string) => void;
-  labels: Record<string, string>;
-  onLabelChange: (path: string, label: string) => void;
-  onRemoveFieldOrSection: (path: string[]) => void;
-  onMoveItem: (itemPath: string[], targetPath: string[]) => void;
-  newlyAddedPath: string[] | null;
-  setNewlyAddedPath: (path: string[] | null) => void;
 }
 
-const SingleField: React.FC<SingleFieldProps> = ({
+const SingleField = memo(({
   fieldKey,
   value,
   currentPath,
   pathString,
-  onFieldChange,
-  labels,
-  onLabelChange,
-  onRemoveFieldOrSection,
-  onMoveItem,
-  newlyAddedPath,
-  setNewlyAddedPath,
-}) => {
+}: SingleFieldProps) => {
   const [inputValue, setInputValue] = useState(
     typeof value === "string" || typeof value === "number" ? value : ""
   );
+
+  const {
+    handleFieldChange,
+    handleLabelChange,
+    handleRemoveFieldOrSection,
+    handleMoveItem,
+    newlyAddedPath,
+    setNewlyAddedPath,
+    labels
+  } = useDynamicFormContext();
+
   const { selectedItems, toggleSelection } = useSelection();
   const gridItemRef = useRef<HTMLDivElement>(null);
   const [isHighlighted, setIsHighlighted] = useState(false);
 
   React.useLayoutEffect(() => {
     if (newlyAddedPath && newlyAddedPath.join(PATH_SEPARATOR) === pathString && gridItemRef.current) {
-      // Use requestAnimationFrame to ensure smooth scrolling
       requestAnimationFrame(() => {
         gridItemRef.current?.scrollIntoView({ behavior: 'smooth', block: 'center' });
       });
-      setNewlyAddedPath(null); // Reset after scrolling
-      setIsHighlighted(true); // Trigger highlight after scroll
+      setNewlyAddedPath(null);
+      setIsHighlighted(true);
     }
   }, [newlyAddedPath, pathString, setNewlyAddedPath]);
 
@@ -59,7 +56,7 @@ const SingleField: React.FC<SingleFieldProps> = ({
     if (isHighlighted) {
       timer = setTimeout(() => {
         setIsHighlighted(false);
-      }, 1200); // Highlight for 1.2 seconds
+      }, 1200);
     }
     return () => clearTimeout(timer);
   }, [isHighlighted]);
@@ -75,7 +72,7 @@ const SingleField: React.FC<SingleFieldProps> = ({
   const [{ isOver, draggedItem }, drop] = useDrop(() => ({
     accept: ['field', 'section'],
     drop: (item: { path: string[] }) => {
-      onMoveItem(item.path, currentPath);
+      handleMoveItem(item.path, currentPath);
     },
     collect: (monitor) => ({
       isOver: monitor.isOver(),
@@ -97,7 +94,7 @@ const SingleField: React.FC<SingleFieldProps> = ({
 
   const handleBlur = () => {
     if (inputValue !== value) {
-      onFieldChange(currentPath, inputValue as string);
+      handleFieldChange(currentPath, inputValue as string);
     }
   };
 
@@ -112,8 +109,6 @@ const SingleField: React.FC<SingleFieldProps> = ({
       title={pathString}
       cursor={isDragging ? "grabbing" : "grab"}
       className="group"
-      //boxShadow={isHighlighted ? "0px 0px 20px var(--shadow-color)" : "none"}
-      //scale={isHighlighted ? "1.01" : "1"}
       transition="scale 0.25s ease-in-out"
       shadowColor="onBackground/20"
     >
@@ -131,14 +126,14 @@ const SingleField: React.FC<SingleFieldProps> = ({
           <Flex gap="2" alignItems="center" scale={isHighlighted ? "1.05" : "1"} textShadow={isHighlighted ? "0 0 10px var(--shadow-color)" : "none"} shadowColor="onBackground/50" color={isHighlighted ? "primary" : "inherit"} transition="all 0.3s ease-in-out">
             <EditableLabel
               initialValue={labels[pathString] || fieldKey}
-              onSave={(newLabel) => onLabelChange(pathString, newLabel)}
+              onSave={(newLabel) => handleLabelChange(pathString, newLabel)}
             />
             <IconButton
               display="none"
               _groupHover={{ display: "flex" }}
               aria-label="Delete Field"
               size="2xs"
-              onClick={() => onRemoveFieldOrSection(currentPath)}
+              onClick={() => handleRemoveFieldOrSection(currentPath)}
               colorPalette="red"
               rounded="full"
               variant="outline"
@@ -170,6 +165,6 @@ const SingleField: React.FC<SingleFieldProps> = ({
       </Field.Root>
     </GridItem>
   );
-};
+});
 
 export default SingleField;

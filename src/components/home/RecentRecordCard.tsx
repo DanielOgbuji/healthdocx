@@ -28,7 +28,7 @@ const RecentRecordCard = ({
         try {
             setIsLoading(true);
             const id = recordID;
-            console.log("the record id", id)
+
 
             // Navigate to the details page with the record ID
             navigate(`/records/details/${id}`);

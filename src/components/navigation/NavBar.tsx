@@ -4,8 +4,8 @@ import { MdOutlineNotifications, MdPersonOutline, MdOutlineSupport, MdOutlineLog
 import { IoMdAdd } from "react-icons/io";
 import { RxLightningBolt } from "react-icons/rx";
 import NavList from "@/components/navigation/NavList";
-import Logo from "@/assets/images/Off-Jeay.svg";
-import LogoDark from "@/assets/images/Off-Jeay-Dark.svg";
+import Logo from "@/assets/images/off-jeay.svg";
+import LogoDark from "@/assets/images/off-jeay-dark.svg";
 import { useColorMode } from "@/components/ui/color-mode";
 import { useDispatch, useSelector } from 'react-redux';
 import { useNavigate } from "react-router";
@@ -23,6 +23,8 @@ const NavBar = () => {
     const handleMenuItemSelect = ({ value }: { value: string }) => {
         if (value === "logout") {
             setIsLogoutDialogOpen(true);
+        } else if (value === "support") {
+            navigate("/contact-form");
         }
     };
 
@@ -115,7 +117,7 @@ const NavBar = () => {
                                     </Flex>
                                     <Menu.Separator />
                                     <Menu.Item value="account" disabled><Icon size="md" color="outline"><MdPersonOutline /></Icon> View profile</Menu.Item>
-                                    <Menu.Item value="settings"><Icon size="md" color="outline"><MdOutlineSupport /></Icon> Support</Menu.Item>
+                                    <Menu.Item value="support"><Icon size="md" color="outline"><MdOutlineSupport /></Icon> Support</Menu.Item>
                                     <Menu.Separator />
                                     <Menu.Item value="logout" color="error"
                                         _hover={{ bg: "bg.error", color: "error" }}><Icon size="md" color="error"><MdOutlineLogout /></Icon> Sign out</Menu.Item>

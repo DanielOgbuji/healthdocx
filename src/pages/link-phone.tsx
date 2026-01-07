@@ -75,8 +75,14 @@ const LinkPhone = () => {
   const [sessions, setSessions] = useState<TransferSession[]>([]);
   const [sessionsLoaded, setSessionsLoaded] = useState(false);
 
-  // Removed unused currentFile state
+  // WebSocket ref
   const wsRef = useRef<WebSocket | null>(null);
+
+  // Reconnection/heartbeat refs
+  const manualCloseRef = useRef(false);
+  const reconnectAttemptsRef = useRef(0);
+  const heartbeatRef = useRef<number | null>(null);
+  const reconnectTimeoutRef = useRef<number | null>(null);
 
   // QR Code expanded view state
   const [isQrExpanded, setIsQrExpanded] = useState(false);
@@ -181,12 +187,12 @@ const LinkPhone = () => {
     }
   }, []);
 
-  // Countdown timer based solely on expiry time
+  // Countdown timer — only depend on expiry; update seconds inside interval
   useEffect(() => {
     let intervalId: number | null = null;
 
-    if (qrCodeData?.expiresAt && countdown > 0) {
-      intervalId = setInterval(() => {
+    if (qrCodeData?.expiresAt) {
+      const updateRemaining = () => {
         const expiresAtDate = new Date(qrCodeData.expiresAt);
         const now = new Date();
         const remainingMilliseconds = expiresAtDate.getTime() - now.getTime();
@@ -194,26 +200,25 @@ const LinkPhone = () => {
 
         setCountdown(remainingSeconds);
 
-        // Auto-regenerate when timer reaches 0
         if (remainingSeconds === 0) {
-          if (intervalId) clearInterval(intervalId);
-
-          // Automatically trigger new session like the "New Session" button
           setError(null);
           setSessionStatus("expired");
 
-          // Small delay to show expired state before generating new code
-          setTimeout(() => {
-            fetchQrCode();
-          }, 1000);
+          // small delay so UI shows expired state
+          window.setTimeout(() => fetchQrCode(), 1000);
         }
-      }, 1000);
+      };
+
+      updateRemaining();
+      intervalId = window.setInterval(updateRemaining, 1000);
     }
 
     return () => {
-      if (intervalId) clearInterval(intervalId);
+      if (intervalId !== null) {
+        window.clearInterval(intervalId);
+      }
     };
-  }, [qrCodeData?.expiresAt, countdown, fetchQrCode]);
+  }, [qrCodeData?.expiresAt, fetchQrCode]);
 
   interface FileUploadedMessage {
     fileId: string;
@@ -293,38 +298,114 @@ const LinkPhone = () => {
       default:
         console.log("Unhandled WS message:", message);
     }
-  }, [addUploadedFile, setSessionStatus, updateFileStatus, setError]);
+  }, [addUploadedFile, updateFileStatus]);
 
-  // --- Connect to WebSocket (immediate, like desktop.html)
+  // --- Robust WebSocket connect with heartbeat and exponential backoff
   const connectWebSocket = useCallback(() => {
     if (!qrCodeData?.sessionId) return;
+
+    // Close existing socket first
+    if (wsRef.current) {
+      try {
+        manualCloseRef.current = true;
+        wsRef.current.close();
+      } catch (e) {
+        void e;
+      } finally {
+        wsRef.current = null;
+      }
+      // small pause to ensure previous socket closed properly before opening new one
+      // (not strictly necessary but reduces race conditions on flaky mobile networks)
+    }
+
+    manualCloseRef.current = false;
 
     const ws = new WebSocket("wss://healthdocx-node.onrender.com/ws/transfer");
     wsRef.current = ws;
 
     ws.onopen = () => {
-      ws.send(
-        JSON.stringify({
-          type: "join_session",
-          sessionId: qrCodeData.sessionId,
-          connectionType: "dashboard",
-        })
-      );
+      reconnectAttemptsRef.current = 0;
+
+      try {
+        ws.send(
+          JSON.stringify({
+            type: "join_session",
+            sessionId: qrCodeData.sessionId,
+            connectionType: "dashboard",
+          })
+        );
+      } catch (err) {
+        console.warn("Failed to send join_session:", err);
+      }
+
+      // start heartbeat (ping) to keep connection alive
+      if (heartbeatRef.current !== null) {
+        window.clearInterval(heartbeatRef.current);
+        heartbeatRef.current = null;
+      }
+      heartbeatRef.current = window.setInterval(() => {
+        try {
+          if (wsRef.current && wsRef.current.readyState === WebSocket.OPEN) {
+            wsRef.current.send(JSON.stringify({ type: "ping" }));
+          }
+        } catch (e) {
+          console.warn("Heartbeat failed:", e);
+        }
+      }, 30_000);
     };
 
     ws.onmessage = (event) => {
-      const message: WebSocketMessage = JSON.parse(event.data);
-      handleWebSocketMessage(message);
+      // Be defensive: handle only string messages for JSON parse
+      try {
+        if (typeof event.data === "string") {
+          const parsed = JSON.parse(event.data) as WebSocketMessage;
+          // ignore pong responses
+          if (parsed.type === "pong") return;
+          handleWebSocketMessage(parsed);
+        } else {
+          // optionally handle binary payloads if server uses them in future
+        }
+      } catch (err) {
+        console.error("Failed to parse WS message:", err);
+      }
     };
 
-    ws.onclose = () => {
-      setSessionStatus("cancelled");
+  ws.onclose = () => {
+      // clear heartbeat
+      if (heartbeatRef.current !== null) {
+        window.clearInterval(heartbeatRef.current);
+        heartbeatRef.current = null;
+      }
+
+      wsRef.current = null;
+
+      // If closed manually by UI (cancel), don't auto-reconnect
+      if (!manualCloseRef.current) {
+        reconnectAttemptsRef.current = Math.min(6, reconnectAttemptsRef.current + 1);
+        const backoff = Math.min(30_000, 500 * 2 ** reconnectAttemptsRef.current);
+
+        if (reconnectTimeoutRef.current !== null) {
+          window.clearTimeout(reconnectTimeoutRef.current);
+        }
+        reconnectTimeoutRef.current = window.setTimeout(() => {
+          // only reconnect if session still valid
+          if (qrCodeData?.sessionId && !manualCloseRef.current) {
+            connectWebSocket();
+          }
+        }, backoff);
+      } else {
+        reconnectAttemptsRef.current = 0;
+      }
+
+      // reflect disconnected state for UI
+      // only mark cancelled if user explicitly closed or server signaled error
+      setSessionStatus(manualCloseRef.current ? "cancelled" : "waiting");
     };
 
     ws.onerror = (err) => {
       console.error("WebSocket error:", err);
       setError("WebSocket connection error");
-      setSessionStatus("cancelled");
+      // onclose will handle reconnection/backoff
     };
   }, [qrCodeData?.sessionId, handleWebSocketMessage]);
 
@@ -336,8 +417,12 @@ const LinkPhone = () => {
   // Kick off when QR is generated
   useEffect(() => {
     if (qrCodeData?.sessionId) {
-      connectWebSocket();
+      // small delay to avoid immediate reconnect storms on mobile
+      window.setTimeout(() => connectWebSocket(), 300);
     }
+    return () => {
+      // no-op here; cleanup handled in unmount effect below
+    };
   }, [qrCodeData?.sessionId, connectWebSocket]);
 
   // Show toast for errors
@@ -352,10 +437,54 @@ const LinkPhone = () => {
     }
   }, [error]);
 
-  // Cleanup
+  // Visibility handling: close WS when backgrounded to avoid throttling; reconnect on visible
+  useEffect(() => {
+    const handleVisibility = () => {
+      if (document.hidden) {
+        // close socket but do not set manualClose to true so reconnect is allowed when visible
+        if (wsRef.current) {
+          try {
+            wsRef.current.close();
+          } catch (e) { void e; }
+          wsRef.current = null;
+        }
+      } else {
+        // reconnect when tab visible if we have an active session
+        if (qrCodeData?.sessionId) {
+          window.setTimeout(() => {
+            if (!manualCloseRef.current) connectWebSocket();
+          }, 500);
+        }
+      }
+    };
+
+    document.addEventListener("visibilitychange", handleVisibility);
+    return () => {
+      document.removeEventListener("visibilitychange", handleVisibility);
+    };
+  }, [qrCodeData?.sessionId, connectWebSocket]);
+
+  // Cleanup on unmount
   useEffect(() => {
     return () => {
-      if (wsRef.current) wsRef.current.close();
+      manualCloseRef.current = true;
+
+      if (wsRef.current) {
+        try {
+          wsRef.current.close();
+        } catch (e) { void e; }
+        wsRef.current = null;
+      }
+
+      if (reconnectTimeoutRef.current !== null) {
+        window.clearTimeout(reconnectTimeoutRef.current);
+        reconnectTimeoutRef.current = null;
+      }
+
+      if (heartbeatRef.current !== null) {
+        window.clearInterval(heartbeatRef.current);
+        heartbeatRef.current = null;
+      }
     };
   }, []);
 
@@ -430,9 +559,19 @@ const LinkPhone = () => {
       setIsLoading(true);
       await cancelTransferSession(qrCodeData.sessionId);
 
-      // Close WebSocket connection
+      // Close WebSocket connection and prevent auto-reconnect
+      manualCloseRef.current = true;
       if (wsRef.current) {
-        wsRef.current.close();
+        try { wsRef.current.close(); } catch (e) { void e; }
+        wsRef.current = null;
+      }
+      if (reconnectTimeoutRef.current !== null) {
+        window.clearTimeout(reconnectTimeoutRef.current);
+        reconnectTimeoutRef.current = null;
+      }
+      if (heartbeatRef.current !== null) {
+        window.clearInterval(heartbeatRef.current);
+        heartbeatRef.current = null;
       }
 
       // Reset state
@@ -501,8 +640,10 @@ const LinkPhone = () => {
 
       // If this is the current active session, clean it up
       if (qrCodeData?.sessionId === sessionId) {
+        manualCloseRef.current = true;
         if (wsRef.current) {
-          wsRef.current.close();
+          try { wsRef.current.close(); } catch (e) { void e; }
+          wsRef.current = null;
         }
         setSessionStatus("cancelled");
         setQrCodeData(null);

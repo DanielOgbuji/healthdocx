@@ -1,5 +1,6 @@
 import { useState, useCallback, useEffect, useRef } from "react";
 import { type FileChangeDetails } from "@zag-js/file-upload";
+import { base64ToFile } from "@/utils/imageUtils";
 
 export const useCamera = (
 	handleFileChange: (details: FileChangeDetails) => Promise<void>
@@ -43,7 +44,6 @@ export const useCamera = (
 			setStream(newStream);
 			setSelectedDevice(deviceId);
 		} catch (err) {
-			console.error("Error starting camera stream.", err);
 			setError("Could not start camera stream with the selected device.");
 		} finally {
 			setIsSearching(false);
@@ -68,14 +68,12 @@ export const useCamera = (
 
 				const allDevices = await navigator.mediaDevices.enumerateDevices();
 				const videoDevices = allDevices.filter((d) => d.kind === "videoinput");
-				console.log("Available video devices:", videoDevices.map((d) => d.label));
 				setDevices(videoDevices);
 
 				if (videoDevices.length === 0) {
 					setError("No camera devices found.");
 				}
 			} catch (err) {
-				console.error("Error initializing camera.", err);
 				setError("Could not access camera. Please ensure permissions are granted.");
 			} finally {
 				setIsSearching(false);
@@ -123,15 +121,7 @@ export const useCamera = (
 			context.drawImage(videoElement, 0, 0, canvas.width, canvas.height);
 			const dataUrl = canvas.toDataURL("image/jpeg");
 
-			const byteString = atob(dataUrl.split(",")[1]);
-			const mimeString = dataUrl.split(",")[0].split(":")[1].split(";")[0];
-			const ab = new ArrayBuffer(byteString.length);
-			const ia = new Uint8Array(ab);
-			for (let i = 0; i < byteString.length; i++) {
-				ia[i] = byteString.charCodeAt(i);
-			}
-			const blob = new Blob([ab], { type: mimeString });
-			const file = new File([blob], `capture-${new Date().toISOString()}.jpg`, { type: mimeString });
+			const file = base64ToFile(dataUrl, `capture-${new Date().toISOString()}.jpg`);
 
 			await handleFileChange({ acceptedFiles: [file], rejectedFiles: [] });
 			closeCamera();

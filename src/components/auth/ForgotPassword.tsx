@@ -17,6 +17,8 @@ import { useForm } from "react-hook-form";
 import { AnimatePresence, motion } from "motion/react";
 import { MdOutlineArrowCircleRight, MdOutlineAlternateEmail } from "react-icons/md";
 import { forgotPassword } from "@/api/auth";
+import { getErrorMessage } from "@/utils/apiUtils";
+import { EMAIL_REGEX, STORAGE_KEYS } from "@/constants/formConstants";
 
 interface FormValues {
     email: string;
@@ -47,7 +49,7 @@ const ForgotPassword = () => {
             await forgotPassword(values.email);
 
             // Store email in sessionStorage for use in VerifyEmail component
-            sessionStorage.setItem("resetPasswordEmail", values.email);
+            sessionStorage.setItem(STORAGE_KEYS.RESET_PWD_EMAIL, values.email);
 
             setIsVisible(false);
             setTimeout(() => {
@@ -62,11 +64,7 @@ const ForgotPassword = () => {
             });
         } catch (error: unknown) {
             console.error('An error occurred:', error);
-            const errorMessage = error && typeof error === 'object' && 'response' in error &&
-                error.response && typeof error.response === 'object' && 'data' in error.response &&
-                error.response.data && typeof error.response.data === 'object' && 'error' in error.response.data
-                ? (error.response.data as { error: string }).error
-                : "An error occurred while submitting the form. Please try again later.";
+            const errorMessage = getErrorMessage(error);
             toaster.create({
                 duration: 3000,
                 title: "Error",
@@ -164,7 +162,7 @@ const ForgotPassword = () => {
                                                 {...register("email", {
                                                     required: "Email is required",
                                                     pattern: {
-                                                        value: /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i,
+                                                        value: EMAIL_REGEX,
                                                         message: "Invalid email format",
                                                     },
                                                     maxLength: {

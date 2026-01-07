@@ -5,8 +5,9 @@ import { Controller, useForm } from "react-hook-form"
 import { useAnimate } from "motion/react"
 import { AnimatePresence, motion } from "motion/react"
 import { toaster } from "@/components/ui/toaster"
-import { INITIAL_RESEND_TIMER, MAX_RESEND_ATTEMPTS, RESEND_TIMER_INCREMENT } from '@/constants/formConstants';
+import { INITIAL_RESEND_TIMER, MAX_RESEND_ATTEMPTS, RESEND_TIMER_INCREMENT, STORAGE_KEYS } from '@/constants/formConstants';
 import { forgotPassword } from "@/api/auth";
+import { getErrorMessage } from "@/utils/apiUtils";
 
 interface FormValues {
     pin: string[]
@@ -25,7 +26,7 @@ export default function VerifyEmail({ onSuccess }: VerifyEmailProps) {
     const resendAttemptsRef = React.useRef(0)
 
     // Get email from sessionStorage (set by ForgotPassword component)
-    const email = sessionStorage.getItem("resetPasswordEmail")
+    const email = sessionStorage.getItem(STORAGE_KEYS.RESET_PWD_EMAIL)
 
     const defaultPin = ['', '', '', '']
 
@@ -70,7 +71,7 @@ export default function VerifyEmail({ onSuccess }: VerifyEmailProps) {
         }
 
         // Store OTP in sessionStorage for use in PasswordReset component
-        sessionStorage.setItem("resetPasswordOtp", otp)
+        sessionStorage.setItem(STORAGE_KEYS.RESET_PWD_OTP, otp)
 
         setIsVisible(false)
         setTimeout(() => {
@@ -110,11 +111,7 @@ export default function VerifyEmail({ onSuccess }: VerifyEmailProps) {
                 type: "success",
             })
         } catch (error: unknown) {
-            const errorMessage = error && typeof error === 'object' && 'response' in error &&
-                error.response && typeof error.response === 'object' && 'data' in error.response &&
-                error.response.data && typeof error.response.data === 'object' && 'error' in error.response.data
-                ? (error.response.data as { error: string }).error
-                : "Failed to resend code. Please try again."
+            const errorMessage = getErrorMessage(error)
 
             toaster.create({
                 duration: 3000,

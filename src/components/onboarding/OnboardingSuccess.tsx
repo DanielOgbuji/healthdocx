@@ -3,7 +3,7 @@ import { Button, Container, Box, Image, Stack, Text, Link } from "@chakra-ui/rea
 import handshake from "@/assets/images/welcome-light.svg";
 import handshakeDark from "@/assets/images/welcome-dark.svg";
 
-const Welcome = () => {
+const OnboardingSuccess = () => {
     const { colorMode } = useColorMode(); // Get current color mode
     return (
         <Container
@@ -20,7 +20,7 @@ const Welcome = () => {
                 objectFit="cover"
                 loading="lazy"
             />
-            <Stack gap="4" maxW={{ base: "90%", md: "lg", lg: "lg" }}  alignItems="center">
+            <Stack gap="4" maxW={{ base: "90%", md: "lg", lg: "lg" }} alignItems="center">
                 <Text
                     fontWeight="bold"
                     maxW={{ base: "90%", md: "lg", lg: "lg" }}
@@ -56,4 +56,4 @@ const Welcome = () => {
     );
 };
 
-export default Welcome;
+export default OnboardingSuccess;

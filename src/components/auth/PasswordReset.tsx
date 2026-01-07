@@ -6,10 +6,12 @@ import {
     PasswordInput,
     PasswordStrengthMeter,
 } from "@/components/ui/password-input";
-import * as motion from "motion/react-client";
+import { motion } from "motion/react";
 import { toaster } from "@/components/ui/toaster";
 import { PASSWORD_MIN_LENGTH, calculatePasswordStrength, validatePassword } from "@/utils/passwordUtils";
 import { resetPassword } from "@/api/auth";
+import { getErrorMessage } from "@/utils/apiUtils";
+import { STORAGE_KEYS } from "@/constants/formConstants";
 
 interface FormValues {
     password: string;
@@ -34,8 +36,8 @@ const PasswordResetForm = () => {
     const password = watch("password", "");
 
     // Get email and OTP from sessionStorage (set by ForgotPassword and VerifyEmail components)
-    const email = sessionStorage.getItem("resetPasswordEmail");
-    const otp = sessionStorage.getItem("resetPasswordOtp");
+    const email = sessionStorage.getItem(STORAGE_KEYS.RESET_PWD_EMAIL);
+    const otp = sessionStorage.getItem(STORAGE_KEYS.RESET_PWD_OTP);
 
     const onSubmit = async (data: FormValues) => {
         if (!email) {
@@ -63,8 +65,8 @@ const PasswordResetForm = () => {
             await resetPassword(email, otp, data.password);
 
             // Clear stored data after successful reset
-            sessionStorage.removeItem("resetPasswordEmail");
-            sessionStorage.removeItem("resetPasswordOtp");
+            sessionStorage.removeItem(STORAGE_KEYS.RESET_PWD_EMAIL);
+            sessionStorage.removeItem(STORAGE_KEYS.RESET_PWD_OTP);
 
             setTimeout(() => {
                 navigate("/reset-successful");
@@ -77,11 +79,7 @@ const PasswordResetForm = () => {
             }, 500);
         } catch (error: unknown) {
             console.error("Error during password reset:", error);
-            const errorMessage = error && typeof error === 'object' && 'response' in error &&
-                error.response && typeof error.response === 'object' && 'data' in error.response &&
-                error.response.data && typeof error.response.data === 'object' && 'error' in error.response.data
-                ? (error.response.data as { error: string }).error
-                : "An error occurred while resetting your password";
+            const errorMessage = getErrorMessage(error);
 
             toaster.create({
                 duration: 3000,

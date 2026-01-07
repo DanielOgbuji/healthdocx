@@ -1,22 +1,18 @@
-import React, { useState, useEffect, useRef, useCallback } from "react";
+import React, { useState, useEffect, useRef, useCallback, memo } from "react";
 import {
+  Flex,
   Box,
   GridItem,
-  Flex,
   IconButton,
   Input,
-  Checkbox,
   Icon,
   HStack,
-  Heading,
-  Table, // Import Table as a compound component
+  Table,
 } from "@chakra-ui/react";
 import {
   MdAdd,
   MdDeleteOutline,
   MdOutlineKeyboardDoubleArrowDown,
-  MdExpandMore,
-  MdExpandLess,
 } from "react-icons/md";
 import { DragHandle } from "./DragHandle";
 import EditableLabel from "./EditableLabel";
@@ -26,6 +22,8 @@ import { PATH_SEPARATOR } from "@/utils/dynamicFormUtils";
 import type { DragItem } from "@/types/dnd";
 import { Collapsible } from "@chakra-ui/react";
 import { useMergeRefs } from "@chakra-ui/hooks";
+import { useDynamicFormContext } from "@/contexts/DynamicFormContext";
+import { FieldHeader } from "./FieldHeader";
 
 interface DraggableTableRowProps {
   row: Record<string, string>;
@@ -39,7 +37,7 @@ interface DraggableTableRowProps {
   onReorderArrayItem: (path: string[], fromIndex: number, toIndex: number) => void;
 }
 
-const DraggableTableRow: React.FC<DraggableTableRowProps> = ({
+const DraggableTableRow = memo(({
   row,
   rowIndex,
   rowPath,
@@ -49,7 +47,7 @@ const DraggableTableRow: React.FC<DraggableTableRowProps> = ({
   handleRemoveRow,
   currentArrayPath,
   onReorderArrayItem,
-}) => {
+}: DraggableTableRowProps) => {
   const rowRef = useRef<HTMLTableRowElement>(null);
   const [, dragRow] = useDrag(() => ({
     type: 'table-row',
@@ -108,60 +106,47 @@ const DraggableTableRow: React.FC<DraggableTableRowProps> = ({
       )}
     </Table.Row>
   );
-};
+});
 
 interface EditableTableFieldProps {
   fieldKey: string;
   value: Array<Record<string, string>>;
   currentPath: string[];
   pathString: string;
-  onFieldChange: (path: string[], value: string | Array<Record<string, string>>) => void;
-  labels: Record<string, string>;
-  onLabelChange: (path: string, label: string) => void;
-  onRemoveFieldOrSection: (path: string[]) => void;
-  onMoveItem: (itemPath: string[], targetPath: string[], moveType?: "reorder" | "moveInto") => void;
-  onAddArrayItem: (path: string[], item: Record<string, string> | string) => void;
-  onRemoveArrayItem: (path: string[], index: number) => void;
-  onReorderArrayItem: (path: string[], fromIndex: number, toIndex: number) => void;
-  isCollapsed: boolean;
-  toggleCollapse: () => void;
   depth: number;
-  newlyAddedPath: string[] | null;
-  setNewlyAddedPath: (path: string[] | null) => void;
 }
 
-const EditableTableField: React.FC<EditableTableFieldProps> = ({
+const EditableTableField = memo(({
   fieldKey,
   value,
   currentPath,
   pathString,
-  onFieldChange,
-  labels,
-  onLabelChange,
-  onRemoveFieldOrSection,
-  onMoveItem,
-  onAddArrayItem,
-  onRemoveArrayItem,
-  onReorderArrayItem,
-  isCollapsed,
-  toggleCollapse,
   depth,
-  newlyAddedPath,
-  setNewlyAddedPath,
-}) => {
+}: EditableTableFieldProps) => {
   const [localValue, setLocalValue] = useState(value);
-  const { selectedItems, toggleSelection } = useSelection();
+  const { selectedItems } = useSelection();
+  const {
+    handleFieldChange,
+    handleRemoveArrayItem,
+    handleReorderArrayItem,
+    handleMoveItem,
+    handleAddArrayItem,
+    newlyAddedPath,
+    setNewlyAddedPath,
+    isCollapsed,
+    toggleCollapse,
+  } = useDynamicFormContext();
+
   const gridItemRef = useRef<HTMLDivElement>(null);
   const [isHighlighted, setIsHighlighted] = useState(false);
 
   React.useLayoutEffect(() => {
     if (newlyAddedPath && newlyAddedPath.join(PATH_SEPARATOR) === pathString && gridItemRef.current) {
-      // Use requestAnimationFrame to ensure smooth scrolling
       requestAnimationFrame(() => {
         gridItemRef.current?.scrollIntoView({ behavior: 'smooth', block: 'center' });
       });
-      setNewlyAddedPath(null); // Reset after scrolling
-      setIsHighlighted(true); // Trigger highlight after scroll
+      setNewlyAddedPath(null);
+      setIsHighlighted(true);
     }
   }, [newlyAddedPath, pathString, setNewlyAddedPath]);
 
@@ -170,7 +155,7 @@ const EditableTableField: React.FC<EditableTableFieldProps> = ({
     if (isHighlighted) {
       timer = setTimeout(() => {
         setIsHighlighted(false);
-      }, 1200); // Highlight for 1.2 seconds
+      }, 1200);
     }
     return () => clearTimeout(timer);
   }, [isHighlighted]);
@@ -185,21 +170,17 @@ const EditableTableField: React.FC<EditableTableFieldProps> = ({
 
   const [{ isOver, draggedItem }, drop] = useDrop(() => ({
     accept: ['field', 'section'],
-    drop: (item: DragItem) => {
-      onMoveItem(item.path, currentPath);
+    drop: (item: DragItem, monitor) => {
+      if (monitor.didDrop()) return;
+      handleMoveItem(item.path, currentPath);
     },
     collect: (monitor) => ({
-      isOver: monitor.isOver(),
+      isOver: monitor.isOver({ shallow: true }),
       draggedItem: monitor.getItem() as DragItem | null,
     }),
   }));
 
-  // Removed useMergeRefs as it's not used after removing the import
-  const mergedRefs = (node: HTMLDivElement | null) => {
-    gridItemRef.current = node;
-    // drag(node); // Removed from here
-    drop(node);
-  };
+  const mergedRefs = useMergeRefs(gridItemRef, drop as unknown as React.RefCallback<Element>);
 
   useEffect(() => {
     setLocalValue(value);
@@ -210,30 +191,32 @@ const EditableTableField: React.FC<EditableTableFieldProps> = ({
     [localValue]
   );
 
-  const handleLocalCellChange = (rowIndex: number, columnKey: string, newValue: string) => {
-    const updatedValue = [...localValue];
-    updatedValue[rowIndex] = { ...updatedValue[rowIndex], [columnKey]: newValue };
-    setLocalValue(updatedValue);
-  };
+  const handleLocalCellChange = useCallback((rowIndex: number, columnKey: string, newValue: string) => {
+    setLocalValue(prev => {
+      const updatedValue = [...prev];
+      updatedValue[rowIndex] = { ...updatedValue[rowIndex], [columnKey]: newValue };
+      return updatedValue;
+    });
+  }, []);
 
-  const handleBlur = () => {
+  const handleBlur = useCallback(() => {
     if (JSON.stringify(localValue) !== JSON.stringify(value)) {
-      onFieldChange(currentPath, localValue);
+      handleFieldChange(currentPath, localValue);
     }
-  };
+  }, [localValue, value, currentPath, handleFieldChange]);
 
   const handleAddRow = useCallback(() => {
     const newRow: Record<string, string> = {};
     columnHeaders.forEach(header => (newRow[header] = ""));
-    onAddArrayItem(currentPath, newRow);
+    handleAddArrayItem(currentPath, newRow);
     setNewlyAddedPath([...currentPath, String(localValue.length)]);
-  }, [currentPath, onAddArrayItem, columnHeaders, localValue.length, setNewlyAddedPath]);
+  }, [currentPath, handleAddArrayItem, columnHeaders, localValue.length, setNewlyAddedPath]);
 
   const handleRemoveRow = useCallback(
     (index: number) => {
-      onRemoveArrayItem(currentPath, index);
+      handleRemoveArrayItem(currentPath, index);
     },
-    [currentPath, onRemoveArrayItem]
+    [currentPath, handleRemoveArrayItem]
   );
 
   const handleColumnHeaderChange = useCallback(
@@ -251,16 +234,16 @@ const EditableTableField: React.FC<EditableTableFieldProps> = ({
         });
         return newRow;
       });
-      onFieldChange(currentPath, updatedValue);
+      handleFieldChange(currentPath, updatedValue);
     },
-    [localValue, currentPath, onFieldChange]
+    [localValue, currentPath, handleFieldChange]
   );
 
   const handleAddColumn = useCallback(() => {
     const newColumnName = `New Column ${Date.now()}`;
     const updatedValue = localValue.map(row => ({ ...row, [newColumnName]: "" }));
-    onFieldChange(currentPath, updatedValue);
-  }, [localValue, currentPath, onFieldChange]);
+    handleFieldChange(currentPath, updatedValue);
+  }, [localValue, currentPath, handleFieldChange]);
 
   const handleRemoveColumn = useCallback((columnToRemove: string) => {
     const updatedValue = localValue.map(row => {
@@ -268,8 +251,8 @@ const EditableTableField: React.FC<EditableTableFieldProps> = ({
       delete newRow[columnToRemove];
       return newRow;
     });
-    onFieldChange(currentPath, updatedValue);
-  }, [localValue, currentPath, onFieldChange]);
+    handleFieldChange(currentPath, updatedValue);
+  }, [localValue, currentPath, handleFieldChange]);
 
 
   return (
@@ -286,97 +269,46 @@ const EditableTableField: React.FC<EditableTableFieldProps> = ({
       className="group"
       colorPalette="brand"
     >
-      <Collapsible.Root open={!isCollapsed} lazyMount unmountOnExit>
-        <Flex
-          gap="2"
-          alignItems={{ base: "start", md: "center" }}
-          mb={depth === 0 ? 6 : 4}
-          px="4"
-          p={4}
-          mt={depth === 0 ? 0 : 0}
-          bg={{
-            _light: depth === 0 ? "primaryContainer/10" : "primaryContainer/10",
-            _dark: depth === 0 ? "outlineVariant/20" : "outlineVariant/20"
-          }}
-          borderWidth={depth === 0 ? "1px" : "0 0 1px 0"}
-          borderColor="outlineVariant/50"
-          borderRadius={depth === 0 ? "md" : "none"}
-          justifyContent="space-between"
-          direction={{ base: "column", md: "row" }}
-          boxShadow={isHighlighted ? "0px 0px 20px var(--shadow-color)" : "none"}
-          scale={isHighlighted ? "1.01" : "1"}
-          transition="scale 0.25s ease-in-out"
-          shadowColor="onBackground/20"
-          className="group"
-        >
-          <Flex gap={{ base: "4", md: "1" }} alignItems={{ base: "start", md: "center" }} direction={{ base: "column", md: "row" }} justifyContent="center">
-            <Flex gap={{ base: "2", md: "3" }} alignItems="center" mr="2">
-              <Collapsible.Trigger onClick={toggleCollapse} as="a">
-                <IconButton
-                  aria-label={isCollapsed ? "Expand table" : "Collapse table"}
-                  size="xs"
-                  variant="surface"
-                  colorPalette="brand"
-                  title={isCollapsed ? "Expand this table." : "Collapse this table."}
-                >
-                  {isCollapsed ? <Icon as={MdExpandMore} boxSize={5} /> : <Icon as={MdExpandLess} boxSize={5} />}
-                </IconButton>
-              </Collapsible.Trigger>
-              <Checkbox.Root
-                checked={selectedItems.has(pathString)}
-                onCheckedChange={() => toggleSelection(pathString)}
-                title="Select this item."
-              >
-                <Checkbox.HiddenInput />
-                <Checkbox.Control ml="2" />
-              </Checkbox.Root>
-              <Box ref={drag} cursor="grab">
-                <Flex mx="auto">
-                  <DragHandle />
-                </Flex>
-              </Box>
-            </Flex>
-            <Flex>
-              <Heading size="lg" fontWeight="bold">
-                <EditableLabel
-                  initialValue={labels[pathString] || fieldKey}
-                  onSave={(newLabel) => onLabelChange(pathString, newLabel)}
-                />
-              </Heading>
-            </Flex>
-          </Flex>
-          <Flex gap={2}>
-            <IconButton
-              aria-label="Add Row"
-              size="xs"
-              onClick={handleAddRow}
-              variant="surface"
-              colorPalette="green"
-              title="Add a new row to this table."
-            >
-              <MdAdd title="Add a new row to this table." />
-            </IconButton>
-            <IconButton
-              aria-label="Delete Table"
-              size="xs"
-              onClick={() => onRemoveFieldOrSection(currentPath)}
-              colorPalette="red"
-              variant="surface"
-              title="Delete this table. Warning!! Destructive action."
-            >
-              <MdDeleteOutline title="Delete this table. Warning!! Destructive action." />
-            </IconButton>
-          </Flex>
-        </Flex>
+      <Collapsible.Root open={!isCollapsed(pathString)} lazyMount unmountOnExit>
+
+        <div ref={drag as unknown as React.RefCallback<HTMLDivElement>}>
+          <FieldHeader
+            pathString={pathString}
+            fieldKey={fieldKey}
+            depth={depth}
+            isCollapsed={isCollapsed(pathString)}
+            toggleCollapse={() => toggleCollapse(pathString)}
+            dragHandleRef={drag as unknown as React.Ref<HTMLDivElement>}
+            isHighlighted={isHighlighted}
+            type="table"
+            path={currentPath}
+          />
+        </div>
+
         <Collapsible.Content>
           <Box position="relative" width="full" overflowX="auto">
+            {/* Custom Add Row Button here as Table is unique */}
+            <Flex justifyContent="flex-end" mb="0" mr="1px" mt="1">
+              <IconButton
+                aria-label="Add Row"
+                size="xs"
+                onClick={handleAddRow}
+                variant="surface"
+                colorPalette="green"
+                title="Add a new row."
+                borderBottomRadius="0px"
+              >
+                <MdAdd />
+              </IconButton>
+            </Flex>
+
             <Table.ScrollArea borderWidth="1px" w="full" colorPalette="brand">
               <Table.Root size="sm" variant="outline" interactive showColumnBorder>
-                <Table.Header> {/* Corrected from Table.Thead */}
-                  <Table.Row> {/* Corrected from Table.Tr */}
-                    <Table.ColumnHeader w="6"></Table.ColumnHeader> {/* Corrected from Table.Th */}
+                <Table.Header>
+                  <Table.Row>
+                    <Table.ColumnHeader w="6"></Table.ColumnHeader>
                     {columnHeaders.map((header) => (
-                      <Table.ColumnHeader key={header} className="group"> {/* Corrected from Table.Th */}
+                      <Table.ColumnHeader key={header} className="group">
                         <HStack justifyContent="space-between">
                           <EditableLabel
                             initialValue={header}
@@ -398,7 +330,7 @@ const EditableTableField: React.FC<EditableTableFieldProps> = ({
                         </HStack>
                       </Table.ColumnHeader>
                     ))}
-                    <Table.ColumnHeader> {/* Corrected from Table.Th */}
+                    <Table.ColumnHeader>
                       <IconButton
                         aria-label="Add Column"
                         size="xs"
@@ -410,41 +342,42 @@ const EditableTableField: React.FC<EditableTableFieldProps> = ({
                         <MdAdd />
                       </IconButton>
                     </Table.ColumnHeader>
-                  </Table.Row> {/* Corrected from Table.Tr */}
-                </Table.Header> {/* Corrected from Table.Thead */}
-                <Table.Body> {/* Corrected from Table.Tbody */}
+                  </Table.Row>
+                </Table.Header>
+                <Table.Body>
                   {localValue.map((row, rowIndex) => {
                     const rowPath = [...currentPath, String(rowIndex)];
                     return (
-                      <React.Fragment key={rowIndex}>
-                        <DraggableTableRow
-                          row={row}
-                          rowIndex={rowIndex}
-                          rowPath={rowPath}
-                          columnHeaders={columnHeaders}
-                          handleLocalCellChange={handleLocalCellChange}
-                          handleBlur={handleBlur}
-                          handleRemoveRow={handleRemoveRow}
-                          currentArrayPath={currentPath}
-                          onReorderArrayItem={onReorderArrayItem}
-                        />
-                      </React.Fragment>
+                      <DraggableTableRow
+                        key={rowIndex}
+                        row={row}
+                        rowIndex={rowIndex}
+                        rowPath={rowPath}
+                        columnHeaders={columnHeaders}
+                        handleLocalCellChange={handleLocalCellChange}
+                        handleBlur={handleBlur}
+                        handleRemoveRow={handleRemoveRow}
+                        currentArrayPath={currentPath}
+                        onReorderArrayItem={handleReorderArrayItem}
+                      />
                     );
                   })}
                   <Box h="2px" ref={(node: HTMLDivElement | null) => drop(node)} bg={isOver && draggedItem ? "primary" : "transparent"} />
-                </Table.Body> {/* Corrected from Table.Tbody */}
+                </Table.Body>
               </Table.Root>
             </Table.ScrollArea>
+
             {isOver && draggedItem && (
               <Box position="absolute" top="0" left="0" right="0" bottom="0" display="flex" alignItems="center" justifyContent="center" bg="primary/10" pointerEvents="none">
                 <Icon as={MdOutlineKeyboardDoubleArrowDown} boxSize={8} color="primary" />
               </Box>
             )}
+
           </Box>
         </Collapsible.Content>
       </Collapsible.Root>
     </GridItem>
   );
-};
+});
 
 export default EditableTableField;

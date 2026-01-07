@@ -12,127 +12,37 @@ import {
     Flex,
 } from "@chakra-ui/react";
 import { MdOutlineUndo, MdOutlineArrowForward, MdOutlineAddBusiness, MdOutlineAddLocationAlt, MdOutlineNumbers } from "react-icons/md";
-import { useForm } from "react-hook-form";
 import { useHookFormMask } from "use-mask-input";
-import { useDispatch } from "react-redux";
-import { toaster } from "@/components/ui/toaster";
 import * as motion from "motion/react-client";
-import { completeStep } from "@/features/OnboardingSlice";
-import { useEffect, useRef, useState } from "react";
 import { INSTITUTION_TYPE_OPTIONS, SIZE_OPTIONS } from "@/constants/formConstants";
-import axios from "axios";
-import { type ApiError } from '@/types/api.types';
-import { create as createInstitution } from "@/api/institution";
+import { useInstitutionDetails } from "@/hooks/onboarding/useInstitutionDetails";
 
-const API_KEY = import.meta.env.VITE_GEOAPIFY_API_KEY;
-
-export default function FormThree() {
-    const dispatch = useDispatch();
+export default function InstitutionDetailsForm() {
     const {
         register,
-        handleSubmit,
-        formState,
+        onSubmit,
         reset,
-        setValue,
-    } = useForm({
-        mode: 'onChange',
-        defaultValues: {
-            institutionName: "",
-            location: "",
-            institutionType: "",
-            sizeRange: "",
-            licenseNumber: "",
-        }
-    });
+        errors,
+        isSubmitting,
+        isValid,
+        locationInput,
+        suggestions,
+        showSuggestions,
+        inputRef,
+        handleLocationChange,
+        handleLocationSelect,
+        clearLocation
+    } = useInstitutionDetails();
+
     const registerWithMask = useHookFormMask(register);
 
-    const { errors, isSubmitting, isValid } = formState;
-
-    const [locationInput, setLocationInput] = useState("");
-    type Suggestion = {
-        properties: {
-            formatted: string;
-            [key: string]: unknown;
-        };
-        [key: string]: unknown;
-    };
-    const [suggestions, setSuggestions] = useState<Suggestion[]>([]);
-    const [showSuggestions, setShowSuggestions] = useState(false);
-    const debounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
-
-    const inputRef = useRef<HTMLInputElement | null>(null)
     const endElement = locationInput ? (
         <CloseButton
             size="xs"
-            onClick={() => {
-                setLocationInput("")
-                inputRef.current?.focus()
-            }}
+            onClick={clearLocation}
             me="-2"
         />
-    ) : undefined
-
-    useEffect(() => {
-        if (debounceRef.current) clearTimeout(debounceRef.current);
-
-        if (locationInput.length < 3) {
-            setSuggestions([]);
-            setShowSuggestions(false);
-            return;
-        }
-
-        debounceRef.current = setTimeout(async () => {
-            try {
-                const response = await axios.get("https://api.geoapify.com/v1/geocode/autocomplete", {
-                    params: {
-                        text: locationInput,
-                        apiKey: API_KEY,
-                        limit: 5,
-                        filter: "countrycode:ng",
-                    },
-                });
-
-                const features = response.data.features || [];
-                setSuggestions(features);
-                setShowSuggestions(true);
-            } catch (err) {
-                console.error("Geoapify fetch error:", err);
-                setSuggestions([]);
-                setShowSuggestions(false);
-            }
-        }, 400);
-    }, [locationInput]);
-
-    const onSubmit = handleSubmit(async (data) => {
-        try {
-            // You may need to get userId from your auth context or redux store
-            const payload = {
-                ...data, // or map to correct value if needed
-            };
-            const response = await createInstitution(payload);
-            console.log('Form submitted successfully:', response);
-            toaster.create({
-                duration: 3000,
-                title: "Success",
-                description: "Account created successfully.",
-                type: "success",
-            });
-            dispatch(completeStep(2)); // Mark the third step as completed
-            reset();
-            setLocationInput("");
-            setSuggestions([]);
-            setShowSuggestions(false);
-        } catch (err) {
-            console.error('Form submission failed:', err);
-            const apiError = err as ApiError;
-            toaster.create({
-                title: "Registration Failed",
-                description: apiError.response?.data?.message ?? "An error occurred during registration. Please try again.",
-                type: "error",
-                duration: 5000,
-            })
-        }
-    });
+    ) : undefined;
 
     return (
         <form onSubmit={onSubmit} onReset={() => reset({})} noValidate aria-label="Institution registration form">
@@ -169,15 +79,11 @@ export default function FormThree() {
                                 {...register("location", {
                                     required: "Location is required",
                                     maxLength: { value: 100, message: "Maximum length is 100 characters" },
-                                    onChange: (e) => {
-                                        const val = e.target.value;
-                                        setLocationInput(val);
-                                        setValue("location", val, { shouldValidate: true });
-                                    }
+                                    onChange: handleLocationChange
                                 })}
                                 ref={(el) => {
                                     inputRef.current = el;
-                                    // react-hook-form's register already attaches ref, so no need to call .ref(el)
+                                    register("location").ref(el);
                                 }}
                             />
                         </InputGroup>
@@ -188,17 +94,7 @@ export default function FormThree() {
                                     borderTop="none"
                                     borderTopRadius="none"
                                     color="fg.muted"
-                                    onChange={(e) => {
-                                        const selected = suggestions.find(
-                                            (s) => s.properties.formatted === e.target.value
-                                        );
-                                        if (selected) {
-                                            const fullLocation = selected.properties.formatted;
-                                            setLocationInput(fullLocation);
-                                            setValue("location", fullLocation, { shouldValidate: true });
-                                            setShowSuggestions(false);
-                                        }
-                                    }}
+                                    onChange={handleLocationSelect}
                                 >
                                     <option value="">Select a suggested location</option>
                                     {suggestions.map((s, idx) => (

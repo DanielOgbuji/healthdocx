@@ -1,5 +1,5 @@
 import { useEffect, useState, lazy, Suspense } from "react";
-import { Box, Steps, Stack, VStack, Spinner, Text } from "@chakra-ui/react";
+import { Box, Steps, Stack, VStack, Spinner, Text, useBreakpointValue } from "@chakra-ui/react";
 import { MdOutlinePersonOutline, MdOutlineMarkEmailRead, MdOutlineWorkOutline, MdOutlineTimelapse, MdOutlineVerified } from 'react-icons/md';
 import { StepsList } from "@/components/onboarding/StepsList";
 import { StepsContent } from "@/components/onboarding/StepsContent";
@@ -7,11 +7,11 @@ import { useSelector } from 'react-redux';
 import type { RootState } from '@/store/store';
 import { useSearchParams } from "react-router";
 
-const FormOne = lazy(() => import("@/components/onboarding/FormOne"));
-const FormTwo = lazy(() => import("@/components/onboarding/FormTwo"));
-const FormThree = lazy(() => import("@/components/onboarding/FormThree"));
-const AccountVerification = lazy(() => import("@/components/onboarding/AccountVerification"));
-const FormFive = lazy(() => import("@/components/onboarding/Welcome"));
+const PersonalDetailsForm = lazy(() => import("@/components/onboarding/PersonalDetailsForm"));
+const EmailVerificationForm = lazy(() => import("@/components/onboarding/EmailVerificationForm"));
+const InstitutionDetailsForm = lazy(() => import("@/components/onboarding/InstitutionDetailsForm"));
+const InstitutionVerificationParams = lazy(() => import("@/components/onboarding/InstitutionVerificationParams"));
+const OnboardingSuccess = lazy(() => import("@/components/onboarding/OnboardingSuccess"));
 
 const LoadingFallback = () => (
     <Stack flexGrow="1" height="100%" alignItems="center" justifyContent="center">
@@ -40,7 +40,7 @@ const OnboardingSteps = () => {
             title: "Your details",
             description: "Provide your essential details",
             icon: MdOutlinePersonOutline,
-            formComponent: <FormOne invitationCode={invitationCode} />,
+            formComponent: <PersonalDetailsForm invitationCode={invitationCode} />,
             formLegend: "Create an account",
             formHelperText: "Fill in your details as it is in your National ID."
         },
@@ -48,7 +48,7 @@ const OnboardingSteps = () => {
             title: "Verify your email",
             description: "Enter your verification code",
             icon: MdOutlineMarkEmailRead,
-            formComponent: <FormTwo />,
+            formComponent: <EmailVerificationForm />,
             formLegend: "Verify your email",
             formHelperText: (
                 <>
@@ -61,7 +61,7 @@ const OnboardingSteps = () => {
             title: "Your institution details",
             description: "Provide your hospital information",
             icon: MdOutlineWorkOutline,
-            formComponent: <FormThree />,
+            formComponent: <InstitutionDetailsForm />,
             formLegend: "Add institution details",
             formHelperText: "Fill in your institution details correctly."
         },
@@ -69,7 +69,7 @@ const OnboardingSteps = () => {
             title: "Institution verification",
             description: "Wait for a quick verification",
             icon: MdOutlineTimelapse,
-            formComponent: <AccountVerification />,
+            formComponent: <InstitutionVerificationParams />,
             formLegend: "",
             formHelperText: "",
         },
@@ -77,7 +77,7 @@ const OnboardingSteps = () => {
             title: "Welcome to Healthdocx!",
             description: "Your account is up and running",
             icon: MdOutlineVerified,
-            formComponent: <FormFive />,
+            formComponent: <OnboardingSuccess />,
             formLegend: "Create an account",
             formHelperText: "Fill in your details as it is in your National ID."
         }
@@ -118,7 +118,7 @@ const OnboardingSteps = () => {
             step={step}
             onStepChange={(e) => setStep(e.step)}
             display="flex"
-            orientation="vertical"
+            orientation={useBreakpointValue({ base: "horizontal", md: "vertical" })}
             width="100%"
             defaultStep={0}
             count={steps.length}
