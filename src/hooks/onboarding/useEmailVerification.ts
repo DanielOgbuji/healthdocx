@@ -3,7 +3,7 @@ import { useForm } from "react-hook-form";
 import { useDispatch } from "react-redux";
 import { useAnimate } from "motion/react";
 import { toaster } from "@/components/ui/toaster";
-import { completeStep } from "@/features/onboardingSlice";
+import { completeStep } from "@/features/onboarding-slice";
 import { loginSuccess } from "@/features/authSlice";
 import { verifyEmail as verifyUserEmail, resendVerification } from "@/api/auth";
 import { type ApiError } from '@/types/api.types';
