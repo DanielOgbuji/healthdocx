@@ -1,4 +1,4 @@
-import React, { memo } from "react";
+import { memo } from "react";
 import FormField from "./FormField";
 import SingleField from "./SingleField";
 import EditableTableField from "./EditableTableField";

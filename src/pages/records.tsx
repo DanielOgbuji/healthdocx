@@ -309,7 +309,7 @@ const Records = () => {
         </EmptyState.Root>
       ) : (
         <Stack width="full" alignItems="center" px={{ xl: "6vw", lg: "6vw", md: "6vw", sm: "6vw", base: "4" }} pb={{ xl: "6vw", lg: "6vw", md: "6vw", sm: "6vw", base: "4" }} mt="120px" gap="0">
-          <InfoTile openCamera={openCamera} />
+          <InfoTile openCamera={openCamera} handleFileChange={handleFileChange} />
           <Flex w="full" p="4" pt="3" justifyContent="space-between" alignItems={{ base: "center", mdDown: "start" }} borderStyle="solid" borderWidth="1px" borderBottomWidth="0" borderColor="border.default" roundedTop="md" mt="8" direction={{ base: "row", mdDown: "column" }} gap={{ base: "4", md: "0" }} colorPalette="brand">
             <Flex direction="column" gap="1">
               <Flex textStyle="md" fontWeight="semibold" gap="2" alignItems="center">
